@@ -1,0 +1,38 @@
+# Root level gitignore for Octovoc
+
+# Excel files
+*.xlsx
+*.xls
+*.csv
+
+# Images
+*.png
+*.jpg
+*.jpeg
+*.gif
+
+# Zone Identifier files (Windows)
+*:Zone.Identifier
+
+# Claude AI files
+.claude/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Environment variables
+.env
+.env.local
+
+# Documentation temporary files
+*.md~

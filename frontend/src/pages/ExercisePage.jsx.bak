@@ -1,0 +1,308 @@
+import { useState, useEffect } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
+import api from '../services/api'
+
+export default function ExercisePage({ user }) {
+  const { moduleId } = useParams()
+  const navigate = useNavigate()
+  const [loading, setLoading] = useState(true)
+  const [currentWord, setCurrentWord] = useState(null)
+  const [batteryWords, setBatteryWords] = useState([])
+  const [phase, setPhase] = useState(1)
+  const [answer, setAnswer] = useState('')
+  const [feedback, setFeedback] = useState(null)
+  const [batteryProgress, setBatteryProgress] = useState(null)
+  const [moduleName, setModuleName] = useState('')
+  const [progressHistory, setProgressHistory] = useState([])
+  const [isAnonymous, setIsAnonymous] = useState(false)
+  const [questionQueue, setQuestionQueue] = useState([])
+
+  useEffect(() => {
+    startModule()
+  }, [])
+
+  const startModule = async () => {
+    try {
+      const progressRes = await api.post(`/student/module/${moduleId}/start`)
+      const progress = progressRes.data
+
+      // Get module details
+      const modulesRes = await api.get('/student/modules')
+      const module = modulesRes.data.find(m => m.id === parseInt(moduleId))
+      if (module) {
+        setModuleName(module.name)
+      }
+
+      if (progress.current_battery_id) {
+        startBattery(progress.current_battery_id)
+      } else if (progress.in_final_round && !progress.is_completed) {
+        // Start final round - navigate to final round page
+        navigate(`/final-round/${moduleId}`)
+      } else if (progress.is_completed) {
+        // Module already complete
+        navigate('/')
+      } else {
+        // No batteries, no final round - shouldn't happen
+        navigate('/')
+      }
+    } catch (err) {
+      console.error(err)
+      setLoading(false)
+    }
+  }
+
+  const startBattery = async (batteryId) => {
+    try {
+      const res = await api.post(`/student/battery/${batteryId}/start`)
+
+      // Get the phase from battery_progress
+      const currentPhase = res.data.battery_progress.current_phase
+
+      setCurrentWord(res.data.current_word)
+      setBatteryWords(res.data.battery_words)
+      setPhase(currentPhase)
+      setBatteryProgress(res.data.battery_progress)
+      // Initialize progress history with empty slots for all words
+      const totalWords = res.data.battery_words.length
+      setProgressHistory(Array(totalWords).fill(null))
+      // Clear feedback and answer from previous battery/phase
+      setFeedback(null)
+      setAnswer('')
+      setLoading(false)
+    } catch (err) {
+      console.error(err)
+      setLoading(false)
+    }
+  }
+
+  const handleAnswer = async (selectedAnswer) => {
+    if (feedback) return // Already answered
+
+    // Store the selected answer for visual feedback
+    setAnswer(selectedAnswer)
+
+    // Use the current phase from batteryProgress to ensure it's up to date
+    const currentPhase = batteryProgress.current_phase
+
+    try {
+      const res = await api.post('/student/question/answer', {
+        battery_progress_id: batteryProgress.id,
+        word_id: currentWord.id,
+        answer: selectedAnswer,
+        phase: currentPhase
+      })
+
+      setFeedback(res.data)
+
+      // Update batteryProgress from server response
+      setBatteryProgress(res.data.battery_progress)
+
+      // Add to progress history chronologically (left to right)
+      const history = progressHistory.slice()
+      // Find the first empty slot
+      const firstEmptyIndex = history.findIndex(item => item === null)
+      if (firstEmptyIndex !== -1) {
+        history[firstEmptyIndex] = res.data.is_correct ? 'correct' : 'incorrect'
+        setProgressHistory(history)
+      }
+
+      setTimeout(() => {
+        if (res.data.battery_complete) {
+          // Battery is complete, check if there are more batteries
+          // Reload the module to get the next battery
+          startModule()
+        } else if (res.data.phase_complete) {
+          // Phase complete, update phase and show first question of next phase
+          setPhase(res.data.battery_progress.current_phase)
+          if (res.data.next_word) {
+            setCurrentWord(res.data.next_word)
+          }
+          setAnswer('')
+          setFeedback(null)
+          // Reset progress history for new phase
+          const totalWords = batteryWords.length
+          setProgressHistory(Array(totalWords).fill(null))
+        } else if (res.data.next_word) {
+          // Next question in same phase
+          setCurrentWord(res.data.next_word)
+          setAnswer('')
+          setFeedback(null)
+        } else {
+          // No more questions but not complete - shouldn't happen
+          console.error('Unexpected state', res.data)
+          navigate('/')
+        }
+      }, currentPhase === 3 ? 800 : 1500)
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  const handleTextSubmit = (e) => {
+    e.preventDefault()
+    // Prevent default form submission, actual checking happens on input change
+  }
+
+  const handleTextInput = (e) => {
+    const value = e.target.value
+    setAnswer(value)
+
+    // Only check if not already showing feedback
+    if (!feedback && currentWord && value.length > 0) {
+      // If exactly correct, submit immediately as correct
+      if (value === currentWord.word) {
+        handleAnswer(value)
+      }
+      // Check if user has typed enough to evaluate
+      // Only check when typed at least as long as the word, or has clear errors
+      else if (value.length >= 3) {
+        // Use Levenshtein distance to check for errors
+        const distance = levenshteinDistance(value, currentWord.word)
+
+        // Only submit as wrong if:
+        // 1. The distance is more than 2 (too many errors)
+        // AND
+        // 2. The user has typed at least as many characters as the correct word
+        //    (to avoid penalizing incomplete but correct typing)
+        if (distance > 2 && value.length >= currentWord.word.length) {
+          handleAnswer(value)
+        }
+      }
+    }
+  }
+
+  // Levenshtein distance function
+  const levenshteinDistance = (str1, str2) => {
+    const matrix = []
+
+    for (let i = 0; i <= str2.length; i++) {
+      matrix[i] = [i]
+    }
+
+    for (let j = 0; j <= str1.length; j++) {
+      matrix[0][j] = j
+    }
+
+    for (let i = 1; i <= str2.length; i++) {
+      for (let j = 1; j <= str1.length; j++) {
+        if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+          matrix[i][j] = matrix[i - 1][j - 1]
+        } else {
+          matrix[i][j] = Math.min(
+            matrix[i - 1][j - 1] + 1,
+            matrix[i][j - 1] + 1,
+            matrix[i - 1][j] + 1
+          )
+        }
+      }
+    }
+
+    return matrix[str2.length][str1.length]
+  }
+
+  if (loading) {
+    return <div className="loading">Laden...</div>
+  }
+
+  if (!currentWord) {
+    return <div className="loading">Geen vragen beschikbaar</div>
+  }
+
+  const renderSentence = () => {
+    // Extract the word between asterisks
+    const match = currentWord.example_sentence.match(/\*([^*]+)\*/)
+    if (!match) return currentWord.example_sentence
+
+    const wordInSentence = match[1]
+
+    if (phase === 1) {
+      return currentWord.example_sentence.replace(`*${wordInSentence}*`, `<span class="underline">${wordInSentence}</span>`)
+    } else {
+      return currentWord.example_sentence.replace(`*${wordInSentence}*`, '_________')
+    }
+  }
+
+  return (
+    <div className="container">
+      <header className="exercise-header">
+        <div className="header-title">Octovoc</div>
+        <div className="user-info">
+          {user.email}<br />
+          Klas 4B
+        </div>
+      </header>
+
+      <div className="module-progress-container">
+        <div className="module-title">{moduleName}</div>
+        <div className="progress-bar">
+          {progressHistory.map((status, idx) => (
+            <div key={idx} className={`progress-block ${status === 'correct' ? 'correct' : status === 'incorrect' ? 'incorrect' : 'empty'}`}>
+              {status === 'correct' ? 'V' : status === 'incorrect' ? 'X' : ''}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="sentence" dangerouslySetInnerHTML={{ __html: renderSentence() }} />
+
+      {phase === 3 ? (
+        <form onSubmit={handleTextSubmit} className={`text-input-container ${feedback?.is_correct ? 'correct-input' : feedback ? 'incorrect-input' : ''}`}>
+          <input
+            type="text"
+            value={feedback && !feedback.is_correct ? feedback.correct_answer : answer}
+            onChange={handleTextInput}
+            disabled={feedback !== null}
+            autoFocus
+            placeholder="Typ het woord..."
+          />
+        </form>
+      ) : (
+        <ul className="answers-list">
+          {phase === 1 && batteryWords.map((word) => {
+            const isCorrectAnswer = word.meaning === currentWord.meaning
+            const wasClicked = feedback !== null
+            let className = 'answer-option'
+
+            if (wasClicked && isCorrectAnswer) {
+              className += ' correct-answer'
+            } else if (wasClicked && !feedback.is_correct && word.meaning === answer) {
+              className += ' incorrect-answer'
+            }
+
+            return (
+              <li
+                key={word.id}
+                className={className}
+                onClick={() => !feedback && handleAnswer(word.meaning)}
+              >
+                {word.meaning}
+              </li>
+            )
+          })}
+
+          {phase === 2 && batteryWords.map((word) => {
+            const isCorrectAnswer = word.word === currentWord.word
+            const wasClicked = feedback !== null
+            let className = 'answer-option'
+
+            if (wasClicked && isCorrectAnswer) {
+              className += ' correct-answer'
+            } else if (wasClicked && !feedback.is_correct && word.word === answer) {
+              className += ' incorrect-answer'
+            }
+
+            return (
+              <li
+                key={word.id}
+                className={className}
+                onClick={() => !feedback && handleAnswer(word.word)}
+              >
+                {word.word}
+              </li>
+            )
+          })}
+        </ul>
+      )}
+    </div>
+  )
+}

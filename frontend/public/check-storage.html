@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Check Storage</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+            background: #1e1e1e;
+            color: #d4d4d4;
+        }
+        pre {
+            background: #2d2d2d;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        button {
+            background: #007acc;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #005a9e;
+        }
+    </style>
+</head>
+<body>
+    <h1>LocalStorage Inspector</h1>
+    <button onclick="showStorage()">Toon LocalStorage</button>
+    <button onclick="clearAll()">Clear Alles</button>
+    <button onclick="location.href='/'">Ga naar Home</button>
+
+    <h2>LocalStorage Inhoud:</h2>
+    <pre id="output">Klik op "Toon LocalStorage" om te bekijken...</pre>
+
+    <script>
+        function showStorage() {
+            const output = document.getElementById('output');
+            const data = {};
+
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                const value = localStorage.getItem(key);
+                data[key] = value;
+            }
+
+            output.textContent = JSON.stringify(data, null, 2);
+
+            // Also show token info if it exists
+            const token = localStorage.getItem('token');
+            if (token) {
+                const parts = token.split('.');
+                output.textContent += '\n\n=== TOKEN ANALYSE ===\n';
+                output.textContent += 'Token delen: ' + parts.length + '\n';
+                output.textContent += 'Token lengte: ' + token.length + ' chars\n';
+                output.textContent += 'Eerste 50 chars: ' + token.substring(0, 50) + '...\n';
+            }
+        }
+
+        function clearAll() {
+            localStorage.clear();
+            sessionStorage.clear();
+            alert('Alles gewist!');
+            showStorage();
+        }
+
+        // Auto-show on load
+        showStorage();
+    </script>
+</body>
+</html>
