@@ -241,15 +241,12 @@ export default function StudentDashboard({ user, setUser }) {
                   position: 'relative'
                 }}
               >
-                <h3>
-                  {module.name}
-                  {isLocked && <span style={{ marginLeft: '8px', fontSize: '14px' }}>🔒</span>}
-                </h3>
+                <h3>{module.name}</h3>
                 <p>
-                  {module.difficulty && `${module.difficulty} | `}
+                  {module.difficulty && `niveau ${module.difficulty} | `}
                   {module.word_count} woorden
                   {module.progress && ` | ${Math.round(module.completion_percentage)}% voltooid`}
-                  {isLocked && <><br /><span style={{ color: '#666', fontSize: '13px' }}>klascode vereist</span></>}
+                  {isLocked && ' | 🔒 klascode vereist'}
                 </p>
               </li>
             )
