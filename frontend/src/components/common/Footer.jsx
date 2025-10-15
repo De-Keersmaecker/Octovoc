@@ -59,12 +59,13 @@ const Footer = () => {
   return (
     <footer style={{
       width: '100%',
+      maxWidth: '800px',
+      margin: '-40px auto 40px auto',
       textAlign: 'center',
-      padding: '20px 10px',
+      padding: '8px 10px',
       fontSize: '11px',
       color: '#fff',
-      backgroundColor: '#000',
-      marginTop: '0'
+      backgroundColor: '#000'
     }}>
       {footerContent}
     </footer>
