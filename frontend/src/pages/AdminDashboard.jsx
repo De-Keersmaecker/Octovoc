@@ -328,6 +328,80 @@ export default function AdminDashboard({ user }) {
     }
   }
 
+  const sortModulesByLevel = async () => {
+    // Sort by difficulty level (1, 2, 3, 4)
+    const sorted = [...modules].sort((a, b) => {
+      // Extract numbers from difficulty string
+      const levelA = parseInt(a.difficulty) || 999
+      const levelB = parseInt(b.difficulty) || 999
+      return levelA - levelB
+    })
+
+    setModules(sorted)
+
+    try {
+      await api.put('/admin/modules/reorder', {
+        module_order: sorted.map(m => m.id)
+      })
+      alert('Modules gesorteerd op niveau')
+    } catch (err) {
+      console.error('Failed to update module order:', err)
+      alert('Fout bij sorteren van modules')
+      loadModules()
+    }
+  }
+
+  const sortModulesFreeFirst = async () => {
+    // Sort by level first, then by is_free (free modules first within each level)
+    const sorted = [...modules].sort((a, b) => {
+      const levelA = parseInt(a.difficulty) || 999
+      const levelB = parseInt(b.difficulty) || 999
+
+      // First sort by level
+      if (levelA !== levelB) {
+        return levelA - levelB
+      }
+
+      // Within same level, free modules come first
+      if (a.is_free && !b.is_free) return -1
+      if (!a.is_free && b.is_free) return 1
+      return 0
+    })
+
+    setModules(sorted)
+
+    try {
+      await api.put('/admin/modules/reorder', {
+        module_order: sorted.map(m => m.id)
+      })
+      alert('Modules gesorteerd: gratis modules bovenaan per niveau')
+    } catch (err) {
+      console.error('Failed to update module order:', err)
+      alert('Fout bij sorteren van modules')
+      loadModules()
+    }
+  }
+
+  const sortModulesAlphabetically = async () => {
+    // Sort alphabetically by name
+    const sorted = [...modules].sort((a, b) => {
+      return a.name.localeCompare(b.name, 'nl')
+    })
+
+    setModules(sorted)
+
+    try {
+      await api.put('/admin/modules/reorder', {
+        module_order: sorted.map(m => m.id)
+      })
+      alert('Modules alfabetisch gesorteerd')
+    } catch (err) {
+      console.error('Failed to update module order:', err)
+      alert('Fout bij sorteren van modules')
+      loadModules()
+    }
+  }
+
   const handleUpload = async (e) => {
     e.preventDefault()
     if (!file || !moduleName) {
@@ -1108,7 +1182,56 @@ export default function AdminDashboard({ user }) {
           </section>
 
           <section>
-            <h3>bestaande modules</h3>
+            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px'}}>
+              <h3 style={{margin: 0}}>bestaande modules</h3>
+              <div style={{display: 'flex', gap: '10px'}}>
+                <button
+                  onClick={sortModulesByLevel}
+                  className="btn"
+                  style={{
+                    padding: '6px 12px',
+                    fontSize: '14px',
+                    backgroundColor: '#2196f3',
+                    borderColor: '#2196f3',
+                    color: '#ffffff'
+                  }}
+                  disabled={editingModule !== null}
+                  title="Sorteer modules op niveau (1, 2, 3, 4)"
+                >
+                  sorteer op niveau
+                </button>
+                <button
+                  onClick={sortModulesFreeFirst}
+                  className="btn"
+                  style={{
+                    padding: '6px 12px',
+                    fontSize: '14px',
+                    backgroundColor: '#4caf50',
+                    borderColor: '#4caf50',
+                    color: '#ffffff'
+                  }}
+                  disabled={editingModule !== null}
+                  title="Sorteer met gratis modules bovenaan per niveau"
+                >
+                  gratis bovenaan
+                </button>
+                <button
+                  onClick={sortModulesAlphabetically}
+                  className="btn"
+                  style={{
+                    padding: '6px 12px',
+                    fontSize: '14px',
+                    backgroundColor: '#ff9800',
+                    borderColor: '#ff9800',
+                    color: '#ffffff'
+                  }}
+                  disabled={editingModule !== null}
+                  title="Sorteer modules alfabetisch"
+                >
+                  alfabetisch
+                </button>
+              </div>
+            </div>
             <div style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', tableLayout: 'fixed' }}>
                 <thead>
