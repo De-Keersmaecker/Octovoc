@@ -8,6 +8,7 @@ import FinalRoundPage from './pages/FinalRoundPage'
 import DifficultWordsPage from './pages/DifficultWordsPage'
 import TeacherDashboard from './pages/TeacherDashboard'
 import AdminDashboard from './pages/AdminDashboard'
+import PrivacyPage from './pages/PrivacyPage'
 import GDPRNotification from './components/common/GDPRNotification'
 import Footer from './components/common/Footer'
 import { getToken, getUser } from './utils/auth'
@@ -56,6 +57,7 @@ function App() {
       <Routes>
         <Route path="/login" element={<LoginPage setUser={setUser} />} />
         <Route path="/register" element={<RegisterPage setUser={setUser} />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
 
         <Route
           path="/"
@@ -124,7 +126,7 @@ function App() {
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
 
-      {user && !user.gdpr_accepted && <GDPRNotification user={user} setUser={setUser} />}
+      <GDPRNotification />
 
       <Footer />
     </>
