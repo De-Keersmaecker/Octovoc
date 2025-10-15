@@ -352,20 +352,17 @@ export default function AdminDashboard({ user }) {
   }
 
   const sortModulesFreeFirst = async () => {
-    // Sort by level first, then by is_free (free modules first within each level)
+    // Sort with ALL free modules first, then ALL paid modules
+    // Within each group (free/paid), sort by level from low to high
     const sorted = [...modules].sort((a, b) => {
-      const levelA = parseInt(a.difficulty) || 999
-      const levelB = parseInt(b.difficulty) || 999
-
-      // First sort by level
-      if (levelA !== levelB) {
-        return levelA - levelB
-      }
-
-      // Within same level, free modules come first
+      // First criterion: free modules come before paid modules
       if (a.is_free && !b.is_free) return -1
       if (!a.is_free && b.is_free) return 1
-      return 0
+
+      // If both are free or both are paid, sort by level
+      const levelA = parseInt(a.difficulty) || 999
+      const levelB = parseInt(b.difficulty) || 999
+      return levelA - levelB
     })
 
     setModules(sorted)
@@ -374,7 +371,7 @@ export default function AdminDashboard({ user }) {
       await api.put('/admin/modules/reorder', {
         module_order: sorted.map(m => m.id)
       })
-      alert('Modules gesorteerd: gratis modules bovenaan per niveau')
+      alert('Modules gesorteerd: alle gratis modules bovenaan')
     } catch (err) {
       console.error('Failed to update module order:', err)
       alert('Fout bij sorteren van modules')
@@ -1211,7 +1208,7 @@ export default function AdminDashboard({ user }) {
                     color: '#ffffff'
                   }}
                   disabled={editingModule !== null}
-                  title="Sorteer met gratis modules bovenaan per niveau"
+                  title="Alle gratis modules bovenaan, daarna betaalde modules (beide gesorteerd op niveau)"
                 >
                   gratis bovenaan
                 </button>
