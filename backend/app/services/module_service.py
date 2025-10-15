@@ -209,8 +209,11 @@ class ModuleService:
             try:
                 delimiter = csv.Sniffer().sniff(sample).delimiter
             except:
-                # Default to comma if detection fails
-                delimiter = ','
+                # Try semicolon first (common in European CSVs), then comma
+                if ';' in sample and sample.count(';') > sample.count(','):
+                    delimiter = ';'
+                else:
+                    delimiter = ','
 
             csv_file.seek(0)  # Reset to start
             reader = csv.reader(csv_file, delimiter=delimiter)
