@@ -55,6 +55,13 @@ def main():
     ):
         print("WARNING: Admin seeding failed, but continuing...")
 
+    # Seed quotes
+    if not run_command(
+        '/opt/venv/bin/python seed_quotes.py',
+        'Seeding motivational quotes'
+    ):
+        print("WARNING: Quotes seeding failed, but continuing...")
+
     # Start Gunicorn
     print("\n" + "="*60)
     print("  STARTING GUNICORN SERVER")
