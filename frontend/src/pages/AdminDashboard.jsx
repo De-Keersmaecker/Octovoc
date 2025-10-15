@@ -1632,18 +1632,19 @@ export default function AdminDashboard({ user }) {
 
           <section>
             <h3>bestaande quotes</h3>
-            <table className="progress-table" style={{ tableLayout: 'fixed', width: '100%' }}>
-              <thead>
-                <tr>
-                  <th>tekst</th>
-                  <th style={{width: '120px'}}>auteur</th>
-                  <th style={{width: '100px'}}>video URL</th>
-                  <th style={{width: '70px', textAlign: 'center'}}>actief</th>
-                  <th style={{width: '180px'}}>acties</th>
-                </tr>
-              </thead>
-              <tbody>
-                {quotes.map(quote => (
+            <div style={{ overflowX: 'auto' }}>
+              <table className="progress-table" style={{ tableLayout: 'fixed', width: '100%' }}>
+                <thead>
+                  <tr>
+                    <th>tekst</th>
+                    <th style={{width: '120px'}}>auteur</th>
+                    <th style={{width: '100px'}}>video URL</th>
+                    <th style={{width: '70px', textAlign: 'center'}}>actief</th>
+                    <th style={{width: '180px'}}>acties</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {quotes.map(quote => (
                   <tr key={quote.id}>
                     <td style={{ wordBreak: 'break-word' }}>
                       {editingQuote === quote.id ? (
@@ -1751,6 +1752,7 @@ export default function AdminDashboard({ user }) {
                 ))}
               </tbody>
             </table>
+            </div>
           </section>
         </>
       )}
