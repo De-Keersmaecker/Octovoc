@@ -1,9 +1,16 @@
 import { useState, useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 
 export default function GDPRNotification() {
   const [visible, setVisible] = useState(false)
+  const location = useLocation()
 
   useEffect(() => {
+    // Don't show on privacy page
+    if (location.pathname === '/privacy') {
+      return
+    }
+
     // Check if user has already accepted
     const hasAccepted = localStorage.getItem('gdpr_accepted')
     if (hasAccepted) {
@@ -16,7 +23,7 @@ export default function GDPRNotification() {
     }, 15000)
 
     return () => clearTimeout(timer)
-  }, [])
+  }, [location.pathname])
 
   const handleAccept = () => {
     localStorage.setItem('gdpr_accepted', 'true')
