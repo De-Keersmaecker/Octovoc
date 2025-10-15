@@ -1,5 +1,5 @@
 [phases.setup]
-nixPkgs = ["python310", "python310Packages.pip", "python310Packages.virtualenv", "postgresql", "bash"]
+nixPkgs = ["python310", "python310Packages.pip", "python310Packages.virtualenv", "postgresql"]
 
 [phases.install]
 cmds = [
@@ -7,6 +7,3 @@ cmds = [
   "/opt/venv/bin/pip install --upgrade pip",
   "/opt/venv/bin/pip install -r requirements.txt"
 ]
-
-[start]
-cmd = "/bin/bash -c 'export FLASK_APP=run.py && /opt/venv/bin/flask db upgrade && /opt/venv/bin/python seed_admin.py || true && exec /opt/venv/bin/gunicorn run:app --bind 0.0.0.0:$PORT --access-logfile - --error-logfile -'"
