@@ -206,10 +206,19 @@ class ModuleService:
             csv_file = io.StringIO(csv_data)
             # Use Sniffer to detect the delimiter
             sample = csv_data[:1024]  # Take first 1KB as sample
+
+            # Only allow common delimiters (comma, semicolon, tab, pipe)
+            valid_delimiters = [',', ';', '\t', '|']
+
             try:
-                delimiter = csv.Sniffer().sniff(sample).delimiter
+                detected = csv.Sniffer().sniff(sample, delimiters=',;\t|').delimiter
+                # Verify it's a valid delimiter
+                if detected in valid_delimiters:
+                    delimiter = detected
+                else:
+                    raise ValueError("Invalid delimiter detected")
             except:
-                # Try semicolon first (common in European CSVs), then comma
+                # Fallback: Try semicolon first (common in European CSVs), then comma
                 if ';' in sample and sample.count(';') > sample.count(','):
                     delimiter = ';'
                 else:
