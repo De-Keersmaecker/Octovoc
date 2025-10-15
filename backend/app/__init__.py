@@ -20,12 +20,11 @@ def create_app(config_class=Config):
     jwt.init_app(app)
 
     # Register blueprints
-    from app.routes import auth, student, teacher, admin, setup
+    from app.routes import auth, student, teacher, admin
     app.register_blueprint(auth.bp)
     app.register_blueprint(student.bp)
     app.register_blueprint(teacher.bp)
     app.register_blueprint(admin.bp)
-    app.register_blueprint(setup.bp)
 
     # Create upload folder
     import os
