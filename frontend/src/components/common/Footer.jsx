@@ -62,9 +62,9 @@ const Footer = () => {
       textAlign: 'center',
       padding: '20px 10px',
       fontSize: '11px',
-      color: '#666',
-      backgroundColor: 'transparent',
-      marginTop: '20px'
+      color: '#fff',
+      backgroundColor: '#000',
+      marginTop: '0'
     }}>
       {footerContent}
     </footer>
