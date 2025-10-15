@@ -241,8 +241,9 @@ export default function StudentDashboard({ user, setUser }) {
                   position: 'relative'
                 }}
               >
-                <h3>{module.name}</h3>
-                <p>
+                <p style={{ margin: 0, fontSize: '16px' }}>
+                  <strong>{module.name}</strong>
+                  {' | '}
                   {module.difficulty && `niveau ${module.difficulty} | `}
                   {module.word_count} woorden
                   {module.progress && ` | ${Math.round(module.completion_percentage)}% voltooid`}
