@@ -20,6 +20,7 @@ export default function AdminDashboard({ user }) {
   const [csvIsFree, setCsvIsFree] = useState(false)
   const [csvUploading, setCsvUploading] = useState(false)
   const [csvMessage, setCsvMessage] = useState('')
+  const [editingCsvModuleId, setEditingCsvModuleId] = useState(null) // For editing existing modules
 
   // Modules state
   const [modules, setModules] = useState([])
@@ -371,23 +372,66 @@ export default function AdminDashboard({ user }) {
     setCsvMessage('')
 
     try {
-      await api.post('/admin/module/upload-csv', {
-        csv_data: csvData,
-        name: csvModuleName,
-        difficulty: csvDifficulty,
-        is_free: csvIsFree
-      })
-      setCsvMessage('Module succesvol geüpload!')
+      if (editingCsvModuleId) {
+        // Update existing module
+        await api.put(`/admin/module/${editingCsvModuleId}`, {
+          csv_data: csvData,
+          name: csvModuleName,
+          difficulty: csvDifficulty,
+          is_free: csvIsFree
+        })
+        setCsvMessage('Module succesvol bijgewerkt!')
+      } else {
+        // Create new module
+        await api.post('/admin/module/upload-csv', {
+          csv_data: csvData,
+          name: csvModuleName,
+          difficulty: csvDifficulty,
+          is_free: csvIsFree
+        })
+        setCsvMessage('Module succesvol geüpload!')
+      }
+
       setCsvData('')
       setCsvModuleName('')
       setCsvDifficulty('')
       setCsvIsFree(false)
+      setEditingCsvModuleId(null)
       loadModules()
     } catch (err) {
-      setCsvMessage(err.response?.data?.error || 'Upload mislukt')
+      setCsvMessage(err.response?.data?.error || (editingCsvModuleId ? 'Bijwerken mislukt' : 'Upload mislukt'))
     } finally {
       setCsvUploading(false)
     }
+  }
+
+  const loadModuleCsvForEdit = async (moduleId) => {
+    try {
+      const res = await api.get(`/admin/module/${moduleId}/csv`)
+      setCsvData(res.data.csv_data)
+      setCsvModuleName(res.data.name)
+      setCsvDifficulty(res.data.difficulty || '')
+      setCsvIsFree(res.data.is_free)
+      setEditingCsvModuleId(moduleId)
+      setCsvMessage('Bewerk mode: pas de CSV aan en klik opslaan')
+
+      // Scroll to CSV form
+      const csvSection = document.querySelector('section:nth-of-type(2)')
+      if (csvSection) {
+        csvSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    } catch (err) {
+      alert('Fout bij laden van module CSV: ' + (err.response?.data?.error || 'Onbekende fout'))
+    }
+  }
+
+  const cancelCsvEdit = () => {
+    setCsvData('')
+    setCsvModuleName('')
+    setCsvDifficulty('')
+    setCsvIsFree(false)
+    setEditingCsvModuleId(null)
+    setCsvMessage('')
   }
 
   const updateModule = async (moduleId, updates) => {
@@ -994,12 +1038,17 @@ export default function AdminDashboard({ user }) {
             </form>
           </section>
 
-          <section style={{marginBottom: '30px', padding: '16px', border: '1px solid #ccc'}}>
-            <h3>module uploaden via CSV</h3>
+          <section style={{marginBottom: '30px', padding: '16px', border: editingCsvModuleId ? '2px solid #2196f3' : '1px solid #ccc', backgroundColor: editingCsvModuleId ? '#f0f7ff' : 'transparent'}}>
+            <h3>{editingCsvModuleId ? 'module bewerken via CSV' : 'module uploaden via CSV'}</h3>
+            {editingCsvModuleId && (
+              <div style={{padding: '10px', backgroundColor: '#2196f3', color: 'white', marginBottom: '10px', borderRadius: '4px'}}>
+                <strong>Bewerk mode:</strong> Je bewerkt nu een bestaande module. De voortgang van studenten blijft behouden.
+              </div>
+            )}
             <p style={{fontSize: '14px', color: '#666', marginBottom: '10px'}}>
-              Plak CSV data in het formaat: word,meaning,example_sentence
+              Plak CSV data in het formaat: word;meaning;example_sentence
             </p>
-            {csvMessage && <div className={csvMessage.includes('succesvol') ? 'success' : 'error'}>{csvMessage}</div>}
+            {csvMessage && <div className={csvMessage.includes('succesvol') || csvMessage.includes('Bewerk mode') ? 'success' : 'error'}>{csvMessage}</div>}
 
             <form onSubmit={handleUploadCsv}>
               <div className="form-group">
@@ -1045,9 +1094,16 @@ export default function AdminDashboard({ user }) {
                 </label>
               </div>
 
-              <button type="submit" className="btn btn-primary" disabled={csvUploading}>
-                {csvUploading ? 'uploaden...' : 'upload module (CSV)'}
-              </button>
+              <div style={{display: 'flex', gap: '10px'}}>
+                <button type="submit" className="btn btn-primary" disabled={csvUploading}>
+                  {csvUploading ? (editingCsvModuleId ? 'bijwerken...' : 'uploaden...') : (editingCsvModuleId ? 'module bijwerken' : 'upload module (CSV)')}
+                </button>
+                {editingCsvModuleId && (
+                  <button type="button" onClick={cancelCsvEdit} className="btn" disabled={csvUploading}>
+                    annuleer
+                  </button>
+                )}
+              </div>
             </form>
           </section>
 
@@ -1154,7 +1210,10 @@ export default function AdminDashboard({ user }) {
                       ) : (
                         <>
                           <button
-                            onClick={() => setEditingModule(module.id)}
+                            onClick={() => {
+                              setEditingModule(module.id)
+                              loadModuleCsvForEdit(module.id)
+                            }}
                             className="btn"
                             style={{ padding: '4px 6px', fontSize: '13px', marginRight: '4px' }}
                           >

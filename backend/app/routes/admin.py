@@ -60,6 +60,41 @@ def get_module(module_id):
     return jsonify(module.to_dict(include_words=True)), 200
 
 
+@bp.route('/module/<int:module_id>/csv', methods=['GET'])
+@jwt_required()
+def get_module_csv(module_id):
+    """Get module data as CSV string"""
+    error = admin_required()
+    if error:
+        return error
+
+    module = Module.query.get(module_id)
+    if not module:
+        return jsonify({'error': 'Module not found'}), 404
+
+    # Get all words ordered by position
+    words = Word.query.filter_by(module_id=module_id).order_by(Word.position_in_module).all()
+
+    # Convert to CSV format
+    csv_lines = []
+    for word in words:
+        # Escape any semicolons or quotes in the data
+        word_text = word.word.replace(';', ',')
+        meaning = word.meaning.replace(';', ',')
+        example = word.example_sentence.replace(';', ',')
+
+        csv_lines.append(f"{word_text};{meaning};{example}")
+
+    csv_data = '\n'.join(csv_lines)
+
+    return jsonify({
+        'csv_data': csv_data,
+        'name': module.name,
+        'difficulty': module.difficulty,
+        'is_free': module.is_free
+    }), 200
+
+
 @bp.route('/module/upload', methods=['POST'])
 @jwt_required()
 def upload_module():
@@ -168,7 +203,7 @@ def upload_module_csv():
 @bp.route('/module/<int:module_id>', methods=['PUT'])
 @jwt_required()
 def update_module(module_id):
-    """Update module"""
+    """Update module (metadata only or full CSV update)"""
     error = admin_required()
     if error:
         return error
@@ -179,6 +214,40 @@ def update_module(module_id):
 
     data = request.get_json()
 
+    # Check if this is a CSV update (full module content update)
+    if 'csv_data' in data:
+        csv_data = data.get('csv_data')
+
+        if not csv_data:
+            return jsonify({'error': 'CSV data cannot be empty'}), 400
+
+        try:
+            # Update module metadata if provided
+            if 'name' in data:
+                module.name = data['name']
+            if 'difficulty' in data:
+                module.difficulty = data['difficulty']
+            if 'is_free' in data:
+                module.is_free = data['is_free']
+
+            # Update module content from CSV
+            module = ModuleService.update_module_from_csv(module_id, csv_data)
+
+            return jsonify({
+                'message': 'Module updated successfully',
+                'module': module.to_dict(include_words=True)
+            }), 200
+
+        except ValueError as e:
+            print(f"ValueError during CSV update: {str(e)}")
+            return jsonify({'error': str(e)}), 422
+        except Exception as e:
+            print(f"Exception during CSV update: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            return jsonify({'error': f'Error updating module: {str(e)}'}), 500
+
+    # Otherwise, just update metadata
     if 'name' in data:
         module.name = data['name']
     if 'difficulty' in data:

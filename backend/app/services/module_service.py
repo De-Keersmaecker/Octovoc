@@ -307,3 +307,128 @@ class ModuleService:
         except Exception as e:
             db.session.rollback()
             raise e
+
+    @staticmethod
+    def update_module_from_csv(module_id, csv_data):
+        """
+        Update an existing module from CSV data
+        - Deletes old words and batteries
+        - Creates new words and batteries
+        - Preserves StudentProgress (voortgang blijft)
+        - QuestionProgress and BatteryProgress for deleted items are automatically cleaned up
+        """
+        module = Module.query.get(module_id)
+        if not module:
+            raise ValueError('Module not found')
+
+        try:
+            # Delete old words and batteries (this will cascade delete related progress records)
+            Word.query.filter_by(module_id=module_id).delete()
+            Battery.query.filter_by(module_id=module_id).delete()
+
+            # Increment version
+            module.version += 1
+
+            # Parse CSV - auto-detect delimiter (comma or semicolon)
+            csv_file = io.StringIO(csv_data)
+            sample = csv_data[:1024]  # Take first 1KB as sample
+
+            # Only allow common delimiters
+            valid_delimiters = [',', ';', '\t', '|']
+
+            try:
+                detected = csv.Sniffer().sniff(sample, delimiters=',;\t|').delimiter
+                if detected in valid_delimiters:
+                    delimiter = detected
+                else:
+                    raise ValueError("Invalid delimiter detected")
+            except:
+                # Fallback: Try semicolon first, then comma
+                if ';' in sample and sample.count(';') > sample.count(','):
+                    delimiter = ';'
+                else:
+                    delimiter = ','
+
+            csv_file.seek(0)
+            reader = csv.reader(csv_file, delimiter=delimiter)
+
+            # Check if first row is header
+            first_row = next(reader, None)
+            if not first_row:
+                raise ValueError('CSV is empty')
+
+            # If first row looks like a header, skip it
+            if first_row[0].lower() in ['word', 'woord'] or 'word' in first_row[0].lower():
+                rows = list(reader)
+            else:
+                rows = [first_row] + list(reader)
+
+            words = []
+            errors = []
+
+            for row_idx, row in enumerate(rows, start=2 if first_row else 1):
+                if not row or not any(row):
+                    continue
+
+                word_text = row[0].strip() if len(row) > 0 and row[0] else None
+                meaning = row[1].strip() if len(row) > 1 and row[1] else None
+                example_sentence = row[2].strip() if len(row) > 2 and row[2] else None
+
+                # Validation
+                if not word_text:
+                    errors.append(f'Row {row_idx}: Word is missing')
+                    continue
+
+                if not meaning:
+                    errors.append(f'Row {row_idx}: Meaning is missing')
+                    continue
+
+                if not example_sentence:
+                    errors.append(f'Row {row_idx}: Example sentence is missing')
+                    continue
+
+                # Check for asterisks
+                if '*' not in example_sentence or example_sentence.count('*') < 2:
+                    errors.append(
+                        f'Row {row_idx}: Example sentence must contain a word marked with asterisks (e.g., *word*)'
+                    )
+                    continue
+
+                # Create word
+                word = Word(
+                    module_id=module.id,
+                    word=word_text,
+                    meaning=meaning,
+                    example_sentence=example_sentence,
+                    position_in_module=len(words) + 1
+                )
+                words.append(word)
+
+            if errors:
+                db.session.rollback()
+                raise ValueError('CSV validation errors:\n' + '\n'.join(errors))
+
+            if not words:
+                db.session.rollback()
+                raise ValueError('No valid words found in CSV data')
+
+            # Add words to database
+            db.session.add_all(words)
+            db.session.flush()
+
+            # Create batteries
+            word_ids = [w.id for w in words]
+            batteries = Battery.create_batteries_for_module(module.id, word_ids)
+            db.session.add_all(batteries)
+
+            module.updated_at = db.func.now()
+            db.session.commit()
+
+            return module
+
+        except csv.Error as e:
+            db.session.rollback()
+            raise ValueError(f'CSV parse error: {str(e)}')
+        except Exception as e:
+            db.session.rollback()
+            raise e
