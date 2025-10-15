@@ -1233,12 +1233,8 @@ export default function AdminDashboard({ user }) {
               <table style={{ width: '100%', tableLayout: 'fixed' }}>
                 <thead>
                   <tr>
-                    <th style={{ width: '25%' }}>naam</th>
-                    <th style={{ width: '15%' }}>moeilijkheid</th>
-                    <th style={{ width: '10%' }}>woorden</th>
-                    <th style={{ width: '8%' }}>gratis</th>
-                    <th style={{ width: '8%' }}>actief</th>
-                    <th style={{ width: '34%' }}>acties</th>
+                    <th style={{ width: '60%' }}>module info</th>
+                    <th style={{ width: '40%' }}>acties</th>
                   </tr>
                 </thead>
               <tbody>
@@ -1256,49 +1252,54 @@ export default function AdminDashboard({ user }) {
                   >
                     <td>
                       {editingModule === module.id ? (
-                        <input
-                          type="text"
-                          defaultValue={module.name}
-                          id={`name-${module.id}`}
-                        />
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          <div>
+                            <label style={{ display: 'inline-block', width: '100px', fontWeight: 'bold' }}>Naam:</label>
+                            <input
+                              type="text"
+                              defaultValue={module.name}
+                              id={`name-${module.id}`}
+                              style={{ width: '300px' }}
+                            />
+                          </div>
+                          <div>
+                            <label style={{ display: 'inline-block', width: '100px', fontWeight: 'bold' }}>Niveau:</label>
+                            <input
+                              type="text"
+                              defaultValue={module.difficulty}
+                              id={`difficulty-${module.id}`}
+                              style={{ width: '100px' }}
+                            />
+                          </div>
+                          <div>
+                            <label style={{ display: 'inline-block', width: '100px', fontWeight: 'bold' }}>Gratis:</label>
+                            <input
+                              type="checkbox"
+                              defaultChecked={module.is_free}
+                              id={`is_free-${module.id}`}
+                              style={{ verticalAlign: 'middle' }}
+                            />
+                          </div>
+                          <div>
+                            <label style={{ display: 'inline-block', width: '100px', fontWeight: 'bold' }}>Actief:</label>
+                            <input
+                              type="checkbox"
+                              defaultChecked={module.is_active}
+                              id={`is_active-${module.id}`}
+                              style={{ verticalAlign: 'middle' }}
+                            />
+                          </div>
+                        </div>
                       ) : (
-                        module.name
-                      )}
-                    </td>
-                    <td>
-                      {editingModule === module.id ? (
-                        <input
-                          type="text"
-                          defaultValue={module.difficulty}
-                          id={`difficulty-${module.id}`}
-                        />
-                      ) : (
-                        module.difficulty || '-'
-                      )}
-                    </td>
-                    <td>{module.word_count}</td>
-                    <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>
-                      {editingModule === module.id ? (
-                        <input
-                          type="checkbox"
-                          defaultChecked={module.is_free}
-                          id={`is_free-${module.id}`}
-                          style={{ verticalAlign: 'middle' }}
-                        />
-                      ) : (
-                        module.is_free ? 'Ja' : 'Nee'
-                      )}
-                    </td>
-                    <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>
-                      {editingModule === module.id ? (
-                        <input
-                          type="checkbox"
-                          defaultChecked={module.is_active}
-                          id={`is_active-${module.id}`}
-                          style={{ verticalAlign: 'middle' }}
-                        />
-                      ) : (
-                        module.is_active ? 'Ja' : 'Nee'
+                        <span style={{ fontSize: '14px' }}>
+                          <strong>{module.name}</strong>
+                          {' | '}
+                          niveau {module.difficulty || '-'}
+                          {' | '}
+                          {module.word_count} woorden
+                          {!module.is_free && ' | klascode vereist'}
+                          {!module.is_active && ' | inactief'}
+                        </span>
                       )}
                     </td>
                     <td>
