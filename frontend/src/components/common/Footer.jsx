@@ -63,9 +63,8 @@ const Footer = () => {
       padding: '20px 10px',
       fontSize: '11px',
       color: '#666',
-      backgroundColor: '#f9f9f9',
-      borderTop: '1px solid #e0e0e0',
-      marginTop: 'auto'
+      backgroundColor: 'transparent',
+      marginTop: '20px'
     }}>
       {footerContent}
     </footer>

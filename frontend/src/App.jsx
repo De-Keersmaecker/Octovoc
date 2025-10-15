@@ -52,88 +52,82 @@ function App() {
   }
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column'
-    }}>
-      <div style={{ flex: 1 }}>
-        <Routes>
-          <Route path="/login" element={<LoginPage setUser={setUser} />} />
-          <Route path="/register" element={<RegisterPage setUser={setUser} />} />
+    <>
+      <Routes>
+        <Route path="/login" element={<LoginPage setUser={setUser} />} />
+        <Route path="/register" element={<RegisterPage setUser={setUser} />} />
 
-          <Route
-            path="/"
-            element={
-              user?.role === 'teacher' ? (
-                <PrivateRoute>
-                  <TeacherDashboard user={user} />
-                </PrivateRoute>
-              ) : user?.role === 'admin' ? (
-                <PrivateRoute>
-                  <AdminDashboard user={user} />
-                </PrivateRoute>
-              ) : (
-                <PrivateRoute allowedRoles={['student']}>
-                  <StudentDashboard user={user} setUser={setUser} />
-                </PrivateRoute>
-              )
-            }
-          />
-
-          <Route
-            path="/exercise/:moduleId"
-            element={
-              <PrivateRoute allowedRoles={['student']}>
-                <ExercisePage user={user} />
-              </PrivateRoute>
-            }
-          />
-
-          <Route
-            path="/final-round/:moduleId"
-            element={
-              <PrivateRoute allowedRoles={['student']}>
-                <FinalRoundPage user={user} />
-              </PrivateRoute>
-            }
-          />
-
-          <Route
-            path="/difficult-words"
-            element={
-              <PrivateRoute allowedRoles={['student']}>
-                <DifficultWordsPage user={user} />
-              </PrivateRoute>
-            }
-          />
-
-          <Route
-            path="/teacher/*"
-            element={
-              <PrivateRoute allowedRoles={['teacher']}>
+        <Route
+          path="/"
+          element={
+            user?.role === 'teacher' ? (
+              <PrivateRoute>
                 <TeacherDashboard user={user} />
               </PrivateRoute>
-            }
-          />
-
-          <Route
-            path="/admin/*"
-            element={
-              <PrivateRoute allowedRoles={['admin']}>
+            ) : user?.role === 'admin' ? (
+              <PrivateRoute>
                 <AdminDashboard user={user} />
               </PrivateRoute>
-            }
-          />
+            ) : (
+              <PrivateRoute allowedRoles={['student']}>
+                <StudentDashboard user={user} setUser={setUser} />
+              </PrivateRoute>
+            )
+          }
+        />
 
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
+        <Route
+          path="/exercise/:moduleId"
+          element={
+            <PrivateRoute allowedRoles={['student']}>
+              <ExercisePage user={user} />
+            </PrivateRoute>
+          }
+        />
 
-        {user && !user.gdpr_accepted && <GDPRNotification user={user} setUser={setUser} />}
-      </div>
+        <Route
+          path="/final-round/:moduleId"
+          element={
+            <PrivateRoute allowedRoles={['student']}>
+              <FinalRoundPage user={user} />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/difficult-words"
+          element={
+            <PrivateRoute allowedRoles={['student']}>
+              <DifficultWordsPage user={user} />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/teacher/*"
+          element={
+            <PrivateRoute allowedRoles={['teacher']}>
+              <TeacherDashboard user={user} />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/admin/*"
+          element={
+            <PrivateRoute allowedRoles={['admin']}>
+              <AdminDashboard user={user} />
+            </PrivateRoute>
+          }
+        />
+
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+
+      {user && !user.gdpr_accepted && <GDPRNotification user={user} setUser={setUser} />}
 
       <Footer />
-    </div>
+    </>
   )
 }
 
