@@ -1,7 +1,7 @@
 """Add case_sensitive column to modules
 
-Revision ID: 002_add_case_sensitive
-Revises: 001_initial_schema
+Revision ID: 002
+Revises: 001
 Create Date: 2025-01-16
 
 """
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '002_add_case_sensitive'
-down_revision = '001_initial_schema'
+revision = '002'
+down_revision = '001'
 branch_labels = None
 depends_on = None
 
