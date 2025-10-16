@@ -48,6 +48,13 @@ def main():
     ):
         print("WARNING: Migrations failed, but continuing...")
 
+    # Fix missing case_sensitive column (temporary fix for migration issues)
+    if not run_command(
+        '/opt/venv/bin/python fix_case_sensitive_column.py',
+        'Checking and fixing case_sensitive column'
+    ):
+        print("WARNING: Column fix failed, but continuing...")
+
     # Seed admin user
     if not run_command(
         '/opt/venv/bin/python seed_admin.py',
