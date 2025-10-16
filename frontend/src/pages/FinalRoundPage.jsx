@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import api from '../services/api'
 import QuoteModal from '../components/common/QuoteModal'
+import ModuleProgressFooter from '../components/common/ModuleProgressFooter'
 
 export default function FinalRoundPage({ user }) {
   const { moduleId } = useParams()
@@ -71,11 +72,23 @@ export default function FinalRoundPage({ user }) {
       }
       // Check if user has typed enough to evaluate
       else if (value.length >= 3) {
-        // Use Levenshtein distance to check for errors
-        const distance = levenshteinDistance(value, currentWord.word)
+        // Count mistakes: number of character positions that are wrong
+        let mistakes = 0
+        const minLength = Math.min(value.length, currentWord.word.length)
 
-        // Only submit as wrong if distance > 2 and typed full length
-        if (distance > 2 && value.length >= currentWord.word.length) {
+        for (let i = 0; i < minLength; i++) {
+          if (value[i] !== currentWord.word[i]) {
+            mistakes++
+          }
+        }
+
+        // If word lengths differ, count extra/missing characters as mistakes
+        if (value.length !== currentWord.word.length) {
+          mistakes += Math.abs(value.length - currentWord.word.length)
+        }
+
+        // Mark as incorrect after 3 mistakes (2 wrong, 3rd triggers submission)
+        if (mistakes >= 3 && value.length >= currentWord.word.length) {
           handleAnswer(value)
         }
       }
@@ -153,8 +166,41 @@ export default function FinalRoundPage({ user }) {
   const renderSentence = () => {
     const match = currentWord.example_sentence.match(/\*([^*]+)\*/)
     if (!match) return currentWord.example_sentence
+
     const wordInSentence = match[1]
-    return currentWord.example_sentence.replace(`*${wordInSentence}*`, '_________')
+
+    // Detect inflection/conjugation suffix
+    let suffix = ''
+    const baseWord = currentWord.word.toLowerCase()
+    const sentenceWord = wordInSentence.toLowerCase()
+
+    // Check if the word in the sentence is inflected/conjugated
+    if (baseWord !== sentenceWord) {
+      // Check if baseWord is a prefix of sentenceWord
+      if (sentenceWord.startsWith(baseWord)) {
+        suffix = wordInSentence.substring(baseWord.length)
+      }
+      // Check for stem changes (e.g., 'run' -> 'running' where 'n' is doubled)
+      else if (sentenceWord.length > baseWord.length) {
+        // Find the common prefix
+        let commonLength = 0
+        for (let i = 0; i < Math.min(baseWord.length, sentenceWord.length); i++) {
+          if (baseWord[i] === sentenceWord[i]) {
+            commonLength++
+          } else {
+            break
+          }
+        }
+
+        // If most of the word matches, extract the suffix from the sentence word
+        if (commonLength >= baseWord.length - 1) {
+          suffix = wordInSentence.substring(commonLength)
+        }
+      }
+    }
+
+    const blank = '_________' + suffix
+    return currentWord.example_sentence.replace(`*${wordInSentence}*`, blank)
   }
 
   return (
@@ -188,6 +234,8 @@ export default function FinalRoundPage({ user }) {
           />
         </form>
       </div>
+
+      <ModuleProgressFooter moduleId={moduleId} user={user} />
 
       {showQuote && <QuoteModal quote={quote} onClose={() => navigate('/')} />}
     </>

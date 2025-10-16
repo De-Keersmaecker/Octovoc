@@ -47,6 +47,22 @@ export default function QuoteModal({ quote, onClose }) {
             — {quote.author}
           </div>
         )}
+        {quote.video_url && (
+          <div style={{ marginTop: '20px' }}>
+            <a
+              href={quote.video_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                color: '#0066cc',
+                textDecoration: 'underline',
+                fontSize: '16px'
+              }}
+            >
+              Bekijk het filmpje
+            </a>
+          </div>
+        )}
       </div>
     </div>
   )

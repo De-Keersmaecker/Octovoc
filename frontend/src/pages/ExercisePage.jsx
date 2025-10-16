@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import api from '../services/api'
+import ModuleProgressFooter from '../components/common/ModuleProgressFooter'
+import QuoteModal from '../components/common/QuoteModal'
 
 export default function ExercisePage({ user }) {
   const { moduleId } = useParams()
@@ -14,10 +16,13 @@ export default function ExercisePage({ user }) {
   const [batteryProgress, setBatteryProgress] = useState(null)
   const [moduleName, setModuleName] = useState('')
   const [progressHistory, setProgressHistory] = useState([])
+  const [progressWordMap, setProgressWordMap] = useState({})
   const [isAnonymous, setIsAnonymous] = useState(false)
   const [questionQueue, setQuestionQueue] = useState([])
   const [batteryOrder, setBatteryOrder] = useState([])
   const [currentBatteryIndex, setCurrentBatteryIndex] = useState(0)
+  const [showQuote, setShowQuote] = useState(false)
+  const [quote, setQuote] = useState(null)
 
   useEffect(() => {
     startModule()
@@ -84,6 +89,7 @@ export default function ExercisePage({ user }) {
       // Initialize progress history
       const totalWords = res.data.battery_words.length
       setProgressHistory(Array(totalWords).fill(null))
+      setProgressWordMap({})
       setFeedback(null)
       setAnswer('')
       setLoading(false)
@@ -111,11 +117,23 @@ export default function ExercisePage({ user }) {
 
       // Update progress history
       const history = progressHistory.slice()
-      const firstEmptyIndex = history.findIndex(item => item === null)
-      if (firstEmptyIndex !== -1) {
-        history[firstEmptyIndex] = res.data.is_correct ? 'correct' : 'incorrect'
-        setProgressHistory(history)
+      const wordMap = { ...progressWordMap }
+
+      // Check if this word was already answered in this phase
+      const existingIndex = wordMap[currentWord.id]
+      if (existingIndex !== undefined) {
+        // Update existing entry
+        history[existingIndex] = res.data.is_correct ? 'correct' : 'incorrect'
+      } else {
+        // Add new entry
+        const firstEmptyIndex = history.findIndex(item => item === null)
+        if (firstEmptyIndex !== -1) {
+          history[firstEmptyIndex] = res.data.is_correct ? 'correct' : 'incorrect'
+          wordMap[currentWord.id] = firstEmptyIndex
+        }
       }
+      setProgressHistory(history)
+      setProgressWordMap(wordMap)
 
       // Handle anonymous mode
       if (res.data.anonymous || isAnonymous) {
@@ -138,6 +156,7 @@ export default function ExercisePage({ user }) {
             setFeedback(null)
             const totalWords = batteryWords.length
             setProgressHistory(Array(totalWords).fill(null))
+            setProgressWordMap({})
           } else if (res.data.next_word) {
             setCurrentWord(res.data.next_word)
             setAnswer('')
@@ -178,6 +197,7 @@ export default function ExercisePage({ user }) {
         setQuestionQueue(shuffled)
         setCurrentWord(batteryWords.find(w => w.id === shuffled[0]))
         setProgressHistory(Array(batteryWords.length).fill(null))
+        setProgressWordMap({})
       } else {
         // Battery complete
         const nextBatteryIndex = currentBatteryIndex + 1
@@ -185,9 +205,8 @@ export default function ExercisePage({ user }) {
           setCurrentBatteryIndex(nextBatteryIndex)
           startBattery(batteryOrder[nextBatteryIndex], true)
         } else {
-          // All batteries done - for anonymous users, just go back home
-          alert('Module voltooid! log in om je voortgang op te slaan.')
-          navigate('/')
+          // All batteries done - for anonymous users, show quote
+          showCompletionQuote()
         }
       }
       setAnswer('')
@@ -199,6 +218,21 @@ export default function ExercisePage({ user }) {
       setCurrentWord(nextWord)
       setAnswer('')
       setFeedback(null)
+    }
+  }
+
+  const showCompletionQuote = async () => {
+    try {
+      const res = await api.get('/student/quote/random')
+      if (res.data.quote) {
+        setQuote(res.data.quote)
+        setShowQuote(true)
+      } else {
+        navigate('/')
+      }
+    } catch (err) {
+      console.error(err)
+      navigate('/')
     }
   }
 
@@ -214,8 +248,23 @@ export default function ExercisePage({ user }) {
       if (value === currentWord.word) {
         handleAnswer(value)
       } else if (value.length >= 3) {
-        const distance = levenshteinDistance(value, currentWord.word)
-        if (distance > 2 && value.length >= currentWord.word.length) {
+        // Count mistakes: number of character positions that are wrong
+        let mistakes = 0
+        const minLength = Math.min(value.length, currentWord.word.length)
+
+        for (let i = 0; i < minLength; i++) {
+          if (value[i] !== currentWord.word[i]) {
+            mistakes++
+          }
+        }
+
+        // If word lengths differ, count extra/missing characters as mistakes
+        if (value.length !== currentWord.word.length) {
+          mistakes += Math.abs(value.length - currentWord.word.length)
+        }
+
+        // Mark as incorrect after 3 mistakes (2 wrong, 3rd triggers submission)
+        if (mistakes >= 3 && value.length >= currentWord.word.length) {
           handleAnswer(value)
         }
       }
@@ -267,100 +316,137 @@ export default function ExercisePage({ user }) {
     if (phase === 1) {
       return currentWord.example_sentence.replace(`*${wordInSentence}*`, `<span class="underline">${wordInSentence}</span>`)
     } else {
-      return currentWord.example_sentence.replace(`*${wordInSentence}*`, '_________')
+      // Detect inflection/conjugation suffix
+      let suffix = ''
+      const baseWord = currentWord.word.toLowerCase()
+      const sentenceWord = wordInSentence.toLowerCase()
+
+      // Check if the word in the sentence is inflected/conjugated
+      if (baseWord !== sentenceWord) {
+        // Check if baseWord is a prefix of sentenceWord
+        if (sentenceWord.startsWith(baseWord)) {
+          suffix = wordInSentence.substring(baseWord.length)
+        }
+        // Check for stem changes (e.g., 'run' -> 'running' where 'n' is doubled)
+        else if (sentenceWord.length > baseWord.length) {
+          // Find the common prefix
+          let commonLength = 0
+          for (let i = 0; i < Math.min(baseWord.length, sentenceWord.length); i++) {
+            if (baseWord[i] === sentenceWord[i]) {
+              commonLength++
+            } else {
+              break
+            }
+          }
+
+          // If most of the word matches, extract the suffix from the sentence word
+          if (commonLength >= baseWord.length - 1) {
+            suffix = wordInSentence.substring(commonLength)
+          }
+        }
+      }
+
+      const blank = '_________' + suffix
+      return currentWord.example_sentence.replace(`*${wordInSentence}*`, blank)
     }
   }
 
   return (
-    <div className="container">
-      <header className="exercise-header">
-        <div className="header-title">Octovoc</div>
-        <div className="user-info">
-          {user ? (
-            <>
-              {user.email}<br />
-              {user.classroom_name || 'Geen klas'}
-            </>
-          ) : (
-            <>
-              Gast<br />
-              <small>Log in om voortgang op te slaan</small>
-            </>
-          )}
-        </div>
-      </header>
+    <>
+      <div className="container">
+        <header className="exercise-header">
+          <div className="header-title">Octovoc</div>
+          <div className="user-info">
+            {user ? (
+              <>
+                {user.email}<br />
+                {user.classroom_name || 'Geen klas'}
+              </>
+            ) : (
+              <>
+                Gast<br />
+                <small>Log in om voortgang op te slaan</small>
+              </>
+            )}
+          </div>
+        </header>
 
-      <div className="module-progress-container">
-        <div className="module-title">{moduleName}</div>
-        <div className="progress-bar">
-          {progressHistory.map((status, idx) => (
-            <div key={idx} className={`progress-block ${status === 'correct' ? 'correct' : status === 'incorrect' ? 'incorrect' : 'empty'}`}>
-              {status === 'correct' ? 'V' : status === 'incorrect' ? 'X' : ''}
-            </div>
-          ))}
+        <div className="module-progress-container">
+          <div className="module-title">{moduleName}</div>
+          <div className="progress-bar">
+            {progressHistory.map((status, idx) => (
+              <div key={idx} className={`progress-block ${status === 'correct' ? 'correct' : status === 'incorrect' ? 'incorrect' : 'empty'}`}>
+                {status === 'correct' ? 'V' : status === 'incorrect' ? 'X' : ''}
+              </div>
+            ))}
+          </div>
         </div>
+
+        <div className="sentence" dangerouslySetInnerHTML={{ __html: renderSentence() }} />
+
+        {phase === 3 ? (
+          <form onSubmit={handleTextSubmit} className={`text-input-container ${feedback?.is_correct ? 'correct-input' : feedback ? 'incorrect-input' : ''}`}>
+            <input
+              type="text"
+              value={feedback && !feedback.is_correct ? feedback.correct_answer : answer}
+              onChange={handleTextInput}
+              disabled={feedback !== null}
+              autoFocus
+              placeholder="Typ het woord..."
+            />
+          </form>
+        ) : (
+          <ul className="answers-list">
+            {phase === 1 && batteryWords.map((word) => {
+              const isCorrectAnswer = word.meaning === currentWord.meaning
+              const wasClicked = feedback !== null
+              let className = 'answer-option'
+
+              if (wasClicked && isCorrectAnswer) {
+                className += ' correct-answer'
+              } else if (wasClicked && !feedback.is_correct && word.meaning === answer) {
+                className += ' incorrect-answer'
+              }
+
+              return (
+                <li
+                  key={word.id}
+                  className={className}
+                  onClick={() => !feedback && handleAnswer(word.meaning)}
+                >
+                  {word.meaning}
+                </li>
+              )
+            })}
+
+            {phase === 2 && batteryWords.map((word) => {
+              const isCorrectAnswer = word.word === currentWord.word
+              const wasClicked = feedback !== null
+              let className = 'answer-option'
+
+              if (wasClicked && isCorrectAnswer) {
+                className += ' correct-answer'
+              } else if (wasClicked && !feedback.is_correct && word.word === answer) {
+                className += ' incorrect-answer'
+              }
+
+              return (
+                <li
+                  key={word.id}
+                  className={className}
+                  onClick={() => !feedback && handleAnswer(word.word)}
+                >
+                  {word.word}
+                </li>
+              )
+            })}
+          </ul>
+        )}
       </div>
 
-      <div className="sentence" dangerouslySetInnerHTML={{ __html: renderSentence() }} />
+      <ModuleProgressFooter moduleId={moduleId} user={user} />
 
-      {phase === 3 ? (
-        <form onSubmit={handleTextSubmit} className={`text-input-container ${feedback?.is_correct ? 'correct-input' : feedback ? 'incorrect-input' : ''}`}>
-          <input
-            type="text"
-            value={feedback && !feedback.is_correct ? feedback.correct_answer : answer}
-            onChange={handleTextInput}
-            disabled={feedback !== null}
-            autoFocus
-            placeholder="Typ het woord..."
-          />
-        </form>
-      ) : (
-        <ul className="answers-list">
-          {phase === 1 && batteryWords.map((word) => {
-            const isCorrectAnswer = word.meaning === currentWord.meaning
-            const wasClicked = feedback !== null
-            let className = 'answer-option'
-
-            if (wasClicked && isCorrectAnswer) {
-              className += ' correct-answer'
-            } else if (wasClicked && !feedback.is_correct && word.meaning === answer) {
-              className += ' incorrect-answer'
-            }
-
-            return (
-              <li
-                key={word.id}
-                className={className}
-                onClick={() => !feedback && handleAnswer(word.meaning)}
-              >
-                {word.meaning}
-              </li>
-            )
-          })}
-
-          {phase === 2 && batteryWords.map((word) => {
-            const isCorrectAnswer = word.word === currentWord.word
-            const wasClicked = feedback !== null
-            let className = 'answer-option'
-
-            if (wasClicked && isCorrectAnswer) {
-              className += ' correct-answer'
-            } else if (wasClicked && !feedback.is_correct && word.word === answer) {
-              className += ' incorrect-answer'
-            }
-
-            return (
-              <li
-                key={word.id}
-                className={className}
-                onClick={() => !feedback && handleAnswer(word.word)}
-              >
-                {word.word}
-              </li>
-            )
-          })}
-        </ul>
-      )}
-    </div>
+      {showQuote && <QuoteModal quote={quote} onClose={() => navigate('/')} />}
+    </>
   )
 }

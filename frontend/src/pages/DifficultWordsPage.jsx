@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../services/api'
+import ModuleProgressFooter from '../components/common/ModuleProgressFooter'
 
 export default function DifficultWordsPage({ user }) {
   const navigate = useNavigate()
@@ -58,8 +59,23 @@ export default function DifficultWordsPage({ user }) {
       if (value === currentWord) {
         handleAnswer(value)
       } else if (value.length >= 3) {
-        const distance = levenshteinDistance(value, currentWord)
-        if (distance > 2 && value.length >= currentWord.length) {
+        // Count mistakes: number of character positions that are wrong
+        let mistakes = 0
+        const minLength = Math.min(value.length, currentWord.length)
+
+        for (let i = 0; i < minLength; i++) {
+          if (value[i] !== currentWord[i]) {
+            mistakes++
+          }
+        }
+
+        // If word lengths differ, count extra/missing characters as mistakes
+        if (value.length !== currentWord.length) {
+          mistakes += Math.abs(value.length - currentWord.length)
+        }
+
+        // Mark as incorrect after 3 mistakes (2 wrong, 3rd triggers submission)
+        if (mistakes >= 3 && value.length >= currentWord.length) {
           handleAnswer(value)
         }
       }
@@ -149,8 +165,41 @@ export default function DifficultWordsPage({ user }) {
   const renderSentence = (word) => {
     const match = word.example_sentence.match(/\*([^*]+)\*/)
     if (!match) return word.example_sentence
+
     const wordInSentence = match[1]
-    return word.example_sentence.replace(`*${wordInSentence}*`, '_________')
+
+    // Detect inflection/conjugation suffix
+    let suffix = ''
+    const baseWord = word.word.toLowerCase()
+    const sentenceWord = wordInSentence.toLowerCase()
+
+    // Check if the word in the sentence is inflected/conjugated
+    if (baseWord !== sentenceWord) {
+      // Check if baseWord is a prefix of sentenceWord
+      if (sentenceWord.startsWith(baseWord)) {
+        suffix = wordInSentence.substring(baseWord.length)
+      }
+      // Check for stem changes (e.g., 'run' -> 'running' where 'n' is doubled)
+      else if (sentenceWord.length > baseWord.length) {
+        // Find the common prefix
+        let commonLength = 0
+        for (let i = 0; i < Math.min(baseWord.length, sentenceWord.length); i++) {
+          if (baseWord[i] === sentenceWord[i]) {
+            commonLength++
+          } else {
+            break
+          }
+        }
+
+        // If most of the word matches, extract the suffix from the sentence word
+        if (commonLength >= baseWord.length - 1) {
+          suffix = wordInSentence.substring(commonLength)
+        }
+      }
+    }
+
+    const blank = '_________' + suffix
+    return word.example_sentence.replace(`*${wordInSentence}*`, blank)
   }
 
   if (loading) {

@@ -235,19 +235,18 @@ export default function StudentDashboard({ user, setUser }) {
                 className="module-item"
                 onClick={() => isAccessible && startModule(module.id, module.is_free)}
                 style={{
-                  opacity: isLocked ? 0.5 : 1,
-                  backgroundColor: isLocked ? '#e0e0e0' : 'white',
+                  backgroundColor: 'white',
                   cursor: isLocked ? 'not-allowed' : 'pointer',
                   position: 'relative'
                 }}
               >
-                <p style={{ margin: 0, fontSize: '16px' }}>
+                <p style={{ margin: 0, fontSize: '16px', color: isLocked ? '#888' : 'inherit' }}>
                   <strong>{module.name}</strong>
                   {' | '}
                   {module.difficulty && `niveau ${module.difficulty} | `}
                   {module.word_count} woorden
                   {module.progress && ` | ${Math.round(module.completion_percentage)}% voltooid`}
-                  {isLocked && ' | 🔒 klascode vereist'}
+                  {isLocked && ' | klascode vereist'}
                 </p>
               </li>
             )

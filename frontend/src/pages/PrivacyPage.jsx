@@ -49,7 +49,7 @@ export default function PrivacyPage() {
         </p>
 
         <p>
-          <strong>6. Delen van gegevens.</strong> Wij delen je gegevens niet met derden. Octovoc is een educatief platform zonder commerciële doeleinden. De enige personen die toegang hebben tot je gegevens zijn jijzelf (via je account), je leraar (als je via een klascode bent aangemeld, alleen om je voortgang te kunnen volgen), en beheerders van het platform (enkel voor technisch onderhoud).
+          <strong>6. Delen van gegevens.</strong> Wij delen je gegevens niet met derden. De enige personen die toegang hebben tot je gegevens zijn jijzelf (via je account), je leraar (als je via een klascode bent aangemeld, alleen om je voortgang te kunnen volgen), en beheerders van het platform (enkel voor technisch onderhoud).
         </p>
 
         <p>
@@ -70,10 +70,6 @@ export default function PrivacyPage() {
 
         <p>
           <strong>11. Contact.</strong> Voor vragen over deze privacyverklaring of over de verwerking van je persoonsgegevens, kan je contact met ons opnemen: KATERN, Brabançonnestraat 73, e-mail: info@katern.be.
-        </p>
-
-        <p style={{ marginTop: '32px', fontSize: '13px', color: '#666' }}>
-          Deze privacyverklaring is opgesteld in overeenstemming met de Algemene Verordening Gegevensbescherming (AVG) en de Belgische wetgeving inzake gegevensbescherming.
         </p>
       </div>
     </div>

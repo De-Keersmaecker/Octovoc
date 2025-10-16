@@ -10,6 +10,7 @@ class Module(db.Model):
     difficulty = db.Column(db.String(50), nullable=True)  # e.g., 'beginner', 'intermediate', 'advanced'
     is_free = db.Column(db.Boolean, default=False)
     is_active = db.Column(db.Boolean, default=True)
+    case_sensitive = db.Column(db.Boolean, default=False)  # Whether answers must match case
     version = db.Column(db.Integer, default=1)  # For tracking module updates
     display_order = db.Column(db.Integer, default=0)  # For custom ordering in UI
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -26,6 +27,7 @@ class Module(db.Model):
             'difficulty': self.difficulty,
             'is_free': self.is_free,
             'is_active': self.is_active,
+            'case_sensitive': self.case_sensitive,
             'version': self.version,
             'display_order': self.display_order,
             'word_count': self.words.count(),

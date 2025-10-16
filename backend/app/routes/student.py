@@ -203,18 +203,31 @@ def answer_question():
     if not word:
         return jsonify({'error': 'Word not found'}), 404
 
+    # Get module to check case sensitivity setting
+    module = Module.query.get(word.module_id)
+    case_sensitive = module.case_sensitive if module else False
+
     # Determine if answer is correct based on phase
     is_correct = False
 
     if phase == 1:
         # Phase 1: Match meaning
-        is_correct = user_answer.strip() == word.meaning.strip()
+        if case_sensitive:
+            is_correct = user_answer.strip() == word.meaning.strip()
+        else:
+            is_correct = user_answer.strip().lower() == word.meaning.strip().lower()
     elif phase == 2:
         # Phase 2: Match word
-        is_correct = user_answer.strip() == word.word.strip()
+        if case_sensitive:
+            is_correct = user_answer.strip() == word.word.strip()
+        else:
+            is_correct = user_answer.strip().lower() == word.word.strip().lower()
     elif phase == 3:
-        # Phase 3: Type the word (exact match required)
-        is_correct = user_answer == word.word
+        # Phase 3: Type the word
+        if case_sensitive:
+            is_correct = user_answer == word.word
+        else:
+            is_correct = user_answer.lower() == word.word.lower()
 
     # Anonymous user - just check answer, no progress tracking
     if not user_id:
@@ -396,8 +409,15 @@ def answer_final_round(module_id):
     if not word:
         return jsonify({'error': 'Word not found'}), 404
 
-    # Check answer (exact match)
-    is_correct = user_answer == word.word
+    # Get module to check case sensitivity setting
+    module = Module.query.get(word.module_id)
+    case_sensitive = module.case_sensitive if module else False
+
+    # Check answer
+    if case_sensitive:
+        is_correct = user_answer == word.word
+    else:
+        is_correct = user_answer.lower() == word.word.lower()
 
     # Update word list
     word_ids = student_progress.final_round_word_ids.copy()
@@ -509,3 +529,14 @@ def remove_difficult_word(word_id):
     db.session.commit()
 
     return jsonify({'message': 'Word removed from difficult words'}), 200
+
+
+@bp.route('/quote/random', methods=['GET'])
+def get_random_quote():
+    """Get a random quote - available for anonymous users"""
+    quote = Quote.get_random_quote()
+
+    if quote:
+        return jsonify({'quote': quote.to_dict()}), 200
+    else:
+        return jsonify({'quote': None}), 200

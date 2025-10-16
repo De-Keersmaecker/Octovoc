@@ -72,8 +72,7 @@ export default function GDPRNotification() {
 
         <p>
           <strong>Geen gegevens delen</strong><br />
-          We delen je gegevens niet met derden. Octovoc is een educatief platform zonder
-          commerciële doeleinden.
+          We delen je gegevens niet met derden.
         </p>
 
         <p>

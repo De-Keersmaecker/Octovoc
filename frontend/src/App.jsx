@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
@@ -16,6 +16,7 @@ import { getToken, getUser } from './utils/auth'
 function App() {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
+  const location = useLocation()
 
   useEffect(() => {
     const token = getToken()
@@ -128,7 +129,11 @@ function App() {
 
       <GDPRNotification />
 
-      <Footer />
+      {/* Don't show footer on exercise pages */}
+      {!location.pathname.startsWith('/exercise') &&
+       !location.pathname.startsWith('/final-round') &&
+       !location.pathname.startsWith('/difficult-words') &&
+       <Footer />}
     </>
   )
 }

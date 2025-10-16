@@ -1289,6 +1289,15 @@ export default function AdminDashboard({ user }) {
                               style={{ verticalAlign: 'middle' }}
                             />
                           </div>
+                          <div>
+                            <label style={{ display: 'inline-block', width: '150px', fontWeight: 'bold' }}>Hoofdlettergevoelig:</label>
+                            <input
+                              type="checkbox"
+                              defaultChecked={module.case_sensitive}
+                              id={`case_sensitive-${module.id}`}
+                              style={{ verticalAlign: 'middle' }}
+                            />
+                          </div>
                         </div>
                       ) : (
                         <span style={{ fontSize: '14px' }}>
@@ -1311,7 +1320,8 @@ export default function AdminDashboard({ user }) {
                                 name: document.getElementById(`name-${module.id}`).value,
                                 difficulty: document.getElementById(`difficulty-${module.id}`).value,
                                 is_free: document.getElementById(`is_free-${module.id}`).checked,
-                                is_active: document.getElementById(`is_active-${module.id}`).checked
+                                is_active: document.getElementById(`is_active-${module.id}`).checked,
+                                case_sensitive: document.getElementById(`case_sensitive-${module.id}`).checked
                               }
                               updateModule(module.id, updates)
                             }}
