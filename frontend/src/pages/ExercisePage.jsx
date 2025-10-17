@@ -26,6 +26,7 @@ export default function ExercisePage({ user }) {
   const [totalWordsInModule, setTotalWordsInModule] = useState(0)
   const [masteredWords, setMasteredWords] = useState(0)
   const [baselineMasteredWords, setBaselineMasteredWords] = useState(0)
+  const [caseSensitive, setCaseSensitive] = useState(false)
 
   useEffect(() => {
     startModule()
@@ -42,6 +43,7 @@ export default function ExercisePage({ user }) {
       if (module) {
         setModuleName(module.name)
         setTotalWordsInModule(module.word_count || 0)
+        setCaseSensitive(module.case_sensitive || false)
         // Calculate initial mastered words based on progress
         if (module.progress) {
           const completed = module.progress.completed_batteries ? module.progress.completed_batteries.length : 0
@@ -333,16 +335,22 @@ export default function ExercisePage({ user }) {
     setAnswer(value)
 
     if (!feedback && currentWord && value.length > 0) {
-      if (value === currentWord.word) {
+      // Check if answer is correct (respecting case sensitivity setting)
+      const isCorrect = caseSensitive
+        ? value === currentWord.word
+        : value.toLowerCase() === currentWord.word.toLowerCase()
+
+      if (isCorrect) {
         handleAnswer(value)
       } else {
         // Count mistakes: number of character positions that are wrong
         let mistakes = 0
-        const correctWord = currentWord.word
+        const userValue = caseSensitive ? value : value.toLowerCase()
+        const correctWord = caseSensitive ? currentWord.word : currentWord.word.toLowerCase()
 
         // Compare each character position
-        for (let i = 0; i < value.length; i++) {
-          if (i >= correctWord.length || value[i] !== correctWord[i]) {
+        for (let i = 0; i < userValue.length; i++) {
+          if (i >= correctWord.length || userValue[i] !== correctWord[i]) {
             mistakes++
           }
         }
