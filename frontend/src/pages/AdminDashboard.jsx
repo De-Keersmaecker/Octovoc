@@ -25,6 +25,7 @@ export default function AdminDashboard({ user }) {
   // Modules state
   const [modules, setModules] = useState([])
   const [editingModule, setEditingModule] = useState(null)
+  const [levelSortAscending, setLevelSortAscending] = useState(true)
 
   // Codes state
   const [classCodes, setClassCodes] = useState([])
@@ -329,12 +330,16 @@ export default function AdminDashboard({ user }) {
   }
 
   const sortModulesByLevel = async () => {
+    // Toggle sort direction
+    const ascending = !levelSortAscending
+    setLevelSortAscending(ascending)
+
     // Sort by difficulty level (1, 2, 3, 4)
     const sorted = [...modules].sort((a, b) => {
       // Extract numbers from difficulty string
       const levelA = parseInt(a.difficulty) || 999
       const levelB = parseInt(b.difficulty) || 999
-      return levelA - levelB
+      return ascending ? (levelA - levelB) : (levelB - levelA)
     })
 
     setModules(sorted)
@@ -343,7 +348,7 @@ export default function AdminDashboard({ user }) {
       await api.put('/admin/modules/reorder', {
         module_order: sorted.map(m => m.id)
       })
-      alert('Modules gesorteerd op niveau')
+      alert(`Modules gesorteerd op niveau (${ascending ? 'laag naar hoog' : 'hoog naar laag'})`)
     } catch (err) {
       console.error('Failed to update module order:', err)
       alert('Fout bij sorteren van modules')
@@ -1193,9 +1198,9 @@ export default function AdminDashboard({ user }) {
                     color: '#ffffff'
                   }}
                   disabled={editingModule !== null}
-                  title="Sorteer modules op niveau (1, 2, 3, 4)"
+                  title={`Sorteer modules op niveau (${levelSortAscending ? 'klik voor hoog naar laag' : 'klik voor laag naar hoog'})`}
                 >
-                  sorteer op niveau
+                  sorteer op niveau {levelSortAscending ? '↑' : '↓'}
                 </button>
                 <button
                   onClick={sortModulesFreeFirst}
