@@ -6,6 +6,8 @@ import StudentDashboard from './pages/StudentDashboard'
 import ExercisePage from './pages/ExercisePage'
 import FinalRoundPage from './pages/FinalRoundPage'
 import DifficultWordsPage from './pages/DifficultWordsPage'
+import ForgotPasswordPage from './pages/ForgotPasswordPage'
+import ResetPasswordPage from './pages/ResetPasswordPage'
 import TeacherDashboard from './pages/TeacherDashboard'
 import AdminDashboard from './pages/AdminDashboard'
 import PrivacyPage from './pages/PrivacyPage'
@@ -59,6 +61,8 @@ function App() {
         <Route path="/login" element={<LoginPage setUser={setUser} />} />
         <Route path="/register" element={<RegisterPage setUser={setUser} />} />
         <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
 
         <Route
           path="/"

@@ -4,6 +4,8 @@ from app import db
 from app.models.user import User
 from app.models.code import ClassCode, TeacherCode
 from app.models.classroom import Classroom
+from app.utils.email import send_password_reset_email
+from datetime import datetime, timedelta
 import secrets
 
 bp = Blueprint('auth', __name__, url_prefix='/api/auth')
@@ -132,17 +134,28 @@ def forgot_password():
     user = User.query.filter_by(email=email).first()
 
     if user:
+        # Generate reset token and set expiry (1 hour from now)
         user.reset_token = secrets.token_urlsafe(32)
+        user.reset_token_expiry = datetime.utcnow() + timedelta(hours=1)
         db.session.commit()
 
-        # In production, send email with reset link
-        return jsonify({
-            'message': 'Password reset email sent',
-            'reset_token': user.reset_token  # For development only
-        }), 200
+        # Send reset email
+        email_sent = send_password_reset_email(user.email, user.reset_token)
+
+        if email_sent:
+            return jsonify({
+                'message': 'Als dit e-mailadres bij ons bekend is, ontvang je een link om je wachtwoord te resetten.'
+            }), 200
+        else:
+            # Email failed but don't reveal that to user
+            return jsonify({
+                'message': 'Als dit e-mailadres bij ons bekend is, ontvang je een link om je wachtwoord te resetten.'
+            }), 200
 
     # Don't reveal if email exists or not
-    return jsonify({'message': 'If the email exists, a reset link has been sent'}), 200
+    return jsonify({
+        'message': 'Als dit e-mailadres bij ons bekend is, ontvang je een link om je wachtwoord te resetten.'
+    }), 200
 
 
 @bp.route('/reset-password/<token>', methods=['POST'])
@@ -152,18 +165,31 @@ def reset_password(token):
     new_password = data.get('password')
 
     if not new_password:
-        return jsonify({'error': 'New password is required'}), 400
+        return jsonify({'error': 'Nieuw wachtwoord is verplicht'}), 400
+
+    if len(new_password) < 6:
+        return jsonify({'error': 'Wachtwoord moet minimaal 6 karakters bevatten'}), 400
 
     user = User.query.filter_by(reset_token=token).first()
 
     if not user:
-        return jsonify({'error': 'Invalid reset token'}), 400
+        return jsonify({'error': 'Ongeldige of verlopen reset link'}), 400
 
+    # Check if token has expired
+    if user.reset_token_expiry and user.reset_token_expiry < datetime.utcnow():
+        # Token expired, clear it
+        user.reset_token = None
+        user.reset_token_expiry = None
+        db.session.commit()
+        return jsonify({'error': 'Deze reset link is verlopen. Vraag een nieuwe aan.'}), 400
+
+    # Reset password
     user.set_password(new_password)
     user.reset_token = None
+    user.reset_token_expiry = None
     db.session.commit()
 
-    return jsonify({'message': 'Password reset successfully'}), 200
+    return jsonify({'message': 'Wachtwoord succesvol gereset. Je kunt nu inloggen met je nieuwe wachtwoord.'}), 200
 
 
 @bp.route('/add-class-code', methods=['POST'])

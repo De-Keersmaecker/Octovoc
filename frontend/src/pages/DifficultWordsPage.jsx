@@ -11,6 +11,7 @@ export default function DifficultWordsPage({ user }) {
   const [answer, setAnswer] = useState('')
   const [feedback, setFeedback] = useState(null)
   const [practicing, setPracticing] = useState(false)
+  const [attemptedWords, setAttemptedWords] = useState(new Set()) // Track which words have been attempted
 
   useEffect(() => {
     fetchDifficultWords()
@@ -47,6 +48,7 @@ export default function DifficultWordsPage({ user }) {
     setCurrentWordIndex(0)
     setAnswer('')
     setFeedback(null)
+    setAttemptedWords(new Set()) // Reset attempted words for new session
   }
 
   const handleTextInput = (e) => {
@@ -54,28 +56,37 @@ export default function DifficultWordsPage({ user }) {
     setAnswer(value)
 
     if (!feedback && difficultWords[currentWordIndex] && value.length > 0) {
-      const currentWord = difficultWords[currentWordIndex].word.word
+      const currentWordData = difficultWords[currentWordIndex].word
+      const currentWord = currentWordData.word
+      const caseSensitive = currentWordData.case_sensitive || false
 
-      if (value === currentWord) {
+      // Check if answer is correct (respecting case sensitivity)
+      const isCorrect = caseSensitive
+        ? value === currentWord
+        : value.toLowerCase() === currentWord.toLowerCase()
+
+      if (isCorrect) {
         handleAnswer(value)
       } else if (value.length >= 3) {
         // Count mistakes: number of character positions that are wrong
         let mistakes = 0
-        const minLength = Math.min(value.length, currentWord.length)
+        const userValue = caseSensitive ? value : value.toLowerCase()
+        const correctWord = caseSensitive ? currentWord : currentWord.toLowerCase()
+        const minLength = Math.min(userValue.length, correctWord.length)
 
         for (let i = 0; i < minLength; i++) {
-          if (value[i] !== currentWord[i]) {
+          if (userValue[i] !== correctWord[i]) {
             mistakes++
           }
         }
 
         // If word lengths differ, count extra/missing characters as mistakes
-        if (value.length !== currentWord.length) {
-          mistakes += Math.abs(value.length - currentWord.length)
+        if (userValue.length !== correctWord.length) {
+          mistakes += Math.abs(userValue.length - correctWord.length)
         }
 
         // Mark as incorrect after 3 mistakes (2 wrong, 3rd triggers submission)
-        if (mistakes >= 3 && value.length >= currentWord.length) {
+        if (mistakes >= 3 && userValue.length >= correctWord.length) {
           handleAnswer(value)
         }
       }
@@ -113,18 +124,26 @@ export default function DifficultWordsPage({ user }) {
   const handleAnswer = async (selectedAnswer) => {
     if (feedback) return
 
-    const currentWord = difficultWords[currentWordIndex].word
-    const isCorrect = selectedAnswer === currentWord.word
+    const currentWordData = difficultWords[currentWordIndex].word
+    const wordId = currentWordData.id
+    const caseSensitive = currentWordData.case_sensitive || false
+    const isCorrect = caseSensitive
+      ? selectedAnswer === currentWordData.word
+      : selectedAnswer.toLowerCase() === currentWordData.word.toLowerCase()
+    const isFirstAttempt = !attemptedWords.has(wordId)
+
+    // Mark this word as attempted
+    setAttemptedWords(prev => new Set(prev).add(wordId))
 
     setFeedback({
       is_correct: isCorrect,
-      correct_answer: currentWord.word
+      correct_answer: currentWordData.word
     })
 
     setTimeout(() => {
-      if (isCorrect) {
-        // Remove from difficult words if answered correctly
-        api.delete(`/student/difficult-words/${currentWord.id}`)
+      if (isCorrect && isFirstAttempt) {
+        // Only remove if correct on FIRST attempt
+        api.delete(`/student/difficult-words/${wordId}`)
           .catch(err => console.error(err))
 
         // Remove from local state
@@ -146,7 +165,8 @@ export default function DifficultWordsPage({ user }) {
           setFeedback(null)
         }
       } else {
-        // Move to next word
+        // If correct but NOT first attempt, or if incorrect: move to next word
+        // The word stays in the list
         if (currentWordIndex + 1 < difficultWords.length) {
           setCurrentWordIndex(currentWordIndex + 1)
         } else {

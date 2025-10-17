@@ -205,6 +205,17 @@ export default function StudentDashboard({ user, setUser }) {
                 registreer
               </button>
             </form>
+            <a
+              href="/forgot-password"
+              style={{
+                fontSize: '12px',
+                color: '#666',
+                textDecoration: 'underline',
+                cursor: 'pointer'
+              }}
+            >
+              Wachtwoord vergeten?
+            </a>
           </div>
         )}
       </header>
@@ -240,13 +251,15 @@ export default function StudentDashboard({ user, setUser }) {
                   position: 'relative'
                 }}
               >
-                <p style={{ margin: 0, fontSize: '16px', color: isLocked ? '#888' : 'inherit' }}>
+                <p style={{ margin: 0, fontSize: '16px', color: isLocked ? '#888' : 'inherit' }} className="module-info">
+                  {module.difficulty && <span className="module-level">niveau {module.difficulty} | </span>}
                   <strong>{module.name}</strong>
-                  {' | '}
-                  {module.difficulty && `niveau ${module.difficulty} | `}
-                  {module.word_count} woorden
-                  {module.progress && ` | ${Math.round(module.completion_percentage)}% voltooid`}
-                  {isLocked && ' | klascode vereist'}
+                  <span className="module-details">
+                    {' | '}
+                    <span className="module-word-count">{module.word_count} woorden</span>
+                    {module.progress && <span className="module-progress"> | {Math.round(module.completion_percentage)}% voltooid</span>}
+                    {isLocked && <span className="module-locked"> | klascode vereist</span>}
+                  </span>
                 </p>
               </li>
             )

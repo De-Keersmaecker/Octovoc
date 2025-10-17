@@ -184,10 +184,16 @@ class DifficultWord(db.Model):
     word = db.relationship('Word', backref='difficult_for_users')
 
     def to_dict(self):
+        word_dict = self.word.to_dict() if self.word else None
+        # Add case_sensitive setting from the word's module
+        if word_dict and self.word:
+            module = Module.query.get(self.word.module_id)
+            word_dict['case_sensitive'] = module.case_sensitive if module else False
+
         return {
             'id': self.id,
             'user_id': self.user_id,
             'word_id': self.word_id,
-            'word': self.word.to_dict() if self.word else None,
+            'word': word_dict,
             'added_at': self.added_at.isoformat() if self.added_at else None
         }

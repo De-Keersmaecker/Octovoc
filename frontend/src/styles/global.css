@@ -450,6 +450,16 @@ h2 {
         line-height: 1.3;
     }
 
+    /* Make module info compact on mobile */
+    .module-info .module-level,
+    .module-info .module-details {
+        font-size: 12px;
+    }
+
+    .module-info strong {
+        font-size: 14px;
+    }
+
     /* Adjust header for mobile */
     .header-title {
         font-size: 28px;
