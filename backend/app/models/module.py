@@ -85,32 +85,76 @@ class Battery(db.Model):
     def create_batteries_for_module(module_id, word_ids):
         """
         Creates batteries for a module following the algorithm:
-        - Prefer batteries of 5 words
-        - Remainder distributed as 4-word batteries
-        - If still remainder, create 3-word batteries
+        - Prefer batteries of 5 words, then 4 words, then 3 words
+        - Avoid batteries of 1 or 2 words
+        - Maximize the size of battery groups
+
+        Examples:
+        - 13 words: 5+4+4 (better than 5+5+3)
+        - 12 words: 4+4+4 (better than 5+5+2)
+        - 11 words: 4+4+3
+        - 8 words: 4+4 (better than 5+3)
         """
         total_words = len(word_ids)
         batteries = []
 
-        # Calculate distribution
-        fives = total_words // 5
-        remainder = total_words % 5
+        # Special cases for small numbers
+        if total_words <= 5:
+            battery_sizes = [total_words]
+        elif total_words == 6:
+            battery_sizes = [3, 3]
+        elif total_words == 7:
+            battery_sizes = [4, 3]
+        elif total_words == 8:
+            battery_sizes = [4, 4]
+        elif total_words == 9:
+            battery_sizes = [5, 4]
+        else:
+            # For 10+ words, use optimized distribution
+            battery_sizes = []
+            remaining = total_words
 
-        if remainder == 0:
-            # Perfect division by 5
-            battery_sizes = [5] * fives
-        elif remainder == 4:
-            # e.g., 9 words = 1x5 + 1x4
-            battery_sizes = [5] * (fives - 1) + [5, 4] if fives > 0 else [4]
-        elif remainder == 3:
-            # e.g., 8 words = 1x5 + 1x3
-            battery_sizes = [5] * (fives - 1) + [5, 3] if fives > 0 else [3]
-        elif remainder == 2:
-            # e.g., 7 words = 1x4 + 1x3
-            battery_sizes = [5] * (fives - 1) + [4, 3] if fives > 0 else [4, 3]
-        elif remainder == 1:
-            # e.g., 6 words = 1x3 + 1x3
-            battery_sizes = [5] * (fives - 2) + [3, 3] if fives >= 2 else [4, 3] if fives == 1 else [3, 3]
+            # Try to fit as many 5s as possible, but check if remainder works
+            fives = remaining // 5
+            remainder = remaining % 5
+
+            if remainder == 0:
+                # Perfect: all 5s
+                battery_sizes = [5] * fives
+            elif remainder == 1:
+                # 5n+1: convert two 5s to one 4 and two 3s
+                # e.g., 11 = 5+5+1 → 5+3+3 or better: 4+4+3
+                if fives >= 2:
+                    battery_sizes = [5] * (fives - 2) + [4, 4, 3]
+                else:
+                    # 6 words → 3+3
+                    battery_sizes = [4, 3] if remaining == 7 else [3, 3]
+            elif remainder == 2:
+                # 5n+2: convert one 5 to 4+3
+                # e.g., 12 = 5+5+2 → 4+4+4
+                if fives >= 2:
+                    battery_sizes = [5] * (fives - 2) + [4, 4, 4]
+                elif fives == 1:
+                    # 7 words → 4+3
+                    battery_sizes = [4, 3]
+                else:
+                    # 2 words → impossible, should not happen
+                    battery_sizes = [2]  # fallback
+            elif remainder == 3:
+                # 5n+3: convert one 5 to 4+4 or keep 5+3
+                # e.g., 13 = 5+5+3 → 5+4+4 (better)
+                # e.g., 8 = 5+3 → 4+4 (better)
+                if fives >= 2:
+                    battery_sizes = [5] * (fives - 1) + [4, 4]
+                elif fives == 1:
+                    # 8 words → 4+4
+                    battery_sizes = [4, 4]
+                else:
+                    # 3 words → 3
+                    battery_sizes = [3]
+            elif remainder == 4:
+                # 5n+4: just add a 4
+                battery_sizes = [5] * fives + [4]
 
         # Create batteries
         start_idx = 0

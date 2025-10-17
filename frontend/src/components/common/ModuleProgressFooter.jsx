@@ -1,12 +1,24 @@
 import { useState, useEffect } from 'react'
 import api from '../../services/api'
 
-const ModuleProgressFooter = ({ moduleId, user }) => {
+const ModuleProgressFooter = ({ moduleId, user, masteredWordsOverride, totalWordsOverride }) => {
   const [progressData, setProgressData] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     if (!moduleId) return
+
+    // If override values are provided, use them directly
+    if (masteredWordsOverride !== undefined && totalWordsOverride !== undefined) {
+      const percentage = totalWordsOverride > 0 ? (masteredWordsOverride / totalWordsOverride * 100) : 0
+      setProgressData({
+        totalWords: totalWordsOverride,
+        masteredWords: masteredWordsOverride,
+        percentage
+      })
+      setLoading(false)
+      return
+    }
 
     const fetchModuleProgress = async () => {
       try {
@@ -40,7 +52,7 @@ const ModuleProgressFooter = ({ moduleId, user }) => {
     } else {
       setLoading(false)
     }
-  }, [moduleId, user])
+  }, [moduleId, user, masteredWordsOverride, totalWordsOverride])
 
   if (loading || !progressData) {
     return null

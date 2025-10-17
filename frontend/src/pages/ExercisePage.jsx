@@ -23,6 +23,8 @@ export default function ExercisePage({ user }) {
   const [currentBatteryIndex, setCurrentBatteryIndex] = useState(0)
   const [showQuote, setShowQuote] = useState(false)
   const [quote, setQuote] = useState(null)
+  const [totalWordsInModule, setTotalWordsInModule] = useState(0)
+  const [masteredWords, setMasteredWords] = useState(0)
 
   useEffect(() => {
     startModule()
@@ -38,6 +40,13 @@ export default function ExercisePage({ user }) {
       const module = modulesRes.data.find(m => m.id === parseInt(moduleId))
       if (module) {
         setModuleName(module.name)
+        setTotalWordsInModule(module.word_count || 0)
+        // Calculate initial mastered words based on progress
+        if (module.progress) {
+          const completed = module.progress.completed_batteries ? module.progress.completed_batteries.length : 0
+          const total = module.progress.battery_order ? module.progress.battery_order.length : 1
+          setMasteredWords(Math.round((module.word_count || 0) * completed / total))
+        }
       }
 
       // Check if anonymous
@@ -115,12 +124,17 @@ export default function ExercisePage({ user }) {
 
       setFeedback(res.data)
 
+      // Play feedback sound and haptic
+      playFeedbackSound(res.data.is_correct)
+
       // Update progress history
       const history = progressHistory.slice()
-      const wordMap = { ...progressWordMap }
+      const wordMap = { ...progressWordMap}
 
       // Check if this word was already answered in this phase
       const existingIndex = wordMap[currentWord.id]
+      const wasIncorrectBefore = existingIndex !== undefined && history[existingIndex] === 'incorrect'
+
       if (existingIndex !== undefined) {
         // Update existing entry
         history[existingIndex] = res.data.is_correct ? 'correct' : 'incorrect'
@@ -134,6 +148,12 @@ export default function ExercisePage({ user }) {
       }
       setProgressHistory(history)
       setProgressWordMap(wordMap)
+
+      // In phase 3, update mastered words counter for real-time progress
+      if (currentPhase === 3 && res.data.is_correct && wasIncorrectBefore) {
+        // Word was corrected - increment mastered words
+        setMasteredWords(prev => Math.min(prev + 1, totalWordsInModule))
+      }
 
       // Handle anonymous mode
       if (res.data.anonymous || isAnonymous) {
@@ -236,6 +256,44 @@ export default function ExercisePage({ user }) {
     }
   }
 
+  const playFeedbackSound = (isCorrect) => {
+    // Create audio context for sound effects
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)()
+    const oscillator = audioContext.createOscillator()
+    const gainNode = audioContext.createGain()
+
+    oscillator.connect(gainNode)
+    gainNode.connect(audioContext.destination)
+
+    if (isCorrect) {
+      // Success sound: short pleasant tone
+      oscillator.frequency.value = 800
+      oscillator.type = 'sine'
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime)
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15)
+      oscillator.start(audioContext.currentTime)
+      oscillator.stop(audioContext.currentTime + 0.15)
+
+      // Single short vibration for correct answer
+      if (navigator.vibrate) {
+        navigator.vibrate(50)
+      }
+    } else {
+      // Error sound: buzz
+      oscillator.frequency.value = 200
+      oscillator.type = 'sawtooth'
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime)
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3)
+      oscillator.start(audioContext.currentTime)
+      oscillator.stop(audioContext.currentTime + 0.3)
+
+      // Longer vibration for incorrect answer
+      if (navigator.vibrate) {
+        navigator.vibrate(200)
+      }
+    }
+  }
+
   const handleTextSubmit = (e) => {
     e.preventDefault()
   }
@@ -247,24 +305,20 @@ export default function ExercisePage({ user }) {
     if (!feedback && currentWord && value.length > 0) {
       if (value === currentWord.word) {
         handleAnswer(value)
-      } else if (value.length >= 3) {
+      } else {
         // Count mistakes: number of character positions that are wrong
         let mistakes = 0
-        const minLength = Math.min(value.length, currentWord.word.length)
+        const correctWord = currentWord.word
 
-        for (let i = 0; i < minLength; i++) {
-          if (value[i] !== currentWord.word[i]) {
+        // Compare each character position
+        for (let i = 0; i < value.length; i++) {
+          if (i >= correctWord.length || value[i] !== correctWord[i]) {
             mistakes++
           }
         }
 
-        // If word lengths differ, count extra/missing characters as mistakes
-        if (value.length !== currentWord.word.length) {
-          mistakes += Math.abs(value.length - currentWord.word.length)
-        }
-
-        // Mark as incorrect after 3 mistakes (2 wrong, 3rd triggers submission)
-        if (mistakes >= 3 && value.length >= currentWord.word.length) {
+        // Submit as incorrect immediately after 3 mistakes
+        if (mistakes >= 3) {
           handleAnswer(value)
         }
       }
@@ -444,7 +498,12 @@ export default function ExercisePage({ user }) {
         )}
       </div>
 
-      <ModuleProgressFooter moduleId={moduleId} user={user} />
+      <ModuleProgressFooter
+        moduleId={moduleId}
+        user={user}
+        masteredWordsOverride={phase === 3 ? masteredWords : undefined}
+        totalWordsOverride={phase === 3 ? totalWordsInModule : undefined}
+      />
 
       {showQuote && <QuoteModal quote={quote} onClose={() => navigate('/')} />}
     </>
