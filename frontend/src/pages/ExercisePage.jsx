@@ -25,6 +25,7 @@ export default function ExercisePage({ user }) {
   const [quote, setQuote] = useState(null)
   const [totalWordsInModule, setTotalWordsInModule] = useState(0)
   const [masteredWords, setMasteredWords] = useState(0)
+  const [baselineMasteredWords, setBaselineMasteredWords] = useState(0)
 
   useEffect(() => {
     startModule()
@@ -101,6 +102,13 @@ export default function ExercisePage({ user }) {
       setProgressWordMap({})
       setFeedback(null)
       setAnswer('')
+
+      // Set baseline mastered words when starting a new battery (for phase 3 tracking)
+      const phaseNum = res.data.anonymous ? res.data.phase : res.data.battery_progress.current_phase
+      if (phaseNum === 3) {
+        setBaselineMasteredWords(masteredWords)
+      }
+
       setLoading(false)
     } catch (err) {
       console.error(err)
@@ -150,9 +158,11 @@ export default function ExercisePage({ user }) {
       setProgressWordMap(wordMap)
 
       // In phase 3, update mastered words counter for real-time progress
-      if (currentPhase === 3 && res.data.is_correct && wasIncorrectBefore) {
-        // Word was corrected - increment mastered words
-        setMasteredWords(prev => Math.min(prev + 1, totalWordsInModule))
+      if (currentPhase === 3) {
+        // Count words that are correct in the current battery
+        const correctCount = history.filter(status => status === 'correct').length
+        // Update total: baseline (from completed batteries) + current battery correct words
+        setMasteredWords(baselineMasteredWords + correctCount)
       }
 
       // Handle anonymous mode
@@ -256,40 +266,60 @@ export default function ExercisePage({ user }) {
     }
   }
 
-  const playFeedbackSound = (isCorrect) => {
-    // Create audio context for sound effects
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)()
-    const oscillator = audioContext.createOscillator()
-    const gainNode = audioContext.createGain()
-
-    oscillator.connect(gainNode)
-    gainNode.connect(audioContext.destination)
-
-    if (isCorrect) {
-      // Success sound: short pleasant tone
-      oscillator.frequency.value = 800
-      oscillator.type = 'sine'
-      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime)
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15)
-      oscillator.start(audioContext.currentTime)
-      oscillator.stop(audioContext.currentTime + 0.15)
-
-      // Single short vibration for correct answer
-      if (navigator.vibrate) {
-        navigator.vibrate(50)
+  const playFeedbackSound = async (isCorrect) => {
+    try {
+      // Create or reuse audio context
+      const AudioContext = window.AudioContext || window.webkitAudioContext
+      if (!window.globalAudioContext) {
+        window.globalAudioContext = new AudioContext()
       }
-    } else {
-      // Error sound: buzz
-      oscillator.frequency.value = 200
-      oscillator.type = 'sawtooth'
-      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime)
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3)
-      oscillator.start(audioContext.currentTime)
-      oscillator.stop(audioContext.currentTime + 0.3)
+      const audioContext = window.globalAudioContext
 
-      // Longer vibration for incorrect answer
+      // Resume audio context if suspended (required by some browsers)
+      if (audioContext.state === 'suspended') {
+        await audioContext.resume()
+      }
+
+      const oscillator = audioContext.createOscillator()
+      const gainNode = audioContext.createGain()
+
+      oscillator.connect(gainNode)
+      gainNode.connect(audioContext.destination)
+
+      if (isCorrect) {
+        // Success sound: short pleasant tone
+        oscillator.frequency.value = 800
+        oscillator.type = 'sine'
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime)
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15)
+        oscillator.start(audioContext.currentTime)
+        oscillator.stop(audioContext.currentTime + 0.15)
+
+        // Single short vibration for correct answer
+        if (navigator.vibrate) {
+          navigator.vibrate(50)
+        }
+      } else {
+        // Error sound: buzz
+        oscillator.frequency.value = 200
+        oscillator.type = 'sawtooth'
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime)
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3)
+        oscillator.start(audioContext.currentTime)
+        oscillator.stop(audioContext.currentTime + 0.3)
+
+        // Longer vibration for incorrect answer
+        if (navigator.vibrate) {
+          navigator.vibrate(200)
+        }
+      }
+    } catch (error) {
+      // Silently fail if audio doesn't work
+      console.log('Audio playback not available:', error)
+
+      // At least try vibration
       if (navigator.vibrate) {
-        navigator.vibrate(200)
+        navigator.vibrate(isCorrect ? 50 : 200)
       }
     }
   }
