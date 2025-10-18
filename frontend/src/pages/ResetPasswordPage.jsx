@@ -57,7 +57,7 @@ export default function ResetPasswordPage() {
       </header>
 
       <div style={{ maxWidth: '400px', margin: '0 auto' }}>
-        <h2>Nieuw Wachtwoord Instellen</h2>
+        <h2>Nieuw wachtwoord instellen</h2>
 
         {success ? (
           <div style={{
@@ -96,7 +96,7 @@ export default function ResetPasswordPage() {
             ) : (
               <form onSubmit={handleSubmit}>
                 <div className="form-group">
-                  <label htmlFor="password">Nieuw Wachtwoord</label>
+                  <label htmlFor="password">Nieuw wachtwoord</label>
                   <input
                     id="password"
                     type="password"
@@ -110,7 +110,7 @@ export default function ResetPasswordPage() {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="confirmPassword">Bevestig Wachtwoord</label>
+                  <label htmlFor="confirmPassword">Bevestig wachtwoord</label>
                   <input
                     id="confirmPassword"
                     type="password"
@@ -130,7 +130,7 @@ export default function ResetPasswordPage() {
                     disabled={loading}
                     style={{ flex: 1 }}
                   >
-                    {loading ? 'Bezig...' : 'Wachtwoord Resetten'}
+                    {loading ? 'Bezig...' : 'Wachtwoord resetten'}
                   </button>
 
                   <button

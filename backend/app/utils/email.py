@@ -35,7 +35,7 @@ def send_password_reset_email(to_email, reset_token):
 
         # Create email message
         msg = Message(
-            subject="Octovoc - Wachtwoord Resetten",
+            subject="Octovoc - Wachtwoord resetten",
             recipients=[to_email],
             sender=app.config.get('MAIL_DEFAULT_SENDER')
         )
@@ -62,7 +62,7 @@ Het Octovoc Team
 <html>
   <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
     <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-      <h2 style="color: #000;">Octovoc - Wachtwoord Resetten</h2>
+      <h2 style="color: #000;">Octovoc - Wachtwoord resetten</h2>
       <p>Hallo,</p>
       <p>Je hebt een wachtwoordreset aangevraagd voor je Octovoc account.</p>
       <p>Klik op de knop hieronder om je wachtwoord te resetten:</p>
@@ -74,7 +74,7 @@ Het Octovoc Team
                   text-decoration: none;
                   border-radius: 4px;
                   display: inline-block;">
-          Wachtwoord Resetten
+          Wachtwoord resetten
         </a>
       </p>
       <p style="font-size: 14px; color: #666;">

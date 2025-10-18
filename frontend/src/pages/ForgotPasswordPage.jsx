@@ -33,7 +33,7 @@ export default function ForgotPasswordPage() {
       </header>
 
       <div style={{ maxWidth: '400px', margin: '0 auto' }}>
-        <h2>Wachtwoord Vergeten</h2>
+        <h2>Wachtwoord vergeten</h2>
 
         <p style={{ marginBottom: '24px', color: '#666' }}>
           Voer je e-mailadres in en we sturen je een link om je wachtwoord te resetten.
@@ -78,7 +78,7 @@ export default function ForgotPasswordPage() {
               disabled={loading}
               style={{ flex: 1 }}
             >
-              {loading ? 'Versturen...' : 'Reset Link Versturen'}
+              {loading ? 'Versturen...' : 'Reset link versturen'}
             </button>
 
             <button
