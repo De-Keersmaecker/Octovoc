@@ -1,2 +1,1 @@
-release: FLASK_APP=run.py flask db upgrade && python seed_admin.py || true
-web: gunicorn run:app --bind 0.0.0.0:$PORT --access-logfile - --error-logfile -
+web: gunicorn run:app --bind 0.0.0.0:$PORT --timeout 120 --log-level debug --preload --access-logfile - --error-logfile -
