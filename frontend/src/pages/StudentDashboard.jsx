@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../services/api'
 import { logout } from '../utils/auth'
+import './Dashboard.css'
 
 export default function StudentDashboard({ user, setUser }) {
   const [modules, setModules] = useState([])
@@ -181,31 +182,42 @@ export default function StudentDashboard({ user, setUser }) {
   }
 
   if (loading) {
-    return <div className="loading">Laden...</div>
+    return (
+      <div className="dashboard-stage">
+        <div style={{
+          textAlign: 'center',
+          paddingTop: '100px',
+          fontFamily: '"Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif',
+          fontSize: 'clamp(14px, 1.2vw, 16px)',
+          letterSpacing: '0.02em'
+        }}>
+          laden...
+        </div>
+      </div>
+    )
   }
 
   const handleSwitchLevel = () => {
-    // Clear session and go back to level select
     sessionStorage.removeItem('guestLevel')
     sessionStorage.removeItem('userType')
     navigate('/guest-level-select')
   }
 
   return (
-    <div className="container">
-      <header className="exercise-header">
-        <div className="header-title">Octovoc</div>
+    <div className="dashboard-stage">
+      <header className="dashboard-header">
+        <div className="dashboard-title">Octovoc</div>
         {isGuest ? (
-          <div className="user-info">
+          <div className="dashboard-user-info">
             <div style={{ marginBottom: '8px' }}>
-              GAST - Niveau {guestLevel}
+              gast - niveau {guestLevel}
             </div>
-            <button onClick={handleSwitchLevel} className="btn" style={{ padding: '4px 12px' }}>
+            <button onClick={handleSwitchLevel} className="dashboard-btn">
               wissel niveau
             </button>
           </div>
         ) : user ? (
-          <div className="user-info">
+          <div className="dashboard-user-info">
             <div style={{ marginBottom: '8px' }}>
               {user.email}
               {user.classroom_name && (
@@ -215,7 +227,7 @@ export default function StudentDashboard({ user, setUser }) {
                 </>
               )}
             </div>
-            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', justifyContent: 'flex-end' }}>
               {showCodeInput && (
                 <input
                   type="text"
@@ -224,55 +236,55 @@ export default function StudentDashboard({ user, setUser }) {
                   placeholder="KLAS-C0dE"
                   maxLength={9}
                   disabled={isValidating}
+                  className={`dashboard-input ${shouldBlink ? 'blink' : ''}`}
                   style={{
-                    padding: '4px 8px',
-                    fontSize: '14px',
                     width: '100px',
-                    textTransform: 'uppercase',
-                    animation: shouldBlink ? 'blink-red 0.5s ease-in-out 8' : 'none',
-                    border: shouldBlink ? '2px solid red' : '1px solid #ccc'
+                    textTransform: 'uppercase'
                   }}
                 />
               )}
-              <button onClick={logout} className="btn" style={{ padding: '4px 12px' }}>
+              <button onClick={logout} className="dashboard-btn">
                 uitloggen
               </button>
             </div>
           </div>
         ) : (
-          <div className="user-info" style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end' }}>
+          <div className="dashboard-user-info" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <form onSubmit={handleLogin} style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center', justifyContent: 'flex-end' }}>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="E-mail"
+                placeholder="email"
                 required
-                style={{ padding: '6px 10px', fontSize: '14px', width: '150px' }}
+                className="dashboard-input"
+                style={{ width: '150px' }}
               />
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Wachtwoord"
+                placeholder="wachtwoord"
                 required
-                style={{ padding: '6px 10px', fontSize: '14px', width: '120px' }}
+                className="dashboard-input"
+                style={{ width: '120px' }}
               />
-              <button type="submit" className="btn" style={{ padding: '6px 12px', fontSize: '14px' }}>
+              <button type="submit" className="dashboard-btn">
                 login
               </button>
-              <button type="button" onClick={handleRegister} className="btn btn-primary" style={{ padding: '6px 12px', fontSize: '14px' }}>
+              <button type="button" onClick={handleRegister} className="dashboard-btn">
                 registreer
               </button>
               <a
                 href="/forgot-password"
                 style={{
-                  fontSize: '12px',
-                  color: '#666',
+                  fontSize: 'clamp(11px, 0.9vw, 12px)',
+                  color: '#fff',
                   textDecoration: 'underline',
                   cursor: 'pointer',
                   flexBasis: '100%',
-                  textAlign: 'right'
+                  textAlign: 'right',
+                  opacity: 0.7
                 }}
               >
                 wachtwoord vergeten?
@@ -282,105 +294,89 @@ export default function StudentDashboard({ user, setUser }) {
         )}
       </header>
 
-      {/* Level tabs or single level indicator - black bar with white text */}
-      {allowedLevels.length === 1 ? (
-        <div style={{
-          backgroundColor: '#000',
-          padding: '12px 20px',
-          textAlign: 'center',
-          color: '#fff',
-          fontSize: '18px',
-          fontWeight: 'bold',
-          marginBottom: '20px'
-        }}>
-          Niveau {selectedLevel}
-        </div>
-      ) : (
-        <div style={{
-          backgroundColor: '#000',
-          padding: '12px 20px',
-          display: 'flex',
-          justifyContent: 'space-evenly',
-          gap: '8px',
-          marginBottom: '20px'
-        }}>
-          {[1, 2, 3, 4, 5, 6].map(level => {
-            const isAllowed = allowedLevels.includes(level)
-            const isSelected = selectedLevel === level
+      <div className="dashboard-content">
+        {allowedLevels.length === 1 ? (
+          <div style={{
+            textAlign: 'center',
+            fontFamily: '"Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif',
+            fontSize: 'clamp(16px, 1.5vw, 20px)',
+            letterSpacing: '0.03em',
+            marginBottom: '30px',
+            paddingBottom: '15px',
+            borderBottom: '1px solid #fff'
+          }}>
+            niveau {selectedLevel}
+          </div>
+        ) : (
+          <div className="level-selector">
+            {[1, 2, 3, 4, 5, 6].map(level => {
+              const isAllowed = allowedLevels.includes(level)
+              const isSelected = selectedLevel === level
 
-            return (
-              <button
-                key={level}
-                onClick={() => isAllowed && setSelectedLevel(level)}
-                disabled={!isAllowed}
-                style={{
-                  backgroundColor: isSelected ? '#fff' : 'transparent',
-                  color: isSelected ? '#000' : '#fff',
-                  border: isSelected ? 'none' : '1px solid #fff',
-                  padding: '8px 16px',
-                  borderRadius: '4px',
-                  cursor: isAllowed ? 'pointer' : 'not-allowed',
-                  opacity: isAllowed ? 1 : 0.3,
-                  fontSize: '16px',
-                  fontWeight: isSelected ? 'bold' : 'normal',
-                  transition: 'all 0.2s',
-                  flex: '1',
-                  minWidth: '50px',
-                  textAlign: 'center'
-                }}
-              >
-                {level}
-              </button>
-            )
-          })}
-        </div>
-      )}
+              return (
+                <button
+                  key={level}
+                  onClick={() => isAllowed && setSelectedLevel(level)}
+                  disabled={!isAllowed}
+                  className={`level-btn-small ${isSelected ? 'active' : ''}`}
+                >
+                  {level}
+                </button>
+              )
+            })}
+          </div>
+        )}
 
-      {modules.length === 0 ? (
-        <p>Geen modules beschikbaar.</p>
-      ) : (
-        <ul className="module-list">
-          {user && !isGuest && difficultWords.length > 0 && (
-            <li
-              className="module-item"
-              onClick={() => navigate('/difficult-words')}
-              style={{ cursor: 'pointer' }}
-            >
-              <h3>oefenen op moeilijkste woorden</h3>
-              <p>
-                {difficultWords.length} {difficultWords.length === 1 ? 'woord' : 'woorden'} om te oefenen
-              </p>
-            </li>
-          )}
-          {modules.map((module) => {
-            const isAccessible = isGuest ? module.is_free : (module.is_free || (user && user.class_code))
-            const isLocked = !isAccessible
-
-            return (
+        {modules.length === 0 ? (
+          <p style={{
+            textAlign: 'center',
+            fontFamily: '"Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif',
+            fontSize: 'clamp(13px, 1.1vw, 15px)',
+            opacity: 0.7
+          }}>
+            geen modules beschikbaar
+          </p>
+        ) : (
+          <ul className="module-list">
+            {user && !isGuest && difficultWords.length > 0 && (
               <li
-                key={module.id}
                 className="module-item"
-                onClick={() => isAccessible && startModule(module.id, module.is_free)}
-                style={{
-                  backgroundColor: 'white',
-                  cursor: isLocked ? 'not-allowed' : 'pointer',
-                  position: 'relative'
-                }}
+                onClick={() => navigate('/difficult-words')}
               >
-                <p style={{ margin: 0, fontSize: '16px', color: isLocked ? '#888' : 'inherit' }} className="module-info">
-                  <strong>{module.name}</strong>
+                <p className="module-info">
+                  <strong>oefenen op moeilijkste woorden</strong>
                   <span className="module-details">
                     {' | '}
-                    <span className="module-word-count">{module.word_count} woorden</span>
-                    {module.progress && !isGuest && <span className="module-progress"> | {Math.round(module.completion_percentage)}% voltooid</span>}
-                    {isLocked && <span className="module-locked"> | {isGuest ? 'niet gratis' : 'klascode vereist'}</span>}
+                    {difficultWords.length} {difficultWords.length === 1 ? 'woord' : 'woorden'}
                   </span>
                 </p>
               </li>
-            )
-          })}
-        </ul>
-      )}
+            )}
+            {modules.map((module) => {
+              const isAccessible = isGuest ? module.is_free : (module.is_free || (user && user.class_code))
+              const isLocked = !isAccessible
+
+              return (
+                <li
+                  key={module.id}
+                  className={`module-item ${isLocked ? 'locked' : ''}`}
+                  onClick={() => isAccessible && startModule(module.id, module.is_free)}
+                >
+                  <p className="module-info">
+                    <strong>{module.name}</strong>
+                    <span className="module-details">
+                      {' | '}
+                      {module.word_count} woorden
+                      {module.progress && !isGuest && ` | ${Math.round(module.completion_percentage)}% voltooid`}
+                      {isLocked && <span className="module-locked"> | {isGuest ? 'niet gratis' : 'klascode vereist'}</span>}
+                    </span>
+                  </p>
+                </li>
+              )
+            })}
+          </ul>
+        )}
+      </div>
     </div>
   )
 }
