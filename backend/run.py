@@ -4,8 +4,26 @@ app = create_app()
 
 @app.route('/health')
 def health_check():
-    """Simple health check endpoint"""
-    return {'status': 'ok', 'message': 'App is running'}, 200
+    """Health check endpoint with database stats"""
+    try:
+        from app.models.module import Module
+        from app.models.user import User
+        module_count = Module.query.count()
+        user_count = User.query.count()
+
+        return {
+            'status': 'ok',
+            'message': 'App is running',
+            'modules': module_count,
+            'users': user_count,
+            'database': 'connected'
+        }, 200
+    except Exception as e:
+        return {
+            'status': 'error',
+            'message': str(e),
+            'database': 'error'
+        }, 500
 
 @app.shell_context_processor
 def make_shell_context():

@@ -252,8 +252,8 @@ export default function StudentDashboard({ user, setUser }) {
         backgroundColor: '#000',
         padding: '12px 20px',
         display: 'flex',
-        gap: '12px',
-        overflowX: 'auto',
+        justifyContent: 'space-evenly',
+        gap: '8px',
         marginBottom: '20px'
       }}>
         {[1, 2, 3, 4, 5, 6].map(level => {
@@ -273,10 +273,12 @@ export default function StudentDashboard({ user, setUser }) {
                 borderRadius: '4px',
                 cursor: isAllowed ? 'pointer' : 'not-allowed',
                 opacity: isAllowed ? 1 : 0.3,
-                whiteSpace: 'nowrap',
-                fontSize: '14px',
+                fontSize: '16px',
                 fontWeight: isSelected ? 'bold' : 'normal',
-                transition: 'all 0.2s'
+                transition: 'all 0.2s',
+                flex: '1',
+                minWidth: '50px',
+                textAlign: 'center'
               }}
             >
               {level}
