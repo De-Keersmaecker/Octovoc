@@ -1,146 +1,137 @@
 import { useNavigate } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import './LandingPage.css'
 
 export default function LandingPage() {
   const navigate = useNavigate()
-  const [userType, setUserType] = useState(null) // 'teacher', 'student', 'guest'
+  const [currentText, setCurrentText] = useState('')
+  const [fadeState, setFadeState] = useState('black') // 'black', 'fading-in', 'white', 'fading-out'
+  const indexRef = useRef(0)
 
-  const handleChoice = (type) => {
-    setUserType(type)
+  const sequence = [
+    '4600 woorden',
+    '800 woorden per jaar',
+    '5 woorden per schooldag',
+    'gebouwd op data en wetenschap',
+    'ontworpen voor groei',
+    'slim leren, duurzaam onthouden'
+  ]
 
-    if (type === 'guest') {
-      // Voor gasten: naar niveau keuze
+  const FADE_IN = 1100
+  const FADE_OUT = 1000
+  const PAUSE = 120
+  const LAST_PAUSE = 180
+
+  const displayTimeFor = (text) => {
+    const base = 500
+    const perChar = 40
+    const t = base + text.length * perChar
+    return Math.max(700, Math.min(1700, t))
+  }
+
+  useEffect(() => {
+    const showText = (i) => {
+      const text = sequence[i]
+      const displayTime = displayTimeFor(text)
+      const isLast = i === sequence.length - 1
+      const pause = isLast ? LAST_PAUSE : PAUSE
+
+      // Set text instantly while black
+      setCurrentText(text)
+      setFadeState('black')
+
+      // Start fade in
+      setTimeout(() => {
+        setFadeState('fading-in')
+        setTimeout(() => {
+          setFadeState('white')
+
+          // Start fade out after display time
+          setTimeout(() => {
+            setFadeState('fading-out')
+
+            // Move to next after fade out
+            setTimeout(() => {
+              indexRef.current = (i + 1) % sequence.length
+              showText(indexRef.current)
+            }, FADE_OUT + pause)
+          }, displayTime)
+        }, 50) // Small delay for transition to kick in
+      }, 50)
+    }
+
+    // Start the cycle
+    showText(0)
+  }, [])
+
+  const handleRoleClick = (role) => {
+    if (role === 'gast') {
       navigate('/guest-level-select')
-    } else if (type === 'teacher') {
-      // Voor leerkrachten: naar login
-      navigate('/login?type=teacher')
-    } else if (type === 'student') {
-      // Voor leerlingen: naar login
+    } else if (role === 'leerling') {
       navigate('/login?type=student')
+    } else if (role === 'leerkracht') {
+      navigate('/login?type=teacher')
     }
   }
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      backgroundColor: '#000',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      paddingTop: '80px'
-    }}>
-      {/* Header */}
-      <div style={{
-        backgroundColor: '#000',
-        color: '#fff',
-        fontSize: '48px',
-        fontWeight: 'bold',
-        marginBottom: '60px',
-        textAlign: 'center',
-        padding: '20px'
-      }}>
-        Octovoc
-      </div>
+    <main className="stage" aria-label="octovoc intro">
+      <section className="inner">
+        <div className="brand">
+          <video
+            className="octopus"
+            src="/octoloci.mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
+          />
+          <h1 id="title" className="title" aria-label="octovoc">
+            Octovoc
+          </h1>
+        </div>
 
-      {/* Question */}
-      <div style={{
-        backgroundColor: '#000',
-        color: '#fff',
-        fontSize: '28px',
-        marginBottom: '50px',
-        textAlign: 'center',
-        padding: '20px'
-      }}>
-        Wie ben je?
-      </div>
-
-      {/* Buttons */}
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '25px',
-        width: '100%',
-        maxWidth: '400px',
-        padding: '0 20px'
-      }}>
-        <button
-          onClick={() => handleChoice('teacher')}
+        <div
+          id="subwrap"
+          className="subwrap"
           style={{
-            backgroundColor: '#fff',
-            color: '#000',
-            border: 'none',
-            borderRadius: '8px',
-            padding: '25px 40px',
-            fontSize: '24px',
-            fontWeight: '600',
-            cursor: 'pointer',
-            transition: 'transform 0.2s, box-shadow 0.2s',
-            boxShadow: '0 4px 6px rgba(255,255,255,0.1)'
-          }}
-          onMouseEnter={(e) => {
-            e.target.style.transform = 'scale(1.05)'
-            e.target.style.boxShadow = '0 6px 12px rgba(255,255,255,0.2)'
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.transform = 'scale(1)'
-            e.target.style.boxShadow = '0 4px 6px rgba(255,255,255,0.1)'
+            color: fadeState === 'black' ? '#000' : '#fff',
+            transition: fadeState === 'fading-in' ? `color ${FADE_IN}ms linear` :
+                       fadeState === 'fading-out' ? `color ${FADE_OUT}ms linear` :
+                       'none'
           }}
         >
-          👨‍🏫 Leerkracht
-        </button>
+          <div id="subtitle" className="subtitle" role="status" aria-live="polite">
+            {currentText}
+          </div>
+        </div>
 
-        <button
-          onClick={() => handleChoice('student')}
-          style={{
-            backgroundColor: '#fff',
-            color: '#000',
-            border: 'none',
-            borderRadius: '8px',
-            padding: '25px 40px',
-            fontSize: '24px',
-            fontWeight: '600',
-            cursor: 'pointer',
-            transition: 'transform 0.2s, box-shadow 0.2s',
-            boxShadow: '0 4px 6px rgba(255,255,255,0.1)'
-          }}
-          onMouseEnter={(e) => {
-            e.target.style.transform = 'scale(1.05)'
-            e.target.style.boxShadow = '0 6px 12px rgba(255,255,255,0.2)'
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.transform = 'scale(1)'
-            e.target.style.boxShadow = '0 4px 6px rgba(255,255,255,0.1)'
-          }}
-        >
-          👨‍🎓 Leerling
-        </button>
+        <div id="underline" className="underline" aria-hidden="true"></div>
 
-        <button
-          onClick={() => handleChoice('guest')}
-          style={{
-            backgroundColor: '#fff',
-            color: '#000',
-            border: 'none',
-            borderRadius: '8px',
-            padding: '25px 40px',
-            fontSize: '24px',
-            fontWeight: '600',
-            cursor: 'pointer',
-            transition: 'transform 0.2s, box-shadow 0.2s',
-            boxShadow: '0 4px 6px rgba(255,255,255,0.1)'
-          }}
-          onMouseEnter={(e) => {
-            e.target.style.transform = 'scale(1.05)'
-            e.target.style.boxShadow = '0 6px 12px rgba(255,255,255,0.2)'
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.transform = 'scale(1)'
-            e.target.style.boxShadow = '0 4px 6px rgba(255,255,255,0.1)'
-          }}
-        >
-          👤 Gast Oefenen
-        </button>
-      </div>
-    </div>
+        <div id="buttons" className="buttons" aria-label="kies een rol">
+          <button
+            className="btn"
+            type="button"
+            onClick={() => handleRoleClick('gast')}
+          >
+            gast
+          </button>
+          <button
+            className="btn"
+            type="button"
+            onClick={() => handleRoleClick('leerling')}
+          >
+            leerling
+          </button>
+          <button
+            className="btn"
+            type="button"
+            onClick={() => handleRoleClick('leerkracht')}
+          >
+            leerkracht
+          </button>
+        </div>
+      </section>
+    </main>
   )
 }
