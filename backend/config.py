@@ -20,6 +20,9 @@ class Config:
     ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD', 'Warempelwachtwoord007')
     ADMIN_GMAIL = os.getenv('ADMIN_GMAIL', 'info@katern.be')
 
+    # Frontend URL for email links
+    FRONTEND_URL = os.getenv('FRONTEND_URL', 'https://www.octovoc.be')
+
     # Data Retention (in days)
     ACCOUNT_INACTIVE_DAYS = 730  # 2 years
 
