@@ -1,12 +1,11 @@
 import { useNavigate } from 'react-router-dom'
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import './LandingPage.css'
 
 export default function LandingPage() {
   const navigate = useNavigate()
-  const [currentText, setCurrentText] = useState('')
-  const [fadeState, setFadeState] = useState('black') // 'black', 'fading-in', 'white', 'fading-out'
-  const indexRef = useRef(0)
+  const wrapRef = useRef(null)
+  const elRef = useRef(null)
 
   const sequence = [
     '4600 woorden',
@@ -30,38 +29,56 @@ export default function LandingPage() {
   }
 
   useEffect(() => {
-    const showText = (i) => {
+    const wrap = wrapRef.current
+    const el = elRef.current
+    if (!wrap || !el) return
+
+    const toBlackInstant = () => {
+      wrap.style.transition = 'none'
+      wrap.style.color = '#000'
+      void wrap.offsetWidth
+    }
+
+    const fadeToWhite = (duration) => {
+      wrap.style.transition = `color ${duration}ms linear`
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => {
+          wrap.style.color = '#fff'
+        })
+      )
+    }
+
+    const fadeToBlack = (duration) => {
+      wrap.style.transition = `color ${duration}ms linear`
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => {
+          wrap.style.color = '#000'
+        })
+      )
+    }
+
+    let idx = 0
+    const show = (i) => {
       const text = sequence[i]
-      const displayTime = displayTimeFor(text)
-      const isLast = i === sequence.length - 1
-      const pause = isLast ? LAST_PAUSE : PAUSE
+      const display = displayTimeFor(text)
+      el.textContent = text
+      toBlackInstant()
+      fadeToWhite(FADE_IN)
 
-      // Set text instantly while black
-      setCurrentText(text)
-      setFadeState('black')
-
-      // Start fade in
       setTimeout(() => {
-        setFadeState('fading-in')
+        fadeToBlack(FADE_OUT)
+        const isLast = i === sequence.length - 1
+        const pause = isLast ? LAST_PAUSE : PAUSE
+
         setTimeout(() => {
-          setFadeState('white')
-
-          // Start fade out after display time
-          setTimeout(() => {
-            setFadeState('fading-out')
-
-            // Move to next after fade out
-            setTimeout(() => {
-              indexRef.current = (i + 1) % sequence.length
-              showText(indexRef.current)
-            }, FADE_OUT + pause)
-          }, displayTime)
-        }, 50) // Small delay for transition to kick in
-      }, 50)
+          idx = (i + 1) % sequence.length
+          show(idx)
+        }, FADE_OUT + pause)
+      }, FADE_IN + display)
     }
 
     // Start the cycle
-    showText(0)
+    show(idx)
   }, [])
 
   const handleRoleClick = (role) => {
@@ -91,19 +108,14 @@ export default function LandingPage() {
           </h1>
         </div>
 
-        <div
-          id="subwrap"
-          className="subwrap"
-          style={{
-            color: fadeState === 'black' ? '#000' : '#fff',
-            transition: fadeState === 'fading-in' ? `color ${FADE_IN}ms linear` :
-                       fadeState === 'fading-out' ? `color ${FADE_OUT}ms linear` :
-                       'none'
-          }}
-        >
-          <div id="subtitle" className="subtitle" role="status" aria-live="polite">
-            {currentText}
-          </div>
+        <div id="subwrap" className="subwrap" ref={wrapRef}>
+          <div
+            id="subtitle"
+            className="subtitle"
+            role="status"
+            aria-live="polite"
+            ref={elRef}
+          ></div>
         </div>
 
         <div id="underline" className="underline" aria-hidden="true"></div>
@@ -112,6 +124,7 @@ export default function LandingPage() {
           <button
             className="btn"
             type="button"
+            data-role="gast"
             onClick={() => handleRoleClick('gast')}
           >
             gast
@@ -119,6 +132,7 @@ export default function LandingPage() {
           <button
             className="btn"
             type="button"
+            data-role="leerling"
             onClick={() => handleRoleClick('leerling')}
           >
             leerling
@@ -126,6 +140,7 @@ export default function LandingPage() {
           <button
             className="btn"
             type="button"
+            data-role="leerkracht"
             onClick={() => handleRoleClick('leerkracht')}
           >
             leerkracht
