@@ -13,9 +13,12 @@ export default function StudentDashboard({ user, setUser }) {
   const [password, setPassword] = useState('')
   const [isValidating, setIsValidating] = useState(false)
   const [shouldBlink, setShouldBlink] = useState(false)
+  const [selectedLevel, setSelectedLevel] = useState(1)
+  const [allowedLevels, setAllowedLevels] = useState([1, 2, 3, 4, 5, 6])
   const navigate = useNavigate()
 
   useEffect(() => {
+    fetchAllowedLevels()
     fetchModules()
     if (user) {
       fetchDifficultWords()
@@ -28,9 +31,31 @@ export default function StudentDashboard({ user, setUser }) {
     }
   }, [user])
 
+  useEffect(() => {
+    // When allowed levels change, ensure selected level is valid
+    if (allowedLevels.length > 0 && !allowedLevels.includes(selectedLevel)) {
+      setSelectedLevel(allowedLevels[0])
+    }
+  }, [allowedLevels, selectedLevel])
+
+  useEffect(() => {
+    // Fetch modules when selected level changes
+    fetchModules()
+  }, [selectedLevel])
+
+  const fetchAllowedLevels = async () => {
+    try {
+      const response = await api.get('/student/allowed-levels')
+      setAllowedLevels(response.data.allowed_levels || [1, 2, 3, 4, 5, 6])
+    } catch (err) {
+      console.error('Error fetching allowed levels:', err)
+      setAllowedLevels([1, 2, 3, 4, 5, 6])
+    }
+  }
+
   const fetchModules = async () => {
     try {
-      const response = await api.get('/student/modules')
+      const response = await api.get(`/student/modules?level=${selectedLevel}`)
       setModules(response.data)
     } catch (err) {
       console.error('Error fetching modules:', err)
@@ -181,7 +206,7 @@ export default function StudentDashboard({ user, setUser }) {
           </div>
         ) : (
           <div className="user-info" style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end' }}>
-            <form onSubmit={handleLogin} style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <form onSubmit={handleLogin} style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center', justifyContent: 'flex-end' }}>
               <input
                 type="email"
                 value={email}
@@ -204,21 +229,61 @@ export default function StudentDashboard({ user, setUser }) {
               <button type="button" onClick={handleRegister} className="btn btn-primary" style={{ padding: '6px 12px', fontSize: '14px' }}>
                 registreer
               </button>
+              <a
+                href="/forgot-password"
+                style={{
+                  fontSize: '12px',
+                  color: '#666',
+                  textDecoration: 'underline',
+                  cursor: 'pointer',
+                  flexBasis: '100%',
+                  textAlign: 'right'
+                }}
+              >
+                wachtwoord vergeten?
+              </a>
             </form>
-            <a
-              href="/forgot-password"
-              style={{
-                fontSize: '12px',
-                color: '#666',
-                textDecoration: 'underline',
-                cursor: 'pointer'
-              }}
-            >
-              Wachtwoord vergeten?
-            </a>
           </div>
         )}
       </header>
+
+      {/* Level tabs - black bar with white text */}
+      <div style={{
+        backgroundColor: '#000',
+        padding: '12px 20px',
+        display: 'flex',
+        gap: '12px',
+        overflowX: 'auto',
+        marginBottom: '20px'
+      }}>
+        {[1, 2, 3, 4, 5, 6].map(level => {
+          const isAllowed = allowedLevels.includes(level)
+          const isSelected = selectedLevel === level
+
+          return (
+            <button
+              key={level}
+              onClick={() => isAllowed && setSelectedLevel(level)}
+              disabled={!isAllowed}
+              style={{
+                backgroundColor: isSelected ? '#fff' : 'transparent',
+                color: isSelected ? '#000' : '#fff',
+                border: isSelected ? 'none' : '1px solid #fff',
+                padding: '8px 16px',
+                borderRadius: '4px',
+                cursor: isAllowed ? 'pointer' : 'not-allowed',
+                opacity: isAllowed ? 1 : 0.3,
+                whiteSpace: 'nowrap',
+                fontSize: '14px',
+                fontWeight: isSelected ? 'bold' : 'normal',
+                transition: 'all 0.2s'
+              }}
+            >
+              {level}
+            </button>
+          )
+        })}
+      </div>
 
       {modules.length === 0 ? (
         <p>Geen modules beschikbaar.</p>
@@ -252,7 +317,6 @@ export default function StudentDashboard({ user, setUser }) {
                 }}
               >
                 <p style={{ margin: 0, fontSize: '16px', color: isLocked ? '#888' : 'inherit' }} className="module-info">
-                  {module.difficulty && <span className="module-level">niveau {module.difficulty} | </span>}
                   <strong>{module.name}</strong>
                   <span className="module-details">
                     {' | '}
