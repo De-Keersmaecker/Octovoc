@@ -4,16 +4,16 @@ from email.mime.multipart import MIMEMultipart
 import os
 
 def send_password_reset_email(to_email, reset_token):
-    """Send password reset email via Gmail SMTP"""
+    """Send password reset email via One.com SMTP"""
 
     # Get email configuration from environment variables
-    smtp_server = "smtp.gmail.com"
-    smtp_port = 587
-    sender_email = os.getenv('GMAIL_EMAIL')
-    sender_password = os.getenv('GMAIL_APP_PASSWORD')  # Use App Password, not regular password
+    smtp_server = os.getenv('MAIL_SERVER', 'send.one.com')
+    smtp_port = int(os.getenv('MAIL_PORT', 587))
+    sender_email = os.getenv('MAIL_USERNAME')
+    sender_password = os.getenv('MAIL_PASSWORD')
 
     if not sender_email or not sender_password:
-        print("WARNING: Gmail credentials not configured. Email not sent.")
+        print("WARNING: Email credentials not configured. Email not sent.")
         return False
 
     # Get the frontend URL from environment or use default
@@ -89,7 +89,7 @@ Het Octovoc Team
     message.attach(part2)
 
     try:
-        # Connect to Gmail SMTP server
+        # Connect to SMTP server
         server = smtplib.SMTP(smtp_server, smtp_port)
         server.starttls()  # Enable TLS encryption
         server.login(sender_email, sender_password)
@@ -103,4 +103,6 @@ Het Octovoc Team
 
     except Exception as e:
         print(f"Failed to send email: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return False
