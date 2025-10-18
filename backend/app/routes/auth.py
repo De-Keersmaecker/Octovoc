@@ -145,22 +145,21 @@ def forgot_password():
             db.session.commit()
             print("Commit successful")
 
-            # Send reset email in background thread with timeout
-            print(f"Sending email to: {user.email} with token: {user.reset_token}")
-
-            # For now, just log the reset URL instead of sending email
-            # This allows password reset to work while we debug email sending
+            # Log reset URL as backup
             from flask import current_app
             frontend_url = current_app.config.get('FRONTEND_URL', 'https://www.octovoc.be')
             reset_url = f"{frontend_url}/reset-password?token={user.reset_token}"
-            print(f"Reset URL (copy this to browser): {reset_url}")
+            print(f"Reset URL (backup): {reset_url}")
 
-            # TODO: Re-enable email sending once SMTP is debugged
-            # try:
-            #     email_sent = send_password_reset_email(user.email, user.reset_token)
-            #     print(f"Email sent: {email_sent}")
-            # except Exception as e:
-            #     print(f"Email error: {str(e)}")
+            # Send reset email using Flask-Mail
+            print(f"Sending email to: {user.email}")
+            try:
+                email_sent = send_password_reset_email(user.email, user.reset_token)
+                print(f"Email sent successfully: {email_sent}")
+            except Exception as e:
+                print(f"Email sending failed: {str(e)}")
+                import traceback
+                traceback.print_exc()
 
         print("Returning success response")
         # Always return success message (don't reveal if email exists)

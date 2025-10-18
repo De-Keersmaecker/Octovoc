@@ -1,33 +1,25 @@
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
+from flask import current_app
+from flask_mail import Message
+from app import mail
 import os
 
 def send_password_reset_email(to_email, reset_token):
-    """Send password reset email via One.com SMTP"""
+    """Send password reset email via Flask-Mail"""
 
-    # Get email configuration from environment variables
-    smtp_server = os.getenv('MAIL_SERVER', 'send.one.com')
-    smtp_port = int(os.getenv('MAIL_PORT', 587))
-    sender_email = os.getenv('MAIL_USERNAME')
-    sender_password = os.getenv('MAIL_PASSWORD')
+    try:
+        # Get the frontend URL from config
+        frontend_url = current_app.config.get('FRONTEND_URL', 'https://www.octovoc.be')
+        reset_url = f"{frontend_url}/reset-password?token={reset_token}"
 
-    if not sender_email or not sender_password:
-        print("WARNING: Email credentials not configured. Email not sent.")
-        return False
+        # Create email message
+        msg = Message(
+            subject="Octovoc - Wachtwoord Resetten",
+            recipients=[to_email],
+            sender=current_app.config.get('MAIL_DEFAULT_SENDER')
+        )
 
-    # Get the frontend URL from environment or use default
-    frontend_url = os.getenv('FRONTEND_URL', 'https://octovoc.katern.be')
-    reset_url = f"{frontend_url}/reset-password?token={reset_token}"
-
-    # Create email
-    message = MIMEMultipart("alternative")
-    message["Subject"] = "Octovoc - Wachtwoord Resetten"
-    message["From"] = f"Octovoc <{sender_email}>"
-    message["To"] = to_email
-
-    # Create HTML and plain text versions
-    text = f"""
+        # Plain text version
+        msg.body = f"""
 Hallo,
 
 Je hebt een wachtwoordreset aangevraagd voor je Octovoc account.
@@ -43,7 +35,8 @@ Met vriendelijke groet,
 Het Octovoc Team
 """
 
-    html = f"""
+        # HTML version
+        msg.html = f"""
 <html>
   <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
     <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -82,23 +75,9 @@ Het Octovoc Team
 </html>
 """
 
-    # Attach both versions
-    part1 = MIMEText(text, "plain")
-    part2 = MIMEText(html, "html")
-    message.attach(part1)
-    message.attach(part2)
-
-    try:
-        # Connect to SMTP server
-        server = smtplib.SMTP(smtp_server, smtp_port)
-        server.starttls()  # Enable TLS encryption
-        server.login(sender_email, sender_password)
-
-        # Send email
-        server.sendmail(sender_email, to_email, message.as_string())
-        server.quit()
-
-        print(f"Password reset email sent to {to_email}")
+        # Send the email
+        mail.send(msg)
+        print(f"Password reset email sent successfully to {to_email}")
         return True
 
     except Exception as e:
