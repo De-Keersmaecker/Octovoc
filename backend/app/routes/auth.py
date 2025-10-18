@@ -135,9 +135,10 @@ def forgot_password():
         user = User.query.filter_by(email=email).first()
 
         if user:
-            # Generate reset token and set expiry (1 hour from now)
+            # Generate reset token
             user.reset_token = secrets.token_urlsafe(32)
-            user.reset_token_expiry = datetime.utcnow() + timedelta(hours=1)
+            # TODO: Add expiry check after reset_token_expiry column is added
+            # user.reset_token_expiry = datetime.utcnow() + timedelta(hours=1)
             db.session.commit()
 
             # Send reset email
@@ -178,18 +179,19 @@ def reset_password(token):
     if not user:
         return jsonify({'error': 'Ongeldige of verlopen reset link'}), 400
 
-    # Check if token has expired
-    if user.reset_token_expiry and user.reset_token_expiry < datetime.utcnow():
-        # Token expired, clear it
-        user.reset_token = None
-        user.reset_token_expiry = None
-        db.session.commit()
-        return jsonify({'error': 'Deze reset link is verlopen. Vraag een nieuwe aan.'}), 400
+    # TODO: Add expiry check after reset_token_expiry column is added
+    # # Check if token has expired
+    # if user.reset_token_expiry and user.reset_token_expiry < datetime.utcnow():
+    #     # Token expired, clear it
+    #     user.reset_token = None
+    #     user.reset_token_expiry = None
+    #     db.session.commit()
+    #     return jsonify({'error': 'Deze reset link is verlopen. Vraag een nieuwe aan.'}), 400
 
     # Reset password
     user.set_password(new_password)
     user.reset_token = None
-    user.reset_token_expiry = None
+    # user.reset_token_expiry = None  # TODO: Uncomment after column is added
     db.session.commit()
 
     return jsonify({'message': 'Wachtwoord succesvol gereset. Je kunt nu inloggen met je nieuwe wachtwoord.'}), 200
