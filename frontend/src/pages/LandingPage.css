@@ -5,8 +5,8 @@
   --fade-out-ms: 1000;
   --pause-ms: 120;
   --last-pause-ms: 180;
-  --title-scale: clamp(32px, 7vw, 92px);
-  --subtitle-scale: clamp(10px, 1.3vw, 17px);
+  --title-scale: clamp(52px, 7vw, 92px);
+  --subtitle-scale: clamp(15px, 1.3vw, 17px);
   --subtitle-offset: -20px;
   --extra-gap: 10px;
 }
@@ -38,7 +38,7 @@
 }
 
 video.octopus {
-  width: clamp(80px, 14vw, 160px);
+  width: clamp(130px, 14vw, 160px);
   height: auto;
   border: none;
   outline: none;
