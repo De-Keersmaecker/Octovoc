@@ -23,7 +23,7 @@ export default function LoginPage({ setUser: setAppUser }) {
       setUser(user)
       setAppUser(user)
 
-      navigate('/')
+      navigate('/dashboard')
     } catch (err) {
       setError(err.response?.data?.error || 'Login mislukt')
     } finally {

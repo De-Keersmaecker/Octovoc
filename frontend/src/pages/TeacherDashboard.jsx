@@ -50,6 +50,27 @@ export default function TeacherDashboard({ user }) {
     }
   }
 
+  const toggleClassroomLevel = async (classroomId, level, currentLevels) => {
+    const newLevels = currentLevels.includes(level)
+      ? currentLevels.filter(l => l !== level)
+      : [...currentLevels, level].sort()
+
+    if (newLevels.length === 0) {
+      alert('Selecteer minimaal 1 niveau')
+      return
+    }
+
+    try {
+      await api.put(`/admin/classroom/${classroomId}/rename`, {
+        allowed_levels: newLevels
+      })
+      loadClassrooms()
+    } catch (err) {
+      console.error(err)
+      alert('Fout bij wijzigen van niveaus')
+    }
+  }
+
   const loadClassroomProgress = async (classroomId) => {
     try {
       setLoading(true)
@@ -203,24 +224,57 @@ export default function TeacherDashboard({ user }) {
                       </button>
                     </div>
                   ) : (
-                    <h3>
-                      {classroom.name}
-                      {classroom.school_name && <span style={{ fontSize: '14px', color: '#666', marginLeft: '10px' }}>({classroom.school_name})</span>}
-                      <button
-                        onClick={() => {
-                          setEditingClassroom(classroom.id)
-                          setNewClassName(classroom.name)
-                        }}
-                        className="btn"
-                        style={{
-                          marginLeft: '15px',
-                          padding: '4px 8px',
-                          fontSize: '13px'
-                        }}
-                      >
-                        hernoemen
-                      </button>
-                    </h3>
+                    <>
+                      <h3 style={{ marginBottom: '10px' }}>
+                        {classroom.name}
+                        {classroom.school_name && <span style={{ fontSize: '14px', color: '#666', marginLeft: '10px' }}>({classroom.school_name})</span>}
+                        <button
+                          onClick={() => {
+                            setEditingClassroom(classroom.id)
+                            setNewClassName(classroom.name)
+                          }}
+                          className="btn"
+                          style={{
+                            marginLeft: '15px',
+                            padding: '4px 8px',
+                            fontSize: '13px'
+                          }}
+                        >
+                          hernoemen
+                        </button>
+                      </h3>
+
+                      {/* Niveau checkboxes - responsive layout */}
+                      <div style={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: '10px',
+                        alignItems: 'center',
+                        marginBottom: '10px'
+                      }}>
+                        <span style={{ fontSize: '14px', fontWeight: '600', marginRight: '5px' }}>
+                          Niveaus:
+                        </span>
+                        {[1, 2, 3, 4, 5, 6].map(level => {
+                          const isChecked = (classroom.allowed_levels || [1, 2, 3, 4, 5, 6]).includes(level)
+                          return (
+                            <label key={level} style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
+                              <input
+                                type="checkbox"
+                                checked={isChecked}
+                                onChange={() => toggleClassroomLevel(
+                                  classroom.id,
+                                  level,
+                                  classroom.allowed_levels || [1, 2, 3, 4, 5, 6]
+                                )}
+                                style={{ cursor: 'pointer' }}
+                              />
+                              <span>{level}</span>
+                            </label>
+                          )
+                        })}
+                      </div>
+                    </>
                   )}
                   <div style={{ marginTop: '10px' }}>
                     <button

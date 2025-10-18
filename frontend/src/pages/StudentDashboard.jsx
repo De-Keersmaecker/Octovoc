@@ -17,10 +17,22 @@ export default function StudentDashboard({ user, setUser }) {
   const [allowedLevels, setAllowedLevels] = useState([1, 2, 3, 4, 5, 6])
   const navigate = useNavigate()
 
+  // Check if user is guest
+  const isGuest = sessionStorage.getItem('userType') === 'guest'
+  const guestLevel = isGuest ? parseInt(sessionStorage.getItem('guestLevel')) : null
+
   useEffect(() => {
-    fetchAllowedLevels()
+    // If guest, set level to guestLevel
+    if (isGuest && guestLevel) {
+      setSelectedLevel(guestLevel)
+      setAllowedLevels([guestLevel])
+    } else {
+      fetchAllowedLevels()
+    }
+
     fetchModules()
-    if (user) {
+
+    if (user && !isGuest) {
       fetchDifficultWords()
       if (!user.class_code) {
         setShowCodeInput(true)
@@ -29,7 +41,7 @@ export default function StudentDashboard({ user, setUser }) {
         setTimeout(() => setShouldBlink(false), 4000)
       }
     }
-  }, [user])
+  }, [user, isGuest, guestLevel])
 
   useEffect(() => {
     // When allowed levels change, ensure selected level is valid
@@ -56,7 +68,14 @@ export default function StudentDashboard({ user, setUser }) {
   const fetchModules = async () => {
     try {
       const response = await api.get(`/student/modules?level=${selectedLevel}`)
-      setModules(response.data)
+      let modulesData = response.data
+
+      // If guest, only show free modules
+      if (isGuest) {
+        modulesData = modulesData.filter(module => module.is_free)
+      }
+
+      setModules(modulesData)
     } catch (err) {
       console.error('Error fetching modules:', err)
     } finally {
@@ -165,11 +184,27 @@ export default function StudentDashboard({ user, setUser }) {
     return <div className="loading">Laden...</div>
   }
 
+  const handleSwitchLevel = () => {
+    // Clear session and go back to level select
+    sessionStorage.removeItem('guestLevel')
+    sessionStorage.removeItem('userType')
+    navigate('/guest-level-select')
+  }
+
   return (
     <div className="container">
       <header className="exercise-header">
         <div className="header-title">Octovoc</div>
-        {user ? (
+        {isGuest ? (
+          <div className="user-info">
+            <div style={{ marginBottom: '8px' }}>
+              GAST - Niveau {guestLevel}
+            </div>
+            <button onClick={handleSwitchLevel} className="btn" style={{ padding: '4px 12px' }}>
+              wissel niveau
+            </button>
+          </div>
+        ) : user ? (
           <div className="user-info">
             <div style={{ marginBottom: '8px' }}>
               {user.email}
@@ -247,51 +282,65 @@ export default function StudentDashboard({ user, setUser }) {
         )}
       </header>
 
-      {/* Level tabs - black bar with white text */}
-      <div style={{
-        backgroundColor: '#000',
-        padding: '12px 20px',
-        display: 'flex',
-        justifyContent: 'space-evenly',
-        gap: '8px',
-        marginBottom: '20px'
-      }}>
-        {[1, 2, 3, 4, 5, 6].map(level => {
-          const isAllowed = allowedLevels.includes(level)
-          const isSelected = selectedLevel === level
+      {/* Level tabs or single level indicator - black bar with white text */}
+      {allowedLevels.length === 1 ? (
+        <div style={{
+          backgroundColor: '#000',
+          padding: '12px 20px',
+          textAlign: 'center',
+          color: '#fff',
+          fontSize: '18px',
+          fontWeight: 'bold',
+          marginBottom: '20px'
+        }}>
+          Niveau {selectedLevel}
+        </div>
+      ) : (
+        <div style={{
+          backgroundColor: '#000',
+          padding: '12px 20px',
+          display: 'flex',
+          justifyContent: 'space-evenly',
+          gap: '8px',
+          marginBottom: '20px'
+        }}>
+          {[1, 2, 3, 4, 5, 6].map(level => {
+            const isAllowed = allowedLevels.includes(level)
+            const isSelected = selectedLevel === level
 
-          return (
-            <button
-              key={level}
-              onClick={() => isAllowed && setSelectedLevel(level)}
-              disabled={!isAllowed}
-              style={{
-                backgroundColor: isSelected ? '#fff' : 'transparent',
-                color: isSelected ? '#000' : '#fff',
-                border: isSelected ? 'none' : '1px solid #fff',
-                padding: '8px 16px',
-                borderRadius: '4px',
-                cursor: isAllowed ? 'pointer' : 'not-allowed',
-                opacity: isAllowed ? 1 : 0.3,
-                fontSize: '16px',
-                fontWeight: isSelected ? 'bold' : 'normal',
-                transition: 'all 0.2s',
-                flex: '1',
-                minWidth: '50px',
-                textAlign: 'center'
-              }}
-            >
-              {level}
-            </button>
-          )
-        })}
-      </div>
+            return (
+              <button
+                key={level}
+                onClick={() => isAllowed && setSelectedLevel(level)}
+                disabled={!isAllowed}
+                style={{
+                  backgroundColor: isSelected ? '#fff' : 'transparent',
+                  color: isSelected ? '#000' : '#fff',
+                  border: isSelected ? 'none' : '1px solid #fff',
+                  padding: '8px 16px',
+                  borderRadius: '4px',
+                  cursor: isAllowed ? 'pointer' : 'not-allowed',
+                  opacity: isAllowed ? 1 : 0.3,
+                  fontSize: '16px',
+                  fontWeight: isSelected ? 'bold' : 'normal',
+                  transition: 'all 0.2s',
+                  flex: '1',
+                  minWidth: '50px',
+                  textAlign: 'center'
+                }}
+              >
+                {level}
+              </button>
+            )
+          })}
+        </div>
+      )}
 
       {modules.length === 0 ? (
         <p>Geen modules beschikbaar.</p>
       ) : (
         <ul className="module-list">
-          {user && difficultWords.length > 0 && (
+          {user && !isGuest && difficultWords.length > 0 && (
             <li
               className="module-item"
               onClick={() => navigate('/difficult-words')}
@@ -304,7 +353,7 @@ export default function StudentDashboard({ user, setUser }) {
             </li>
           )}
           {modules.map((module) => {
-            const isAccessible = module.is_free || (user && user.class_code)
+            const isAccessible = isGuest ? module.is_free : (module.is_free || (user && user.class_code))
             const isLocked = !isAccessible
 
             return (
@@ -323,8 +372,8 @@ export default function StudentDashboard({ user, setUser }) {
                   <span className="module-details">
                     {' | '}
                     <span className="module-word-count">{module.word_count} woorden</span>
-                    {module.progress && <span className="module-progress"> | {Math.round(module.completion_percentage)}% voltooid</span>}
-                    {isLocked && <span className="module-locked"> | klascode vereist</span>}
+                    {module.progress && !isGuest && <span className="module-progress"> | {Math.round(module.completion_percentage)}% voltooid</span>}
+                    {isLocked && <span className="module-locked"> | {isGuest ? 'niet gratis' : 'klascode vereist'}</span>}
                   </span>
                 </p>
               </li>

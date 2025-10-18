@@ -1,5 +1,8 @@
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { useState, useEffect } from 'react'
+import LandingPage from './pages/LandingPage'
+import GuestLevelSelect from './pages/GuestLevelSelect'
+import OrderPage from './pages/OrderPage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import StudentDashboard from './pages/StudentDashboard'
@@ -58,14 +61,32 @@ function App() {
   return (
     <>
       <Routes>
+        {/* Public routes */}
         <Route path="/login" element={<LoginPage setUser={setUser} />} />
         <Route path="/register" element={<RegisterPage setUser={setUser} />} />
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
+        <Route path="/guest-level-select" element={<GuestLevelSelect />} />
+        <Route path="/bestellen" element={<OrderPage />} />
 
+        {/* Landing page or redirect to dashboard based on login status */}
         <Route
           path="/"
+          element={
+            user ? (
+              <Navigate to="/dashboard" />
+            ) : sessionStorage.getItem('userType') === 'guest' ? (
+              <Navigate to="/dashboard" />
+            ) : (
+              <LandingPage />
+            )
+          }
+        />
+
+        {/* Dashboard route - redirects based on user type */}
+        <Route
+          path="/dashboard"
           element={
             user?.role === 'teacher' ? (
               <PrivateRoute>
@@ -76,29 +97,19 @@ function App() {
                 <AdminDashboard user={user} />
               </PrivateRoute>
             ) : (
-              <PrivateRoute allowedRoles={['student']}>
-                <StudentDashboard user={user} setUser={setUser} />
-              </PrivateRoute>
+              <StudentDashboard user={user} setUser={setUser} />
             )
           }
         />
 
         <Route
           path="/exercise/:moduleId"
-          element={
-            <PrivateRoute allowedRoles={['student']}>
-              <ExercisePage user={user} />
-            </PrivateRoute>
-          }
+          element={<ExercisePage user={user} />}
         />
 
         <Route
           path="/final-round/:moduleId"
-          element={
-            <PrivateRoute allowedRoles={['student']}>
-              <FinalRoundPage user={user} />
-            </PrivateRoute>
-          }
+          element={<FinalRoundPage user={user} />}
         />
 
         <Route
