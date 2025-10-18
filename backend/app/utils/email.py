@@ -35,7 +35,7 @@ def send_password_reset_email(to_email, reset_token):
 
         # Create email message
         msg = Message(
-            subject="Octovoc - Wachtwoord resetten",
+            subject="wachtwoord resetten",
             recipients=[to_email],
             sender=app.config.get('MAIL_DEFAULT_SENDER')
         )
