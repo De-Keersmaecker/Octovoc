@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import api from '../services/api'
+import './LoginPage.css'
 
 export default function RegisterPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [code, setCode] = useState('')
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
   const navigate = useNavigate()
@@ -15,65 +15,64 @@ export default function RegisterPage() {
     setError('')
 
     try {
-      await api.post('/auth/register', { email, password, code })
+      await api.post('/auth/register', { email, password })
       setSuccess(true)
       setTimeout(() => navigate('/login'), 2000)
     } catch (err) {
-      setError(err.response?.data?.error || 'Registratie mislukt')
+      setError(err.response?.data?.error || 'registratie mislukt')
     }
   }
 
   return (
-    <div className="container">
-      <header className="exercise-header">
-        <div className="header-title">Octovoc</div>
-      </header>
+    <main className="stage" aria-label="octovoc registreer">
+      <section className="inner">
+        <h1 className="title">Octovoc</h1>
 
-      <h2>Registreren</h2>
+        <div className="underline" aria-hidden="true"></div>
 
-      {error && <div className="error">{error}</div>}
-      {success && <div style={{padding: '10px', background: '#e0ffe0', border: '1px solid #00cc00', marginBottom: '16px'}}>Registratie geslaagd! Je wordt doorgestuurd...</div>}
+        {error && <div className="error-msg">{error}</div>}
+        {success && (
+          <div className="error-msg" style={{ background: 'rgba(0, 255, 0, 0.15)', borderColor: 'rgba(0, 255, 0, 0.4)' }}>
+            registratie geslaagd! je wordt doorgestuurd...
+          </div>
+        )}
 
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label>Email</label>
+        <form onSubmit={handleSubmit} className="login-form">
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            placeholder="email"
             required
+            className="input-field"
           />
-        </div>
 
-        <div className="form-group">
-          <label>Wachtwoord</label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            placeholder="wachtwoord"
             required
+            className="input-field"
           />
+
+          <button type="submit" className="btn submit-btn">
+            registreer
+          </button>
+        </form>
+
+        <div className="links">
+          <Link to="/login" className="link">login</Link>
         </div>
 
-        <div className="form-group">
-          <label>Code (optioneel)</label>
-          <input
-            type="text"
-            value={code}
-            onChange={(e) => setCode(e.target.value.toUpperCase())}
-            placeholder="XXXX-YYYY"
-          />
-          <small>Vul je klas- of lerarencode in (optioneel)</small>
-        </div>
-
-        <button type="submit" className="btn btn-primary">
-          Registreren
+        <button
+          className="btn back-btn"
+          type="button"
+          onClick={() => navigate('/')}
+        >
+          ← terug
         </button>
-      </form>
-
-      <p style={{ marginTop: '20px' }}>
-        Al een account? <Link to="/login">Log hier in</Link>
-      </p>
-    </div>
+      </section>
+    </main>
   )
 }

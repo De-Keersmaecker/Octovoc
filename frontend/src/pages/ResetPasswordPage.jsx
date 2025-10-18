@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import api from '../services/api'
+import './LoginPage.css'
 
 export default function ResetPasswordPage() {
   const navigate = useNavigate()
@@ -14,7 +15,7 @@ export default function ResetPasswordPage() {
 
   useEffect(() => {
     if (!token) {
-      setError('Geen geldig reset token gevonden')
+      setError('geen geldig reset token')
     }
   }, [token])
 
@@ -23,130 +24,91 @@ export default function ResetPasswordPage() {
     setError('')
 
     if (password.length < 6) {
-      setError('Wachtwoord moet minimaal 6 karakters bevatten')
+      setError('wachtwoord moet minimaal 6 karakters bevatten')
       return
     }
 
     if (password !== confirmPassword) {
-      setError('Wachtwoorden komen niet overeen')
+      setError('wachtwoorden komen niet overeen')
       return
     }
 
     setLoading(true)
 
     try {
-      const response = await api.post(`/auth/reset-password/${token}`, { password })
+      await api.post(`/auth/reset-password/${token}`, { password })
       setSuccess(true)
-      setError('')
-
-      // Redirect to home after 3 seconds
-      setTimeout(() => {
-        navigate('/')
-      }, 3000)
+      setTimeout(() => navigate('/login'), 2000)
     } catch (err) {
-      setError(err.response?.data?.error || 'Er is een fout opgetreden')
+      setError(err.response?.data?.error || 'reset mislukt')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="container">
-      <header className="exercise-header">
-        <div className="header-title">Octovoc</div>
-      </header>
+    <main className="stage" aria-label="octovoc wachtwoord resetten">
+      <section className="inner">
+        <h1 className="title">Octovoc</h1>
 
-      <div style={{ maxWidth: '400px', margin: '0 auto' }}>
-        <h2>Nieuw wachtwoord instellen</h2>
+        <div className="underline" aria-hidden="true"></div>
 
-        {success ? (
-          <div style={{
-            padding: '20px',
-            backgroundColor: '#c8e6c9',
-            border: '1px solid #4caf50',
-            borderRadius: '4px',
-            textAlign: 'center'
-          }}>
-            <p style={{ marginBottom: '10px', fontSize: '18px', fontWeight: '700' }}>
-              ✓ Wachtwoord succesvol gereset!
-            </p>
-            <p style={{ marginBottom: '0', color: '#666' }}>
-              Je wordt doorgestuurd naar de startpagina...
-            </p>
+        {success && (
+          <div className="error-msg" style={{ background: 'rgba(0, 255, 0, 0.15)', borderColor: 'rgba(0, 255, 0, 0.4)' }}>
+            wachtwoord gereset! je wordt doorgestuurd...
           </div>
-        ) : (
-          <>
-            {error && (
-              <div className="error" style={{ marginBottom: '20px' }}>
-                {error}
-              </div>
-            )}
-
-            {!token ? (
-              <div className="error">
-                <p>Geen geldig reset token gevonden.</p>
-                <button
-                  onClick={() => navigate('/forgot-password')}
-                  className="btn"
-                  style={{ marginTop: '10px' }}
-                >
-                  Nieuwe reset link aanvragen
-                </button>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                  <label htmlFor="password">Nieuw wachtwoord</label>
-                  <input
-                    id="password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    disabled={loading}
-                    placeholder="Minimaal 6 karakters"
-                    minLength={6}
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="confirmPassword">Bevestig wachtwoord</label>
-                  <input
-                    id="confirmPassword"
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    required
-                    disabled={loading}
-                    placeholder="Herhaal je wachtwoord"
-                    minLength={6}
-                  />
-                </div>
-
-                <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-                  <button
-                    type="submit"
-                    className="btn btn-primary"
-                    disabled={loading}
-                    style={{ flex: 1 }}
-                  >
-                    {loading ? 'Bezig...' : 'Wachtwoord resetten'}
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => navigate('/')}
-                    className="btn"
-                    disabled={loading}
-                  >
-                    Annuleren
-                  </button>
-                </div>
-              </form>
-            )}
-          </>
         )}
-      </div>
-    </div>
+
+        {error && <div className="error-msg">{error}</div>}
+
+        {!token ? (
+          <button
+            onClick={() => navigate('/forgot-password')}
+            className="btn submit-btn"
+            style={{ marginTop: '20px' }}
+          >
+            nieuwe reset link aanvragen
+          </button>
+        ) : (
+          !success && (
+            <form onSubmit={handleSubmit} className="login-form">
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="nieuw wachtwoord"
+                required
+                disabled={loading}
+                minLength={6}
+                className="input-field"
+              />
+
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="bevestig wachtwoord"
+                required
+                disabled={loading}
+                minLength={6}
+                className="input-field"
+              />
+
+              <button type="submit" className="btn submit-btn" disabled={loading}>
+                {loading ? 'resetten...' : 'wachtwoord resetten'}
+              </button>
+            </form>
+          )
+        )}
+
+        <button
+          className="btn back-btn"
+          type="button"
+          onClick={() => navigate('/')}
+        >
+          ← terug
+        </button>
+      </section>
+    </main>
   )
 }

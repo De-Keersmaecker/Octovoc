@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../services/api'
+import './LoginPage.css'
 
 export default function ForgotPasswordPage() {
   const navigate = useNavigate()
@@ -20,90 +21,51 @@ export default function ForgotPasswordPage() {
       setMessage(response.data.message)
       setEmail('')
     } catch (err) {
-      setError(err.response?.data?.error || 'Er is een fout opgetreden')
+      setError(err.response?.data?.error || 'fout opgetreden')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="container">
-      <header className="exercise-header">
-        <div className="header-title">Octovoc</div>
-      </header>
+    <main className="stage" aria-label="octovoc wachtwoord vergeten">
+      <section className="inner">
+        <h1 className="title">Octovoc</h1>
 
-      <div style={{ maxWidth: '400px', margin: '0 auto' }}>
-        <h2>Wachtwoord vergeten</h2>
-
-        <p style={{ marginBottom: '24px', color: '#666' }}>
-          Voer je e-mailadres in en we sturen je een link om je wachtwoord te resetten.
-        </p>
+        <div className="underline" aria-hidden="true"></div>
 
         {message && (
-          <div style={{
-            padding: '12px',
-            backgroundColor: '#c8e6c9',
-            border: '1px solid #4caf50',
-            borderRadius: '4px',
-            marginBottom: '20px'
-          }}>
+          <div className="error-msg" style={{ background: 'rgba(0, 255, 0, 0.15)', borderColor: 'rgba(0, 255, 0, 0.4)' }}>
             {message}
           </div>
         )}
 
-        {error && (
-          <div className="error" style={{ marginBottom: '20px' }}>
-            {error}
-          </div>
-        )}
+        {error && <div className="error-msg">{error}</div>}
 
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="email">E-mailadres</label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              disabled={loading}
-              placeholder="jouw@email.com"
-            />
-          </div>
+        <form onSubmit={handleSubmit} className="login-form">
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="email"
+            required
+            disabled={loading}
+            className="input-field"
+          />
 
-          <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-            <button
-              type="submit"
-              className="btn btn-primary"
-              disabled={loading}
-              style={{ flex: 1 }}
-            >
-              {loading ? 'Versturen...' : 'Reset link versturen'}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => navigate('/')}
-              className="btn"
-              disabled={loading}
-            >
-              Annuleren
-            </button>
-          </div>
+          <button type="submit" className="btn submit-btn" disabled={loading}>
+            {loading ? 'versturen...' : 'reset link versturen'}
+          </button>
         </form>
 
-        <div style={{
-          marginTop: '24px',
-          padding: '12px',
-          backgroundColor: '#f5f5f5',
-          border: '1px solid #ccc',
-          borderRadius: '4px',
-          fontSize: '14px'
-        }}>
-          <strong>Let op:</strong> De reset link is 1 uur geldig. Als je geen email ontvangt,
-          controleer dan je spam folder.
-        </div>
-      </div>
-    </div>
+        <button
+          className="btn back-btn"
+          type="button"
+          onClick={() => navigate('/')}
+        >
+          ← terug
+        </button>
+      </section>
+    </main>
   )
 }

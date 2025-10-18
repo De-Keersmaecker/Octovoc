@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import api from '../services/api'
 import { setToken, setUser } from '../utils/auth'
+import './LoginPage.css'
 
 export default function LoginPage({ setUser: setAppUser }) {
   const [email, setEmail] = useState('')
@@ -25,51 +26,59 @@ export default function LoginPage({ setUser: setAppUser }) {
 
       navigate('/dashboard')
     } catch (err) {
-      setError(err.response?.data?.error || 'Login mislukt')
+      setError(err.response?.data?.error || 'login mislukt')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="container">
-      <header className="exercise-header">
-        <div className="header-title">Octovoc</div>
-      </header>
+    <main className="stage" aria-label="octovoc login">
+      <section className="inner">
+        <h1 className="title">Octovoc</h1>
 
-      <h2>Inloggen</h2>
+        <div className="underline" aria-hidden="true"></div>
 
-      {error && <div className="error">{error}</div>}
+        {error && <div className="error-msg">{error}</div>}
 
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label>Email</label>
+        <form onSubmit={handleSubmit} className="login-form">
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            placeholder="email"
             required
+            className="input-field"
           />
-        </div>
 
-        <div className="form-group">
-          <label>Wachtwoord</label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            placeholder="wachtwoord"
             required
+            className="input-field"
           />
+
+          <button type="submit" className="btn submit-btn" disabled={loading}>
+            {loading ? 'laden...' : 'login'}
+          </button>
+        </form>
+
+        <div className="links">
+          <Link to="/register" className="link">registreer</Link>
+          <span className="link-separator">·</span>
+          <Link to="/forgot-password" className="link">wachtwoord vergeten</Link>
         </div>
 
-        <button type="submit" className="btn btn-primary" disabled={loading}>
-          {loading ? 'Laden...' : 'Inloggen'}
+        <button
+          className="btn back-btn"
+          type="button"
+          onClick={() => navigate('/')}
+        >
+          ← terug
         </button>
-      </form>
-
-      <p style={{ marginTop: '20px' }}>
-        Nog geen account? <Link to="/register">Registreer hier</Link>
-      </p>
-    </div>
+      </section>
+    </main>
   )
 }
