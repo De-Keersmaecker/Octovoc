@@ -9,6 +9,7 @@ class Classroom(db.Model):
     teacher_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     class_code_id = db.Column(db.Integer, db.ForeignKey('class_codes.id'), nullable=True)
     school_id = db.Column(db.Integer, db.ForeignKey('schools.id'), nullable=True)
+    allowed_levels = db.Column(db.JSON, default=[1, 2, 3, 4, 5, 6])  # Array of allowed levels (1-6)
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -34,5 +35,6 @@ class Classroom(db.Model):
             'school_id': self.school_id,
             'school_name': school_name,
             'school_code': school_code,
+            'allowed_levels': self.allowed_levels if self.allowed_levels else [1, 2, 3, 4, 5, 6],
             'created_at': self.created_at.isoformat() if self.created_at else None
         }

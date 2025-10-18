@@ -1171,7 +1171,7 @@ def create_school():
 @bp.route('/classroom/<int:classroom_id>/rename', methods=['PUT'])
 @jwt_required()
 def rename_classroom(classroom_id):
-    """Rename a classroom (admin or teacher access)"""
+    """Update classroom (rename and/or change allowed levels) - admin or teacher access"""
     user_id = get_jwt_identity()
     user = User.query.get(int(user_id))
 
@@ -1201,16 +1201,26 @@ def rename_classroom(classroom_id):
             return jsonify({'error': 'Access denied to this classroom'}), 403
 
     data = request.get_json()
-    new_name = data.get('name', '').strip()
 
-    if not new_name:
-        return jsonify({'error': 'New name is required'}), 400
+    # Update name if provided
+    if 'name' in data:
+        new_name = data.get('name', '').strip()
+        if new_name:
+            classroom.name = new_name
 
-    classroom.name = new_name
+    # Update allowed_levels if provided
+    if 'allowed_levels' in data:
+        allowed_levels = data.get('allowed_levels')
+        # Validate: must be array of integers 1-6
+        if isinstance(allowed_levels, list) and all(isinstance(l, int) and 1 <= l <= 6 for l in allowed_levels):
+            classroom.allowed_levels = allowed_levels
+        else:
+            return jsonify({'error': 'allowed_levels must be an array of integers between 1 and 6'}), 400
+
     db.session.commit()
 
     return jsonify({
-        'message': 'Classroom renamed successfully',
+        'message': 'Classroom updated successfully',
         'classroom': classroom.to_dict()
     }), 200
 

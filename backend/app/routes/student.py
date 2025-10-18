@@ -11,15 +11,55 @@ import random
 bp = Blueprint('student', __name__, url_prefix='/api/student')
 
 
-@bp.route('/modules', methods=['GET'])
+@bp.route('/allowed-levels', methods=['GET'])
 @jwt_required(optional=True)
-def get_modules():
-    """Get available modules for student"""
+def get_allowed_levels():
+    """Get levels available for the current user"""
     user_id = get_jwt_identity()
     user = User.query.get(user_id) if user_id else None
 
-    # Always show all active modules, but mark which are accessible
-    modules = Module.query.filter_by(is_active=True).order_by(Module.display_order, Module.id).all()
+    # Default: all levels
+    allowed_levels = [1, 2, 3, 4, 5, 6]
+
+    if user and user.classroom_id:
+        # Student with classroom: get classroom's allowed levels
+        from app.models.classroom import Classroom
+        classroom = Classroom.query.get(user.classroom_id)
+        if classroom and classroom.allowed_levels:
+            allowed_levels = classroom.allowed_levels
+
+    return jsonify({'allowed_levels': allowed_levels}), 200
+
+
+@bp.route('/modules', methods=['GET'])
+@jwt_required(optional=True)
+def get_modules():
+    """Get available modules for student, optionally filtered by level"""
+    user_id = get_jwt_identity()
+    user = User.query.get(user_id) if user_id else None
+    level = request.args.get('level', type=int)  # Optional level filter
+
+    # Determine which levels to show
+    allowed_levels = [1, 2, 3, 4, 5, 6]  # Default: all levels
+
+    if user and user.classroom_id:
+        # Student with classroom: filter by classroom's allowed levels
+        from app.models.classroom import Classroom
+        classroom = Classroom.query.get(user.classroom_id)
+        if classroom and classroom.allowed_levels:
+            allowed_levels = classroom.allowed_levels
+
+    # Build query
+    query = Module.query.filter_by(is_active=True)
+
+    # Filter by level if specified
+    if level:
+        query = query.filter_by(level=level)
+    else:
+        # Filter by allowed levels
+        query = query.filter(Module.level.in_(allowed_levels))
+
+    modules = query.order_by(Module.display_order, Module.id).all()
 
     # Get progress for each module
     result = []

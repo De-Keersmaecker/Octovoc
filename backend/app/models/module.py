@@ -7,7 +7,8 @@ class Module(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200), nullable=False)
-    difficulty = db.Column(db.String(50), nullable=True)  # e.g., 'beginner', 'intermediate', 'advanced'
+    difficulty = db.Column(db.String(50), nullable=True)  # Legacy - kept for compatibility
+    level = db.Column(db.Integer, nullable=False, default=1)  # Level 1-6
     is_free = db.Column(db.Boolean, default=False)
     is_active = db.Column(db.Boolean, default=True)
     case_sensitive = db.Column(db.Boolean, default=False)  # Whether answers must match case
@@ -25,6 +26,7 @@ class Module(db.Model):
             'id': self.id,
             'name': self.name,
             'difficulty': self.difficulty,
+            'level': self.level,
             'is_free': self.is_free,
             'is_active': self.is_active,
             'case_sensitive': self.case_sensitive,
