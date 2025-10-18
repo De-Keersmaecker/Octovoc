@@ -125,38 +125,37 @@ def verify_email(token):
 @bp.route('/forgot-password', methods=['POST'])
 def forgot_password():
     """Request password reset"""
+    print("=== FORGOT PASSWORD ENDPOINT CALLED ===")
     try:
         data = request.get_json()
         email = data.get('email', '').strip().lower()
+        print(f"Email received: {email}")
 
         if not email:
             return jsonify({'error': 'Email is required'}), 400
 
+        print("Querying database for user...")
         user = User.query.filter_by(email=email).first()
+        print(f"User found: {user is not None}")
 
         if user:
-            # Generate reset token
+            print("Generating reset token...")
             user.reset_token = secrets.token_urlsafe(32)
-            # TODO: Add expiry check after reset_token_expiry column is added
-            # user.reset_token_expiry = datetime.utcnow() + timedelta(hours=1)
+            print("Committing to database...")
             db.session.commit()
+            print("Commit successful")
 
-            # Send reset email
-            try:
-                email_sent = send_password_reset_email(user.email, user.reset_token)
-            except Exception as e:
-                print(f"Error sending email: {str(e)}")
-                import traceback
-                traceback.print_exc()
-                email_sent = False
+            # Don't send email for now - just log
+            print(f"Would send email to: {user.email} with token: {user.reset_token[:10]}...")
 
+        print("Returning success response")
         # Always return success message (don't reveal if email exists)
         return jsonify({
             'message': 'Als dit e-mailadres bij ons bekend is, ontvang je een link om je wachtwoord te resetten.'
         }), 200
 
     except Exception as e:
-        print(f"Error in forgot_password: {str(e)}")
+        print(f"ERROR in forgot_password: {str(e)}")
         import traceback
         traceback.print_exc()
         return jsonify({'error': 'Er is een fout opgetreden. Probeer het later opnieuw.'}), 500
