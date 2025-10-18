@@ -145,8 +145,30 @@ def forgot_password():
             db.session.commit()
             print("Commit successful")
 
-            # Don't send email for now - just log
-            print(f"Would send email to: {user.email} with token: {user.reset_token[:10]}...")
+            # Send reset email with timeout protection
+            print(f"Attempting to send email to: {user.email}")
+            try:
+                import signal
+
+                def timeout_handler(signum, frame):
+                    raise TimeoutError("Email sending timeout")
+
+                # Set 10 second timeout for email sending
+                signal.signal(signal.SIGALRM, timeout_handler)
+                signal.alarm(10)
+
+                try:
+                    email_sent = send_password_reset_email(user.email, user.reset_token)
+                    print(f"Email sent successfully: {email_sent}")
+                finally:
+                    signal.alarm(0)  # Cancel timeout
+
+            except TimeoutError:
+                print("Email sending timed out after 10 seconds")
+            except Exception as e:
+                print(f"Error sending email: {str(e)}")
+                import traceback
+                traceback.print_exc()
 
         print("Returning success response")
         # Always return success message (don't reveal if email exists)
