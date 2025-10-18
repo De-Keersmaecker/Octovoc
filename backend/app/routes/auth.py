@@ -125,37 +125,40 @@ def verify_email(token):
 @bp.route('/forgot-password', methods=['POST'])
 def forgot_password():
     """Request password reset"""
-    data = request.get_json()
-    email = data.get('email', '').strip().lower()
+    try:
+        data = request.get_json()
+        email = data.get('email', '').strip().lower()
 
-    if not email:
-        return jsonify({'error': 'Email is required'}), 400
+        if not email:
+            return jsonify({'error': 'Email is required'}), 400
 
-    user = User.query.filter_by(email=email).first()
+        user = User.query.filter_by(email=email).first()
 
-    if user:
-        # Generate reset token and set expiry (1 hour from now)
-        user.reset_token = secrets.token_urlsafe(32)
-        user.reset_token_expiry = datetime.utcnow() + timedelta(hours=1)
-        db.session.commit()
+        if user:
+            # Generate reset token and set expiry (1 hour from now)
+            user.reset_token = secrets.token_urlsafe(32)
+            user.reset_token_expiry = datetime.utcnow() + timedelta(hours=1)
+            db.session.commit()
 
-        # Send reset email
-        email_sent = send_password_reset_email(user.email, user.reset_token)
+            # Send reset email
+            try:
+                email_sent = send_password_reset_email(user.email, user.reset_token)
+            except Exception as e:
+                print(f"Error sending email: {str(e)}")
+                import traceback
+                traceback.print_exc()
+                email_sent = False
 
-        if email_sent:
-            return jsonify({
-                'message': 'Als dit e-mailadres bij ons bekend is, ontvang je een link om je wachtwoord te resetten.'
-            }), 200
-        else:
-            # Email failed but don't reveal that to user
-            return jsonify({
-                'message': 'Als dit e-mailadres bij ons bekend is, ontvang je een link om je wachtwoord te resetten.'
-            }), 200
+        # Always return success message (don't reveal if email exists)
+        return jsonify({
+            'message': 'Als dit e-mailadres bij ons bekend is, ontvang je een link om je wachtwoord te resetten.'
+        }), 200
 
-    # Don't reveal if email exists or not
-    return jsonify({
-        'message': 'Als dit e-mailadres bij ons bekend is, ontvang je een link om je wachtwoord te resetten.'
-    }), 200
+    except Exception as e:
+        print(f"Error in forgot_password: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': 'Er is een fout opgetreden. Probeer het later opnieuw.'}), 500
 
 
 @bp.route('/reset-password/<token>', methods=['POST'])
