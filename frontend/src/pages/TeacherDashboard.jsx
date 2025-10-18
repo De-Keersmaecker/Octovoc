@@ -14,7 +14,6 @@ export default function TeacherDashboard({ user }) {
   const [view, setView] = useState('classrooms') // 'classrooms', 'progress', 'analytics'
   const [editingClassroom, setEditingClassroom] = useState(null)
   const [newClassName, setNewClassName] = useState('')
-  const [allowedLevels, setAllowedLevels] = useState([1, 2, 3, 4, 5, 6])
 
   useEffect(() => {
     loadClassrooms()
@@ -37,33 +36,18 @@ export default function TeacherDashboard({ user }) {
       return
     }
 
-    if (allowedLevels.length === 0) {
-      alert('Selecteer minimaal 1 niveau')
-      return
-    }
-
     try {
       await api.put(`/admin/classroom/${classroomId}/rename`, {
-        name: newClassName,
-        allowed_levels: allowedLevels
+        name: newClassName
       })
-      alert('Klasinstellingen gewijzigd')
+      alert('Klasnaam gewijzigd')
       setEditingClassroom(null)
       setNewClassName('')
-      setAllowedLevels([1, 2, 3, 4, 5, 6])
       loadClassrooms()
     } catch (err) {
       console.error(err)
-      alert('Fout bij wijzigen van klas')
+      alert('Fout bij wijzigen van klasnaam')
     }
-  }
-
-  const toggleLevel = (level) => {
-    setAllowedLevels(prev =>
-      prev.includes(level)
-        ? prev.filter(l => l !== level)
-        : [...prev, level].sort()
-    )
   }
 
   const loadClassroomProgress = async (classroomId) => {
@@ -189,37 +173,18 @@ export default function TeacherDashboard({ user }) {
                 <div key={classroom.id} className="classroom-card">
                   {editingClassroom === classroom.id ? (
                     <div style={{ marginBottom: '15px' }}>
-                      <div style={{ marginBottom: '12px' }}>
-                        <input
-                          type="text"
-                          value={newClassName}
-                          onChange={(e) => setNewClassName(e.target.value)}
-                          placeholder="Nieuwe klasnaam"
-                          style={{
-                            padding: '8px',
-                            fontSize: '16px',
-                            width: '200px'
-                          }}
-                        />
-                      </div>
-                      <div style={{ marginBottom: '12px' }}>
-                        <label style={{ fontSize: '14px', fontWeight: '600', marginBottom: '6px', display: 'block' }}>
-                          toegestane niveaus:
-                        </label>
-                        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                          {[1, 2, 3, 4, 5, 6].map(level => (
-                            <label key={level} style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
-                              <input
-                                type="checkbox"
-                                checked={allowedLevels.includes(level)}
-                                onChange={() => toggleLevel(level)}
-                                style={{ cursor: 'pointer' }}
-                              />
-                              <span>niveau {level}</span>
-                            </label>
-                          ))}
-                        </div>
-                      </div>
+                      <input
+                        type="text"
+                        value={newClassName}
+                        onChange={(e) => setNewClassName(e.target.value)}
+                        placeholder="Nieuwe klasnaam"
+                        style={{
+                          padding: '8px',
+                          fontSize: '16px',
+                          width: '200px',
+                          marginRight: '10px'
+                        }}
+                      />
                       <button
                         onClick={() => renameClassroom(classroom.id)}
                         className="btn btn-primary"
@@ -231,7 +196,6 @@ export default function TeacherDashboard({ user }) {
                         onClick={() => {
                           setEditingClassroom(null)
                           setNewClassName('')
-                          setAllowedLevels([1, 2, 3, 4, 5, 6])
                         }}
                         className="btn"
                       >
@@ -246,7 +210,6 @@ export default function TeacherDashboard({ user }) {
                         onClick={() => {
                           setEditingClassroom(classroom.id)
                           setNewClassName(classroom.name)
-                          setAllowedLevels(classroom.allowed_levels || [1, 2, 3, 4, 5, 6])
                         }}
                         className="btn"
                         style={{
@@ -255,7 +218,7 @@ export default function TeacherDashboard({ user }) {
                           fontSize: '13px'
                         }}
                       >
-                        bewerken
+                        hernoemen
                       </button>
                     </h3>
                   )}
