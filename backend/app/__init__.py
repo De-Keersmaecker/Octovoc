@@ -17,22 +17,8 @@ def create_app(config_class=Config):
     db.init_app(app)
     migrate.init_app(app, db)
 
-    # CORS configuration - allow frontend domains
-    CORS(app, resources={
-        r"/api/*": {
-            "origins": [
-                "http://localhost:5173",
-                "http://localhost:3000",
-                "https://www.octovoc.be",
-                "https://octovoc.be",
-                "https://octovoc.katern.be",
-                "https://www.octovoc.katern.be"
-            ],
-            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-            "allow_headers": ["Content-Type", "Authorization"],
-            "supports_credentials": True
-        }
-    })
+    # CORS configuration - allow all origins
+    CORS(app, resources={r"/*": {"origins": "*"}})
 
     jwt.init_app(app)
 
