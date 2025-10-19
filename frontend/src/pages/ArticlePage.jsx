@@ -118,13 +118,23 @@ export default function ArticlePage() {
             Bibliografie woordenlijst
           </h2>
 
-          <p style={{ fontSize: 'clamp(12px, 1vw, 14px)', lineHeight: '1.6' }}>
-            Aitchison, J. (2012). <em>Words in the mind: An introduction to the mental lexicon</em> (4th ed.). John Wiley & Sons.<br />
-            Brysbaert, M., Stevens, M., De Deyne, S., Voorspoels, W., & Storms, G. (2014). Norms of age of acquisition and concreteness for 30,000 Dutch words. <em>Acta Psychologica, 150</em>, 80-84.<br />
-            Garlock, V. M., Walley, A. C., & Metsala, J. L. (2001). Age-of-acquisition, word frequency, and neighborhood density effects on spoken word recognition by children and adults. <em>Journal of Memory and Language, 45</em>(3), 468-492.<br />
-            Hazenberg, S., & Hulstijn, J. H. (1996). Defining a minimal receptive second-language vocabulary for non-native university students: an empirical investigation. <em>Applied Linguistics, 17</em>(2), 145-163.<br />
-            Sadoski, M., & Lawrence, B. (2023). Abstract Vocabulary Development: Embodied Theory and Practice. <em>Educational Psychology Review</em>.
-          </p>
+          <div style={{ fontSize: 'clamp(12px, 1vw, 14px)', lineHeight: '1.8' }}>
+            <p style={{ marginBottom: '12px' }}>
+              Aitchison, J. (2012). <em>Words in the mind: An introduction to the mental lexicon</em> (4th ed.). John Wiley & Sons.
+            </p>
+            <p style={{ marginBottom: '12px' }}>
+              Brysbaert, M., Stevens, M., De Deyne, S., Voorspoels, W., & Storms, G. (2014). Norms of age of acquisition and concreteness for 30,000 Dutch words. <em>Acta Psychologica, 150</em>, 80-84.
+            </p>
+            <p style={{ marginBottom: '12px' }}>
+              Garlock, V. M., Walley, A. C., & Metsala, J. L. (2001). Age-of-acquisition, word frequency, and neighborhood density effects on spoken word recognition by children and adults. <em>Journal of Memory and Language, 45</em>(3), 468-492.
+            </p>
+            <p style={{ marginBottom: '12px' }}>
+              Hazenberg, S., & Hulstijn, J. H. (1996). Defining a minimal receptive second-language vocabulary for non-native university students: an empirical investigation. <em>Applied Linguistics, 17</em>(2), 145-163.
+            </p>
+            <p style={{ marginBottom: '12px' }}>
+              Sadoski, M., & Lawrence, B. (2023). Abstract Vocabulary Development: Embodied Theory and Practice. <em>Educational Psychology Review</em>.
+            </p>
+          </div>
 
           <h2 style={{
             fontFamily: 'Perpetua, Georgia, "Times New Roman", Times, serif',
@@ -136,14 +146,26 @@ export default function ArticlePage() {
             Bibliografie didactiek
           </h2>
 
-          <p style={{ fontSize: 'clamp(12px, 1vw, 14px)', lineHeight: '1.6', marginBottom: '40px' }}>
-            Bjork, R. A., & Bjork, E. L. (2020). Desirable difficulties in theory and practice. <em>Journal of Applied Research in Memory and Cognition, 9</em>(4), 475-479.<br />
-            Cepeda, N. J., Pashler, H., Vul, E., Wixted, J. T., & Rohrer, D. (2006). Distributed practice in verbal recall tasks: A review and quantitative synthesis. <em>Psychological Bulletin, 132</em>(3), 354–380.<br />
-            Goossens, N., Camp, G., Verkoeijen, P., Tabbers, H., & Zwaan, R. (2012). Spreading the words: A spacing effect in vocabulary learning. <em>Journal of Cognitive Psychology, 24</em>(8), 965-971.<br />
-            Hebb, D. O. (1949). <em>The Organization of Behavior: A Neuropsychological Theory</em>. John Wiley & Sons.<br />
-            Karpicke, J. D., & Blunt, J. R. (2011). Retrieval practice produces more learning than elaborative studying with concept mapping. <em>Science, 331</em>(6018), 772–775.<br />
-            Roediger III, H. L., & Butler, A. C. (2011). The critical role of retrieval practice in long-term retention. <em>Trends in Cognitive Sciences, 15</em>(1), 20-27.
-          </p>
+          <div style={{ fontSize: 'clamp(12px, 1vw, 14px)', lineHeight: '1.8', marginBottom: '40px' }}>
+            <p style={{ marginBottom: '12px' }}>
+              Bjork, R. A., & Bjork, E. L. (2020). Desirable difficulties in theory and practice. <em>Journal of Applied Research in Memory and Cognition, 9</em>(4), 475-479.
+            </p>
+            <p style={{ marginBottom: '12px' }}>
+              Cepeda, N. J., Pashler, H., Vul, E., Wixted, J. T., & Rohrer, D. (2006). Distributed practice in verbal recall tasks: A review and quantitative synthesis. <em>Psychological Bulletin, 132</em>(3), 354–380.
+            </p>
+            <p style={{ marginBottom: '12px' }}>
+              Goossens, N., Camp, G., Verkoeijen, P., Tabbers, H., & Zwaan, R. (2012). Spreading the words: A spacing effect in vocabulary learning. <em>Journal of Cognitive Psychology, 24</em>(8), 965-971.
+            </p>
+            <p style={{ marginBottom: '12px' }}>
+              Hebb, D. O. (1949). <em>The Organization of Behavior: A Neuropsychological Theory</em>. John Wiley & Sons.
+            </p>
+            <p style={{ marginBottom: '12px' }}>
+              Karpicke, J. D., & Blunt, J. R. (2011). Retrieval practice produces more learning than elaborative studying with concept mapping. <em>Science, 331</em>(6018), 772–775.
+            </p>
+            <p style={{ marginBottom: '12px' }}>
+              Roediger III, H. L., & Butler, A. C. (2011). The critical role of retrieval practice in long-term retention. <em>Trends in Cognitive Sciences, 15</em>(1), 20-27.
+            </p>
+          </div>
         </div>
 
         <button onClick={() => navigate(-1)} className="btn back-btn">

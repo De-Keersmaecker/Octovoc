@@ -31,7 +31,8 @@ export default function StudentDashboard({ user, setUser }) {
       fetchAllowedLevels()
     }
 
-    fetchModules()
+    // Don't fetch modules here - let the selectedLevel useEffect handle it
+    // This prevents a race condition where modules are fetched twice
 
     if (user && !isGuest) {
       fetchDifficultWords()
@@ -53,7 +54,7 @@ export default function StudentDashboard({ user, setUser }) {
 
   useEffect(() => {
     // Fetch modules when selected level changes
-    fetchModules()
+    fetchModules(selectedLevel)
   }, [selectedLevel])
 
   const fetchAllowedLevels = async () => {
@@ -66,9 +67,9 @@ export default function StudentDashboard({ user, setUser }) {
     }
   }
 
-  const fetchModules = async () => {
+  const fetchModules = async (level = selectedLevel) => {
     try {
-      const response = await api.get(`/student/modules?level=${selectedLevel}`)
+      const response = await api.get(`/student/modules?level=${level}`)
       let modulesData = response.data
 
       // If guest, only show free modules
@@ -100,7 +101,7 @@ export default function StudentDashboard({ user, setUser }) {
       localStorage.setItem('token', response.data.token)
       localStorage.setItem('user', JSON.stringify(response.data.user))
       setUser(response.data.user)
-      fetchModules()
+      fetchModules(selectedLevel)
     } catch (err) {
       alert(err.response?.data?.error || 'Login mislukt')
     }
@@ -113,7 +114,7 @@ export default function StudentDashboard({ user, setUser }) {
       localStorage.setItem('token', response.data.token)
       localStorage.setItem('user', JSON.stringify(response.data.user))
       setUser(response.data.user)
-      fetchModules()
+      fetchModules(selectedLevel)
     } catch (err) {
       alert(err.response?.data?.error || 'Registratie mislukt')
     }
@@ -138,7 +139,7 @@ export default function StudentDashboard({ user, setUser }) {
       localStorage.setItem('user', JSON.stringify(updatedUser))
       setShowCodeInput(false)
       setCode('')
-      fetchModules()
+      fetchModules(selectedLevel)
     } catch (err) {
       alert(err.response?.data?.error || 'Ongeldige code')
       setCode('')

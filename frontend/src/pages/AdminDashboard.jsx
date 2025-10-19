@@ -1003,7 +1003,7 @@ export default function AdminDashboard({ user }) {
       {/* Schools View */}
       {view === 'schools' && (
         <>
-          <section style={{marginBottom: '30px', padding: '16px', border: '1px solid #ccc'}}>
+          <section style={{marginBottom: '30px', padding: '16px', border: '1px solid #fff'}}>
             <h3>nieuwe school aanmaken</h3>
             <div className="form-group">
               <label>schoolcode (precies 4 letters)</label>
@@ -1082,7 +1082,7 @@ export default function AdminDashboard({ user }) {
       {/* Modules View */}
       {view === 'modules' && (
         <>
-          <section style={{marginBottom: '30px', padding: '16px', border: '1px solid #ccc'}}>
+          <section style={{marginBottom: '30px', padding: '16px', border: '1px solid #fff'}}>
             <h3>module uploaden</h3>
             {message && <div className={message.includes('succesvol') ? 'success' : 'error'}>{message}</div>}
 
@@ -1134,14 +1134,14 @@ export default function AdminDashboard({ user }) {
             </form>
           </section>
 
-          <section style={{marginBottom: '30px', padding: '16px', border: editingCsvModuleId ? '2px solid #2196f3' : '1px solid #ccc', backgroundColor: editingCsvModuleId ? '#f0f7ff' : 'transparent'}}>
+          <section style={{marginBottom: '30px', padding: '16px', border: editingCsvModuleId ? '2px solid #2196f3' : '1px solid #fff', backgroundColor: editingCsvModuleId ? 'rgba(33, 150, 243, 0.1)' : 'transparent'}}>
             <h3>{editingCsvModuleId ? 'module bewerken via CSV' : 'module uploaden via CSV'}</h3>
             {editingCsvModuleId && (
               <div style={{padding: '10px', backgroundColor: '#2196f3', color: 'white', marginBottom: '10px', borderRadius: '4px'}}>
                 <strong>Bewerk mode:</strong> Je bewerkt nu een bestaande module. De voortgang van studenten blijft behouden.
               </div>
             )}
-            <p style={{fontSize: '14px', color: '#666', marginBottom: '10px'}}>
+            <p style={{fontSize: '14px', color: 'rgba(255, 255, 255, 0.7)', marginBottom: '10px'}}>
               Plak CSV data in het formaat: word;meaning;example_sentence
             </p>
             {csvMessage && <div className={csvMessage.includes('succesvol') || csvMessage.includes('Bewerk mode') ? 'success' : 'error'}>{csvMessage}</div>}
@@ -1272,7 +1272,7 @@ export default function AdminDashboard({ user }) {
                     onDrop={(e) => handleDrop(e, idx)}
                     style={{
                       cursor: editingModule ? 'default' : 'move',
-                      backgroundColor: editingModule === module.id ? '#f5f5f5' : 'transparent'
+                      backgroundColor: editingModule === module.id ? 'rgba(255, 255, 255, 0.05)' : 'transparent'
                     }}
                   >
                     <td>
@@ -1463,7 +1463,7 @@ export default function AdminDashboard({ user }) {
             </div>
           </section>
 
-          <section style={{marginBottom: '30px', padding: '16px', border: '1px solid #ccc'}}>
+          <section style={{marginBottom: '30px', padding: '16px', border: '1px solid #fff'}}>
             <h3>klascode genereren</h3>
             <div className="form-group">
               <label>klasnaam</label>
@@ -1493,7 +1493,7 @@ export default function AdminDashboard({ user }) {
             </button>
           </section>
 
-          <section style={{marginBottom: '30px', padding: '16px', border: '1px solid #ccc'}}>
+          <section style={{marginBottom: '30px', padding: '16px', border: '1px solid #fff'}}>
             <h3>leerkrachtcode genereren</h3>
             <button onClick={generateTeacherCode} className="teacher-btn" style={{ backgroundColor: '#fff', color: '#000' }}>
               genereer leerkrachtcode
@@ -1671,7 +1671,7 @@ export default function AdminDashboard({ user }) {
                           ))}
                         </div>
                       ) : (
-                        <span style={{ color: '#999', fontSize: '14px' }}>Geen klassen</span>
+                        <span style={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: '14px' }}>Geen klassen</span>
                       )}
                       <button
                         onClick={() => setLinkingTeacherCode(code)}
@@ -1812,7 +1812,7 @@ export default function AdminDashboard({ user }) {
       {/* Quotes View */}
       {view === 'quotes' && (
         <>
-          <section style={{marginBottom: '30px', padding: '16px', border: '1px solid #ccc'}}>
+          <section style={{marginBottom: '30px', padding: '16px', border: '1px solid #fff'}}>
             <h3>nieuwe quote toevoegen</h3>
             <div className="form-group">
               <label>quote tekst</label>
@@ -2134,7 +2134,7 @@ export default function AdminDashboard({ user }) {
                 <tbody>
                   {progressData.map(student => (
                     <tr key={student.student_id}>
-                      <td style={{ position: 'sticky', left: 0, backgroundColor: '#fff', fontWeight: '600' }}>
+                      <td style={{ position: 'sticky', left: 0, backgroundColor: '#fff', color: '#000', fontWeight: '600' }}>
                         {student.student_email}
                       </td>
                       {matrixModules.map(module => {
@@ -2145,7 +2145,7 @@ export default function AdminDashboard({ user }) {
                             style={{
                               textAlign: 'center',
                               cursor: moduleData ? 'pointer' : 'default',
-                              backgroundColor: moduleData ? '#f9f9f9' : 'transparent'
+                              backgroundColor: moduleData ? 'rgba(255, 255, 255, 0.05)' : 'transparent'
                             }}
                             onClick={() => moduleData && loadCellDetail(student.student_id, module.id)}
                           >
@@ -2164,7 +2164,7 @@ export default function AdminDashboard({ user }) {
                                 </span>
                               </div>
                             ) : (
-                              <span style={{ color: '#ccc' }}>-</span>
+                              <span style={{ color: 'rgba(255, 255, 255, 0.5)' }}>-</span>
                             )}
                           </td>
                         )
@@ -2277,7 +2277,7 @@ export default function AdminDashboard({ user }) {
               {classrooms.map(classroom => (
                 <div key={classroom.id} className="classroom-card">
                   <h4>{classroom.name}</h4>
-                  <p style={{ marginBottom: '10px', color: '#666' }}>
+                  <p style={{ marginBottom: '10px', color: 'rgba(255, 255, 255, 0.7)' }}>
                     {classroom.student_count || 0} {classroom.student_count === 1 ? 'leerling' : 'leerlingen'}
                   </p>
                   <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
@@ -2337,7 +2337,7 @@ export default function AdminDashboard({ user }) {
                 <tbody>
                   {progressData.map(student => (
                     <tr key={student.student_id}>
-                      <td style={{ position: 'sticky', left: 0, backgroundColor: '#fff', fontWeight: '600' }}>
+                      <td style={{ position: 'sticky', left: 0, backgroundColor: '#fff', color: '#000', fontWeight: '600' }}>
                         {student.student_email}
                       </td>
                       {matrixModules.map(module => {
@@ -2348,7 +2348,7 @@ export default function AdminDashboard({ user }) {
                             style={{
                               textAlign: 'center',
                               cursor: moduleData ? 'pointer' : 'default',
-                              backgroundColor: moduleData ? '#f9f9f9' : 'transparent'
+                              backgroundColor: moduleData ? 'rgba(255, 255, 255, 0.05)' : 'transparent'
                             }}
                             onClick={() => moduleData && loadCellDetail(student.student_id, module.id)}
                           >
@@ -2367,7 +2367,7 @@ export default function AdminDashboard({ user }) {
                                 </span>
                               </div>
                             ) : (
-                              <span style={{ color: '#ccc' }}>-</span>
+                              <span style={{ color: 'rgba(255, 255, 255, 0.5)' }}>-</span>
                             )}
                           </td>
                         )
