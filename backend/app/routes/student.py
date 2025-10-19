@@ -31,6 +31,24 @@ def get_allowed_levels():
     return jsonify({'allowed_levels': allowed_levels}), 200
 
 
+@bp.route('/modules/debug', methods=['GET'])
+def debug_modules():
+    """Debug endpoint to check module status"""
+    total_modules = Module.query.count()
+    active_modules = Module.query.filter_by(is_active=True).count()
+    modules_by_level = {}
+    for level in range(1, 7):
+        count = Module.query.filter_by(is_active=True, level=level).count()
+        modules_by_level[f'level_{level}'] = count
+
+    return jsonify({
+        'total_modules': total_modules,
+        'active_modules': active_modules,
+        'modules_by_level': modules_by_level,
+        'sample_modules': [m.to_dict() for m in Module.query.limit(3).all()]
+    }), 200
+
+
 @bp.route('/modules', methods=['GET'])
 @jwt_required(optional=True)
 def get_modules():
