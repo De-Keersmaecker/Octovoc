@@ -53,53 +53,61 @@ def debug_modules():
 @jwt_required(optional=True)
 def get_modules():
     """Get available modules for student, optionally filtered by level"""
-    user_id = get_jwt_identity()
-    user = User.query.get(user_id) if user_id else None
-    level = request.args.get('level', type=int)  # Optional level filter
+    try:
+        user_id = get_jwt_identity()
+        user = User.query.get(user_id) if user_id else None
+        level = request.args.get('level', type=int)  # Optional level filter
 
-    # Determine which levels to show
-    allowed_levels = [1, 2, 3, 4, 5, 6]  # Default: all levels
+        # Determine which levels to show
+        allowed_levels = [1, 2, 3, 4, 5, 6]  # Default: all levels
 
-    if user and user.classroom_id:
-        # Student with classroom: filter by classroom's allowed levels
-        from app.models.classroom import Classroom
-        classroom = Classroom.query.get(user.classroom_id)
-        if classroom and classroom.allowed_levels:
-            allowed_levels = classroom.allowed_levels
+        if user and user.classroom_id:
+            # Student with classroom: filter by classroom's allowed levels
+            from app.models.classroom import Classroom
+            classroom = Classroom.query.get(user.classroom_id)
+            if classroom and classroom.allowed_levels:
+                allowed_levels = classroom.allowed_levels
 
-    # Build query
-    query = Module.query.filter_by(is_active=True)
+        # Build query
+        query = Module.query.filter_by(is_active=True)
 
-    # Filter by level if specified
-    if level:
-        query = query.filter_by(level=level)
-    else:
-        # Filter by allowed levels
-        query = query.filter(Module.level.in_(allowed_levels))
+        # Filter by level if specified
+        if level:
+            query = query.filter_by(level=level)
+        else:
+            # Filter by allowed levels
+            query = query.filter(Module.level.in_(allowed_levels))
 
-    modules = query.order_by(Module.display_order, Module.id).all()
+        modules = query.order_by(Module.display_order, Module.id).all()
 
-    # Get progress for each module
-    result = []
-    for module in modules:
-        module_data = module.to_dict()
+        # Get progress for each module
+        result = []
+        for module in modules:
+            try:
+                module_data = module.to_dict()
 
-        if user_id:
-            progress = StudentProgress.query.filter_by(
-                user_id=user_id,
-                module_id=module.id
-            ).first()
+                if user_id:
+                    progress = StudentProgress.query.filter_by(
+                        user_id=user_id,
+                        module_id=module.id
+                    ).first()
 
-            if progress:
-                module_data['progress'] = progress.to_dict()
-                # Calculate completion percentage
-                total_batteries = len(progress.battery_order) if progress.battery_order else 0
-                completed = len(progress.completed_batteries) if progress.completed_batteries else 0
-                module_data['completion_percentage'] = (completed / total_batteries * 100) if total_batteries > 0 else 0
+                    if progress:
+                        module_data['progress'] = progress.to_dict()
+                        # Calculate completion percentage
+                        total_batteries = len(progress.battery_order) if progress.battery_order else 0
+                        completed = len(progress.completed_batteries) if progress.completed_batteries else 0
+                        module_data['completion_percentage'] = (completed / total_batteries * 100) if total_batteries > 0 else 0
 
-        result.append(module_data)
+                result.append(module_data)
+            except Exception as e:
+                print(f"Error processing module {module.id}: {str(e)}")
+                continue
 
-    return jsonify(result), 200
+        return jsonify(result), 200
+    except Exception as e:
+        print(f"Error in get_modules: {str(e)}")
+        return jsonify({'error': str(e)}), 500
 
 
 @bp.route('/module/<int:module_id>/start', methods=['POST'])
