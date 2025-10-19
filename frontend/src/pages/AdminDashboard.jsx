@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import api from '../services/api'
 import { logout } from '../utils/auth'
+import './Teacher.css'
 
 export default function AdminDashboard({ user }) {
   const [view, setView] = useState('modules') // 'modules', 'codes', 'users', 'quotes', 'analytics', 'schools'
@@ -922,59 +923,78 @@ export default function AdminDashboard({ user }) {
   }
 
   if (loading && view === 'modules') {
-    return <div className="loading">laden...</div>
+    return (
+      <div className="teacher-stage">
+        <div style={{
+          textAlign: 'center',
+          paddingTop: '100px',
+          fontFamily: '"Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif',
+          fontSize: 'clamp(14px, 1.2vw, 16px)',
+          letterSpacing: '0.02em'
+        }}>
+          laden...
+        </div>
+      </div>
+    )
   }
 
   return (
-    <div className="container">
-      <header className="exercise-header">
-        <div className="header-title">Octovoc</div>
-        <div className="user-info">
-          {user.email} (Admin)
+    <div className="teacher-stage">
+      <header className="teacher-header">
+        <div className="teacher-title">Octovoc</div>
+        <div className="teacher-user-info">
+          {user.email} (admin)
           <br />
-          <button onClick={logout} className="btn" style={{marginTop: '8px', padding: '4px 12px'}}>
+          <button onClick={logout} className="teacher-btn teacher-btn-small" style={{marginTop: '8px'}}>
             uitloggen
           </button>
         </div>
       </header>
 
-      <h2>administrator dashboard</h2>
+      <div className="teacher-content">
+        <div className="teacher-section-title">administrator dashboard</div>
 
       {/* Navigation */}
-      <div style={{ marginBottom: '20px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+      <div style={{ marginBottom: '30px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
         <button
           onClick={() => setView('schools')}
-          className={`btn ${view === 'schools' ? 'btn-primary' : ''}`}
+          className="teacher-btn"
+          style={view === 'schools' ? { backgroundColor: '#fff', color: '#000' } : {}}
         >
           scholen
         </button>
         <button
           onClick={() => setView('modules')}
-          className={`btn ${view === 'modules' ? 'btn-primary' : ''}`}
+          className="teacher-btn"
+          style={view === 'modules' ? { backgroundColor: '#fff', color: '#000' } : {}}
         >
           modules
         </button>
         <button
           onClick={() => setView('codes')}
-          className={`btn ${view === 'codes' ? 'btn-primary' : ''}`}
+          className="teacher-btn"
+          style={view === 'codes' ? { backgroundColor: '#fff', color: '#000' } : {}}
         >
           codes
         </button>
         <button
           onClick={() => setView('quotes')}
-          className={`btn ${view === 'quotes' ? 'btn-primary' : ''}`}
+          className="teacher-btn"
+          style={view === 'quotes' ? { backgroundColor: '#fff', color: '#000' } : {}}
         >
           quotes
         </button>
         <button
           onClick={() => setView('users')}
-          className={`btn ${view === 'users' ? 'btn-primary' : ''}`}
+          className="teacher-btn"
+          style={view === 'users' ? { backgroundColor: '#fff', color: '#000' } : {}}
         >
           gebruikers
         </button>
         <button
           onClick={() => setView('analytics')}
-          className={`btn ${view === 'analytics' ? 'btn-primary' : ''}`}
+          className="teacher-btn"
+          style={view === 'analytics' ? { backgroundColor: '#fff', color: '#000' } : {}}
         >
           prestaties
         </button>
@@ -1025,13 +1045,13 @@ export default function AdminDashboard({ user }) {
                 max={50}
               />
             </div>
-            <button onClick={createSchool} className="btn btn-primary">
+            <button onClick={createSchool} className="teacher-btn" style={{ backgroundColor: '#fff', color: '#000' }}>
               school aanmaken
             </button>
           </section>
 
           <section style={{ overflowX: 'auto' }}>
-            <table className="progress-table" style={{ tableLayout: 'auto', minWidth: '100%' }}>
+            <table className="teacher-progress-table" style={{ tableLayout: 'auto', minWidth: '100%' }}>
               <thead>
                 <tr>
                   <th style={{ width: '100px' }}>schoolcode</th>
@@ -1108,7 +1128,7 @@ export default function AdminDashboard({ user }) {
                 </label>
               </div>
 
-              <button type="submit" className="btn btn-primary" disabled={uploading}>
+              <button type="submit" className="teacher-btn" style={{ backgroundColor: '#fff', color: '#000' }} disabled={uploading}>
                 {uploading ? 'uploaden...' : 'upload module'}
               </button>
             </form>
@@ -1171,11 +1191,11 @@ export default function AdminDashboard({ user }) {
               </div>
 
               <div style={{display: 'flex', gap: '10px'}}>
-                <button type="submit" className="btn btn-primary" disabled={csvUploading}>
+                <button type="submit" className="teacher-btn" style={{ backgroundColor: '#fff', color: '#000' }} disabled={csvUploading}>
                   {csvUploading ? (editingCsvModuleId ? 'bijwerken...' : 'uploaden...') : (editingCsvModuleId ? 'module bijwerken' : 'upload module (CSV)')}
                 </button>
                 {editingCsvModuleId && (
-                  <button type="button" onClick={cancelCsvEdit} className="btn" disabled={csvUploading}>
+                  <button type="button" onClick={cancelCsvEdit} className="teacher-btn" disabled={csvUploading}>
                     annuleer
                   </button>
                 )}
@@ -1189,7 +1209,7 @@ export default function AdminDashboard({ user }) {
               <div style={{display: 'flex', gap: '10px'}}>
                 <button
                   onClick={sortModulesByLevel}
-                  className="btn"
+                  className="teacher-btn"
                   style={{
                     padding: '6px 12px',
                     fontSize: '14px',
@@ -1204,7 +1224,7 @@ export default function AdminDashboard({ user }) {
                 </button>
                 <button
                   onClick={sortModulesFreeFirst}
-                  className="btn"
+                  className="teacher-btn"
                   style={{
                     padding: '6px 12px',
                     fontSize: '14px',
@@ -1219,7 +1239,7 @@ export default function AdminDashboard({ user }) {
                 </button>
                 <button
                   onClick={sortModulesAlphabetically}
-                  className="btn"
+                  className="teacher-btn"
                   style={{
                     padding: '6px 12px',
                     fontSize: '14px',
@@ -1330,14 +1350,14 @@ export default function AdminDashboard({ user }) {
                               }
                               updateModule(module.id, updates)
                             }}
-                            className="btn"
+                            className="teacher-btn"
                             style={{ padding: '4px 8px', fontSize: '13px', marginRight: '4px' }}
                           >
                             opslaan
                           </button>
                           <button
                             onClick={() => setEditingModule(null)}
-                            className="btn"
+                            className="teacher-btn"
                             style={{ padding: '4px 8px', fontSize: '13px' }}
                           >
                             annuleren
@@ -1350,14 +1370,14 @@ export default function AdminDashboard({ user }) {
                               setEditingModule(module.id)
                               loadModuleCsvForEdit(module.id)
                             }}
-                            className="btn"
+                            className="teacher-btn"
                             style={{ padding: '4px 6px', fontSize: '13px', marginRight: '4px' }}
                           >
                             bewerk
                           </button>
                           <button
                             onClick={() => toggleModuleActive(module.id, module.is_active)}
-                            className="btn"
+                            className="teacher-btn"
                             style={{
                               padding: '4px 6px',
                               fontSize: '13px',
@@ -1371,7 +1391,7 @@ export default function AdminDashboard({ user }) {
                           </button>
                           <button
                             onClick={() => deleteModule(module.id)}
-                            className="btn"
+                            className="teacher-btn"
                             style={{
                               padding: '4px 6px',
                               fontSize: '13px',
@@ -1417,7 +1437,7 @@ export default function AdminDashboard({ user }) {
               <div style={{display: 'flex', gap: '10px'}}>
                 <button
                   onClick={bulkDeactivateCodes}
-                  className="btn"
+                  className="teacher-btn"
                   style={{
                     backgroundColor: '#f44336',
                     borderColor: '#f44336',
@@ -1429,7 +1449,7 @@ export default function AdminDashboard({ user }) {
                 </button>
                 <button
                   onClick={bulkDeleteCodes}
-                  className="btn"
+                  className="teacher-btn"
                   style={{
                     backgroundColor: '#9e9e9e',
                     borderColor: '#9e9e9e',
@@ -1468,21 +1488,21 @@ export default function AdminDashboard({ user }) {
                 ))}
               </select>
             </div>
-            <button onClick={generateClassCode} className="btn btn-primary">
+            <button onClick={generateClassCode} className="teacher-btn" style={{ backgroundColor: '#fff', color: '#000' }}>
               genereer klascode
             </button>
           </section>
 
           <section style={{marginBottom: '30px', padding: '16px', border: '1px solid #ccc'}}>
             <h3>leerkrachtcode genereren</h3>
-            <button onClick={generateTeacherCode} className="btn btn-primary">
+            <button onClick={generateTeacherCode} className="teacher-btn" style={{ backgroundColor: '#fff', color: '#000' }}>
               genereer leerkrachtcode
             </button>
           </section>
 
           <section style={{marginBottom: '30px'}}>
             <h3>klascodes</h3>
-            <table className="progress-table" style={{ tableLayout: 'fixed', width: '100%' }}>
+            <table className="teacher-progress-table" style={{ tableLayout: 'fixed', width: '100%' }}>
               <thead>
                 <tr>
                   <th style={{width: '40px'}}>
@@ -1533,7 +1553,7 @@ export default function AdminDashboard({ user }) {
                         {code.is_active ? (
                           <button
                             onClick={() => deactivateClassCode(code.id)}
-                            className="btn"
+                            className="teacher-btn"
                             style={{
                               padding: '4px 8px',
                               fontSize: '14px',
@@ -1548,7 +1568,7 @@ export default function AdminDashboard({ user }) {
                         ) : (
                           <button
                             onClick={() => activateClassCode(code.id)}
-                            className="btn"
+                            className="teacher-btn"
                             style={{
                               padding: '4px 8px',
                               fontSize: '14px',
@@ -1563,7 +1583,7 @@ export default function AdminDashboard({ user }) {
                         )}
                         <button
                           onClick={() => deleteClassCode(code.id)}
-                          className="btn"
+                          className="teacher-btn"
                           style={{
                             padding: '4px 8px',
                             fontSize: '14px',
@@ -1584,7 +1604,7 @@ export default function AdminDashboard({ user }) {
 
           <section>
             <h3>leerkrachtcodes</h3>
-            <table className="progress-table" style={{ tableLayout: 'fixed', width: '100%' }}>
+            <table className="teacher-progress-table" style={{ tableLayout: 'fixed', width: '100%' }}>
               <thead>
                 <tr>
                   <th style={{width: '40px'}}>
@@ -1636,7 +1656,7 @@ export default function AdminDashboard({ user }) {
                               <span style={{ marginRight: '8px' }}>{classroom.name}</span>
                               <button
                                 onClick={() => unlinkClassroomFromTeacherCode(code.id, classroom.id)}
-                                className="btn"
+                                className="teacher-btn"
                                 style={{
                                   padding: '2px 6px',
                                   fontSize: '12px',
@@ -1655,7 +1675,7 @@ export default function AdminDashboard({ user }) {
                       )}
                       <button
                         onClick={() => setLinkingTeacherCode(code)}
-                        className="btn"
+                        className="teacher-btn"
                         style={{
                           padding: '4px 8px',
                           fontSize: '13px',
@@ -1674,7 +1694,7 @@ export default function AdminDashboard({ user }) {
                       {code.is_active ? (
                         <button
                           onClick={() => deactivateTeacherCode(code.id)}
-                          className="btn"
+                          className="teacher-btn"
                           style={{
                             padding: '4px 8px',
                             fontSize: '14px',
@@ -1689,7 +1709,7 @@ export default function AdminDashboard({ user }) {
                       ) : (
                         <button
                           onClick={() => activateTeacherCode(code.id)}
-                          className="btn"
+                          className="teacher-btn"
                           style={{
                             padding: '4px 8px',
                             fontSize: '14px',
@@ -1704,7 +1724,7 @@ export default function AdminDashboard({ user }) {
                       )}
                       <button
                         onClick={() => deleteTeacherCode(code.id)}
-                        className="btn"
+                        className="teacher-btn"
                         style={{
                           padding: '4px 8px',
                           fontSize: '14px',
@@ -1725,34 +1745,34 @@ export default function AdminDashboard({ user }) {
 
           {/* Modal voor klas koppelen aan leerkrachtcode */}
           {linkingTeacherCode && (
-            <div style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: 'rgba(0, 0, 0, 0.5)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 1000
-            }}>
-              <div style={{
-                backgroundColor: 'white',
-                padding: '24px',
-                borderRadius: '8px',
-                maxWidth: '500px',
-                width: '90%'
-              }}>
-                <h3 style={{ marginTop: 0 }}>klas koppelen aan leerkrachtcode</h3>
-                <p><strong>leerkrachtcode:</strong> {linkingTeacherCode.code}</p>
+            <div className="modal-overlay">
+              <div className="modal-content" style={{ maxWidth: '500px' }}>
+                <div className="modal-header">
+                  <div className="modal-title">klas koppelen aan leerkrachtcode</div>
+                </div>
 
-                <div className="form-group">
-                  <label>selecteer een klas:</label>
+                <p style={{
+                  fontFamily: '"Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif',
+                  fontSize: 'clamp(13px, 1.1vw, 15px)',
+                  marginBottom: '20px'
+                }}>
+                  <strong>leerkrachtcode:</strong> {linkingTeacherCode.code}
+                </p>
+
+                <div style={{ marginBottom: '20px' }}>
+                  <label style={{
+                    fontFamily: '"Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif',
+                    fontSize: 'clamp(13px, 1.1vw, 15px)',
+                    display: 'block',
+                    marginBottom: '8px'
+                  }}>
+                    selecteer een klas:
+                  </label>
                   <select
                     value={selectedClassroomToLink}
                     onChange={(e) => setSelectedClassroomToLink(e.target.value)}
-                    style={{ width: '100%', padding: '8px' }}
+                    className="teacher-input"
+                    style={{ width: '100%' }}
                   >
                     <option value="">-- selecteer een klas --</option>
                     {classrooms
@@ -1771,13 +1791,14 @@ export default function AdminDashboard({ user }) {
                       setLinkingTeacherCode(null)
                       setSelectedClassroomToLink('')
                     }}
-                    className="btn"
+                    className="teacher-btn"
                   >
                     annuleren
                   </button>
                   <button
                     onClick={linkClassroomToTeacherCode}
-                    className="btn btn-primary"
+                    className="teacher-btn"
+                    style={{ backgroundColor: '#fff', color: '#000' }}
                   >
                     koppelen
                   </button>
@@ -1820,7 +1841,7 @@ export default function AdminDashboard({ user }) {
                 placeholder="https://youtube.com/..."
               />
             </div>
-            <button onClick={createQuote} className="btn btn-primary">
+            <button onClick={createQuote} className="teacher-btn" style={{ backgroundColor: '#fff', color: '#000' }}>
               quote toevoegen
             </button>
           </section>
@@ -1828,7 +1849,7 @@ export default function AdminDashboard({ user }) {
           <section>
             <h3>bestaande quotes</h3>
             <div style={{ overflowX: 'auto' }}>
-              <table className="progress-table" style={{ tableLayout: 'fixed', width: '100%' }}>
+              <table className="teacher-progress-table" style={{ tableLayout: 'fixed', width: '100%' }}>
                 <thead>
                   <tr>
                     <th>tekst</th>
@@ -1905,14 +1926,14 @@ export default function AdminDashboard({ user }) {
                               }
                               updateQuote(quote.id, updates)
                             }}
-                            className="btn"
+                            className="teacher-btn"
                             style={{ padding: '4px 8px', fontSize: '14px', marginRight: '5px' }}
                           >
                             opslaan
                           </button>
                           <button
                             onClick={() => setEditingQuote(null)}
-                            className="btn"
+                            className="teacher-btn"
                             style={{ padding: '4px 8px', fontSize: '14px' }}
                           >
                             annuleren
@@ -1922,14 +1943,14 @@ export default function AdminDashboard({ user }) {
                         <>
                           <button
                             onClick={() => setEditingQuote(quote.id)}
-                            className="btn"
+                            className="teacher-btn"
                             style={{ padding: '4px 8px', fontSize: '14px', marginRight: '5px' }}
                           >
                             bewerken
                           </button>
                           <button
                             onClick={() => deleteQuote(quote.id)}
-                            className="btn"
+                            className="teacher-btn"
                             style={{
                               padding: '4px 8px',
                               fontSize: '14px',
@@ -1987,7 +2008,7 @@ export default function AdminDashboard({ user }) {
               </div>
               <button
                 onClick={bulkDeleteUsers}
-                className="btn"
+                className="teacher-btn"
                 style={{
                   backgroundColor: '#9e9e9e',
                   borderColor: '#9e9e9e',
@@ -2002,7 +2023,7 @@ export default function AdminDashboard({ user }) {
 
           <section>
             <h3>gebruikers</h3>
-            <table className="progress-table" style={{ tableLayout: 'fixed', width: '100%' }}>
+            <table className="teacher-progress-table" style={{ tableLayout: 'fixed', width: '100%' }}>
               <thead>
                 <tr>
                   <th style={{width: '40px'}}>
@@ -2071,21 +2092,21 @@ export default function AdminDashboard({ user }) {
                 setProgressData([])
                 setMatrixModules([])
               }}
-              className="btn"
+              className="teacher-btn"
               style={{ marginRight: '10px' }}
             >
               ← terug naar gebruikers
             </button>
             <button
               onClick={() => exportStudentPDF(selectedStudent)}
-              className="btn"
+              className="teacher-btn"
               style={{ marginRight: '10px' }}
             >
               export naar PDF
             </button>
             <button
               onClick={() => exportStudentExcel(selectedStudent)}
-              className="btn"
+              className="teacher-btn"
             >
               export naar Excel
             </button>
@@ -2099,7 +2120,7 @@ export default function AdminDashboard({ user }) {
             <p>geen voortgangsgegevens beschikbaar.</p>
           ) : (
             <div style={{ overflowX: 'auto', marginTop: '20px' }}>
-              <table className="progress-table" style={{ minWidth: '600px' }}>
+              <table className="teacher-progress-table" style={{ minWidth: '600px' }}>
                 <thead>
                   <tr>
                     <th style={{ position: 'sticky', left: 0, backgroundColor: '#fff', zIndex: 10 }}>leerling</th>
@@ -2156,62 +2177,48 @@ export default function AdminDashboard({ user }) {
           )}
 
           {selectedCell && cellDetail && (
-            <div style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: 'rgba(0, 0, 0, 0.5)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 1000
-            }}>
-              <div style={{
-                backgroundColor: 'white',
-                padding: '24px',
-                borderRadius: '8px',
-                maxWidth: '90vw',
-                maxHeight: '90vh',
-                overflow: 'auto',
-                minWidth: 'min(600px, 90vw)'
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                  <h3 style={{ margin: 0 }}>
+            <div className="modal-overlay">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <div className="modal-title">
                     {cellDetail.student.email} - {cellDetail.module.name}
-                  </h3>
-                  <button onClick={closeCellDetail} className="btn">✕</button>
+                  </div>
+                  <button onClick={closeCellDetail} className="teacher-btn teacher-btn-small">✕</button>
                 </div>
 
-                <div style={{ marginBottom: '20px', padding: '16px', backgroundColor: '#f5f5f5', borderRadius: '4px' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                    <div>
-                      <strong>voortgang:</strong> {cellDetail.progress.completion_percentage}%
-                      <span style={{ color: '#666', fontSize: '14px', marginLeft: '8px' }}>
-                        ({cellDetail.progress.answered_words}/{cellDetail.progress.total_words} woorden)
-                      </span>
-                    </div>
-                    <div>
-                      <strong>score:</strong> {cellDetail.progress.score}% correct
-                      <span style={{ color: '#666', fontSize: '14px', marginLeft: '8px' }}>
-                        ({cellDetail.progress.correct_questions}/{cellDetail.progress.total_questions} vragen)
-                      </span>
-                    </div>
-                    <div>
-                      <strong>status:</strong> {cellDetail.progress.is_completed ? 'voltooid' : 'in uitvoering'}
-                    </div>
-                    <div>
-                      <strong>tijd besteed:</strong> {cellDetail.progress.time_spent ? `${Math.round(cellDetail.progress.time_spent / 60)} min` : '-'}
-                    </div>
+                <div className="modal-stats">
+                  <div className="modal-stat">
+                    <strong>voortgang:</strong> {cellDetail.progress.completion_percentage}%
+                    <span style={{ opacity: 0.7, fontSize: 'clamp(12px, 1vw, 14px)', marginLeft: '8px' }}>
+                      ({cellDetail.progress.answered_words}/{cellDetail.progress.total_words} woorden)
+                    </span>
+                  </div>
+                  <div className="modal-stat">
+                    <strong>score:</strong> {cellDetail.progress.score}% correct
+                    <span style={{ opacity: 0.7, fontSize: 'clamp(12px, 1vw, 14px)', marginLeft: '8px' }}>
+                      ({cellDetail.progress.correct_questions}/{cellDetail.progress.total_questions} vragen)
+                    </span>
+                  </div>
+                  <div className="modal-stat">
+                    <strong>status:</strong> {cellDetail.progress.is_completed ? 'voltooid' : 'in uitvoering'}
+                  </div>
+                  <div className="modal-stat">
+                    <strong>tijd besteed:</strong> {cellDetail.progress.time_spent ? `${Math.round(cellDetail.progress.time_spent / 60)} min` : '-'}
                   </div>
                 </div>
 
                 {cellDetail.question_progress.length > 0 && (
                   <>
-                    <h4>vraaggeschiedenis ({cellDetail.question_progress.length} pogingen)</h4>
-                    <div style={{ maxHeight: '400px', overflow: 'auto' }}>
-                      <table className="progress-table">
+                    <div style={{
+                      fontFamily: 'Perpetua, Georgia, "Times New Roman", Times, serif',
+                      fontSize: 'clamp(18px, 2vw, 24px)',
+                      marginTop: '20px',
+                      marginBottom: '15px'
+                    }}>
+                      vraaggeschiedenis ({cellDetail.question_progress.length} pogingen)
+                    </div>
+                    <div className="modal-table-container">
+                      <table className="teacher-progress-table">
                         <thead>
                           <tr>
                             <th>datum</th>
@@ -2231,7 +2238,7 @@ export default function AdminDashboard({ user }) {
                               </td>
                               <td>fase {q.phase}</td>
                               <td>{q.user_answer}</td>
-                              <td>
+                              <td style={{ textAlign: 'center' }}>
                                 {q.is_correct ? (
                                   <span style={{ color: '#4caf50' }}>✓</span>
                                 ) : (
@@ -2257,7 +2264,7 @@ export default function AdminDashboard({ user }) {
           <section style={{marginBottom: '20px'}}>
             <button
               onClick={() => loadDifficultWordsAnalytics()}
-              className="btn"
+              className="teacher-btn"
               style={{ marginRight: '10px' }}
             >
               moeilijkste woorden (alle klassen)
@@ -2276,19 +2283,19 @@ export default function AdminDashboard({ user }) {
                   <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                     <button
                       onClick={() => loadClassroomProgress(classroom.id)}
-                      className="btn"
+                      className="teacher-btn"
                     >
                       bekijk voortgang
                     </button>
                     <button
                       onClick={() => loadDifficultWordsAnalytics(classroom.id)}
-                      className="btn"
+                      className="teacher-btn"
                     >
                       moeilijkste woorden
                     </button>
                     <button
                       onClick={() => exportClassroomExcel(classroom.id)}
-                      className="btn"
+                      className="teacher-btn"
                     >
                       export naar Excel
                     </button>
@@ -2303,7 +2310,7 @@ export default function AdminDashboard({ user }) {
       {view === 'analytics' && selectedClassroom && !selectedStudent && difficultWords.length === 0 && (
         <>
           <div style={{ marginBottom: '20px' }}>
-            <button onClick={backToClassroomList} className="btn">
+            <button onClick={backToClassroomList} className="teacher-btn">
               ← terug naar klassen
             </button>
           </div>
@@ -2316,7 +2323,7 @@ export default function AdminDashboard({ user }) {
             <p>geen leerlingen in deze klas.</p>
           ) : (
             <div style={{ overflowX: 'auto', marginTop: '20px' }}>
-              <table className="progress-table" style={{ minWidth: '600px' }}>
+              <table className="teacher-progress-table" style={{ minWidth: '600px' }}>
                 <thead>
                   <tr>
                     <th style={{ position: 'sticky', left: 0, backgroundColor: '#fff', zIndex: 10 }}>leerling</th>
@@ -2373,62 +2380,48 @@ export default function AdminDashboard({ user }) {
           )}
 
           {selectedCell && cellDetail && (
-            <div style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: 'rgba(0, 0, 0, 0.5)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 1000
-            }}>
-              <div style={{
-                backgroundColor: 'white',
-                padding: '24px',
-                borderRadius: '8px',
-                maxWidth: '90vw',
-                maxHeight: '90vh',
-                overflow: 'auto',
-                minWidth: 'min(600px, 90vw)'
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                  <h3 style={{ margin: 0 }}>
+            <div className="modal-overlay">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <div className="modal-title">
                     {cellDetail.student.email} - {cellDetail.module.name}
-                  </h3>
-                  <button onClick={closeCellDetail} className="btn">✕</button>
+                  </div>
+                  <button onClick={closeCellDetail} className="teacher-btn teacher-btn-small">✕</button>
                 </div>
 
-                <div style={{ marginBottom: '20px', padding: '16px', backgroundColor: '#f5f5f5', borderRadius: '4px' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                    <div>
-                      <strong>voortgang:</strong> {cellDetail.progress.completion_percentage}%
-                      <span style={{ color: '#666', fontSize: '14px', marginLeft: '8px' }}>
-                        ({cellDetail.progress.answered_words}/{cellDetail.progress.total_words} woorden)
-                      </span>
-                    </div>
-                    <div>
-                      <strong>score:</strong> {cellDetail.progress.score}% correct
-                      <span style={{ color: '#666', fontSize: '14px', marginLeft: '8px' }}>
-                        ({cellDetail.progress.correct_questions}/{cellDetail.progress.total_questions} vragen)
-                      </span>
-                    </div>
-                    <div>
-                      <strong>status:</strong> {cellDetail.progress.is_completed ? 'voltooid' : 'in uitvoering'}
-                    </div>
-                    <div>
-                      <strong>tijd besteed:</strong> {cellDetail.progress.time_spent ? `${Math.round(cellDetail.progress.time_spent / 60)} min` : '-'}
-                    </div>
+                <div className="modal-stats">
+                  <div className="modal-stat">
+                    <strong>voortgang:</strong> {cellDetail.progress.completion_percentage}%
+                    <span style={{ opacity: 0.7, fontSize: 'clamp(12px, 1vw, 14px)', marginLeft: '8px' }}>
+                      ({cellDetail.progress.answered_words}/{cellDetail.progress.total_words} woorden)
+                    </span>
+                  </div>
+                  <div className="modal-stat">
+                    <strong>score:</strong> {cellDetail.progress.score}% correct
+                    <span style={{ opacity: 0.7, fontSize: 'clamp(12px, 1vw, 14px)', marginLeft: '8px' }}>
+                      ({cellDetail.progress.correct_questions}/{cellDetail.progress.total_questions} vragen)
+                    </span>
+                  </div>
+                  <div className="modal-stat">
+                    <strong>status:</strong> {cellDetail.progress.is_completed ? 'voltooid' : 'in uitvoering'}
+                  </div>
+                  <div className="modal-stat">
+                    <strong>tijd besteed:</strong> {cellDetail.progress.time_spent ? `${Math.round(cellDetail.progress.time_spent / 60)} min` : '-'}
                   </div>
                 </div>
 
                 {cellDetail.question_progress.length > 0 && (
                   <>
-                    <h4>vraaggeschiedenis ({cellDetail.question_progress.length} pogingen)</h4>
-                    <div style={{ maxHeight: '400px', overflow: 'auto' }}>
-                      <table className="progress-table">
+                    <div style={{
+                      fontFamily: 'Perpetua, Georgia, "Times New Roman", Times, serif',
+                      fontSize: 'clamp(18px, 2vw, 24px)',
+                      marginTop: '20px',
+                      marginBottom: '15px'
+                    }}>
+                      vraaggeschiedenis ({cellDetail.question_progress.length} pogingen)
+                    </div>
+                    <div className="modal-table-container">
+                      <table className="teacher-progress-table">
                         <thead>
                           <tr>
                             <th>datum</th>
@@ -2448,7 +2441,7 @@ export default function AdminDashboard({ user }) {
                               </td>
                               <td>fase {q.phase}</td>
                               <td>{q.user_answer}</td>
-                              <td>
+                              <td style={{ textAlign: 'center' }}>
                                 {q.is_correct ? (
                                   <span style={{ color: '#4caf50' }}>✓</span>
                                 ) : (
@@ -2471,12 +2464,12 @@ export default function AdminDashboard({ user }) {
       {view === 'analytics' && selectedStudent && studentDetail && (
         <>
           <div style={{ marginBottom: '20px' }}>
-            <button onClick={backToProgress} className="btn" style={{ marginRight: '10px' }}>
+            <button onClick={backToProgress} className="teacher-btn" style={{ marginRight: '10px' }}>
               ← terug naar voortgang
             </button>
             <button
               onClick={() => exportStudentPDF(selectedStudent)}
-              className="btn"
+              className="teacher-btn"
             >
               export naar PDF
             </button>
@@ -2516,7 +2509,7 @@ export default function AdminDashboard({ user }) {
                     <>
                       <h5 style={{ marginTop: '20px', marginBottom: '10px' }}>vraaggeschiedenis</h5>
                       <div className="question-history">
-                        <table className="progress-table">
+                        <table className="teacher-progress-table">
                           <thead>
                             <tr>
                               <th>datum</th>
@@ -2560,7 +2553,7 @@ export default function AdminDashboard({ user }) {
       {view === 'analytics' && difficultWords.length > 0 && (
         <>
           <div style={{ marginBottom: '20px' }}>
-            <button onClick={backToClassroomList} className="btn">
+            <button onClick={backToClassroomList} className="teacher-btn">
               ← terug naar klassen
             </button>
           </div>
@@ -2590,7 +2583,7 @@ export default function AdminDashboard({ user }) {
             <div className="loading">laden...</div>
           ) : (
             <div className="difficult-words-container">
-              <table className="progress-table">
+              <table className="teacher-progress-table">
                 <thead>
                   <tr>
                     <th>#</th>
@@ -2624,6 +2617,8 @@ export default function AdminDashboard({ user }) {
           )}
         </>
       )}
+
+      </div>
     </div>
   )
 }

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { logout } from '../utils/auth'
 import api from '../services/api'
+import './Teacher.css'
 
 export default function TeacherDashboard({ user }) {
   const [classrooms, setClassrooms] = useState([])
@@ -156,40 +157,58 @@ export default function TeacherDashboard({ user }) {
   }
 
   if (loading && view === 'classrooms') {
-    return <div className="loading">laden...</div>
+    return (
+      <div className="teacher-stage">
+        <div style={{
+          textAlign: 'center',
+          paddingTop: '100px',
+          fontFamily: '"Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif',
+          fontSize: 'clamp(14px, 1.2vw, 16px)',
+          letterSpacing: '0.02em'
+        }}>
+          laden...
+        </div>
+      </div>
+    )
   }
 
   return (
-    <div className="container">
-      <header className="exercise-header">
-        <div className="header-title">Octovoc</div>
-        <div className="user-info">
-          {user.email} (Leerkracht)
+    <div className="teacher-stage">
+      <header className="teacher-header">
+        <div className="teacher-title">Octovoc</div>
+        <div className="teacher-user-info">
+          {user.email} (leerkracht)
           <br />
-          <button onClick={logout} className="btn" style={{marginTop: '8px', padding: '4px 12px'}}>
+          <button onClick={logout} className="teacher-btn teacher-btn-small" style={{marginTop: '8px'}}>
             uitloggen
           </button>
         </div>
       </header>
 
+      <div className="teacher-content">
+
       {view === 'classrooms' && (
         <>
-          <h2>mijn klassen</h2>
+          <div className="teacher-section-title">mijn klassen</div>
 
-          <div style={{ marginBottom: '20px' }}>
+          <div style={{ marginBottom: '30px' }}>
             <button
               onClick={() => loadDifficultWords()}
-              className="btn"
-              style={{ marginRight: '10px' }}
+              className="teacher-btn"
             >
               moeilijkste woorden (alle klassen)
             </button>
           </div>
 
           {classrooms.length === 0 ? (
-            <p>Je hebt nog geen klassen.</p>
+            <p style={{
+              fontFamily: '"Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif',
+              fontSize: 'clamp(14px, 1.2vw, 16px)'
+            }}>
+              je hebt nog geen klassen
+            </p>
           ) : (
-            <div className="classroom-list">
+            <div className="classroom-grid">
               {classrooms.map(classroom => (
                 <div key={classroom.id} className="classroom-card">
                   {editingClassroom === classroom.id ? (
@@ -198,17 +217,13 @@ export default function TeacherDashboard({ user }) {
                         type="text"
                         value={newClassName}
                         onChange={(e) => setNewClassName(e.target.value)}
-                        placeholder="Nieuwe klasnaam"
-                        style={{
-                          padding: '8px',
-                          fontSize: '16px',
-                          width: '200px',
-                          marginRight: '10px'
-                        }}
+                        placeholder="nieuwe klasnaam"
+                        className="teacher-input"
+                        style={{ width: '200px', marginRight: '10px' }}
                       />
                       <button
                         onClick={() => renameClassroom(classroom.id)}
-                        className="btn btn-primary"
+                        className="teacher-btn teacher-btn-small"
                         style={{ marginRight: '5px' }}
                       >
                         opslaan
@@ -218,47 +233,36 @@ export default function TeacherDashboard({ user }) {
                           setEditingClassroom(null)
                           setNewClassName('')
                         }}
-                        className="btn"
+                        className="teacher-btn teacher-btn-small"
                       >
                         annuleren
                       </button>
                     </div>
                   ) : (
                     <>
-                      <h3 style={{ marginBottom: '10px' }}>
+                      <div className="classroom-card-title">
                         {classroom.name}
-                        {classroom.school_name && <span style={{ fontSize: '14px', color: '#666', marginLeft: '10px' }}>({classroom.school_name})</span>}
+                        {classroom.school_name && <span style={{ fontSize: 'clamp(12px, 1vw, 14px)', opacity: 0.7, marginLeft: '10px' }}>({classroom.school_name})</span>}
                         <button
                           onClick={() => {
                             setEditingClassroom(classroom.id)
                             setNewClassName(classroom.name)
                           }}
-                          className="btn"
-                          style={{
-                            marginLeft: '15px',
-                            padding: '4px 8px',
-                            fontSize: '13px'
-                          }}
+                          className="teacher-btn teacher-btn-small"
+                          style={{ marginLeft: '15px' }}
                         >
                           hernoemen
                         </button>
-                      </h3>
+                      </div>
 
-                      {/* Niveau checkboxes - responsive layout */}
-                      <div style={{
-                        display: 'flex',
-                        flexWrap: 'wrap',
-                        gap: '10px',
-                        alignItems: 'center',
-                        marginBottom: '10px'
-                      }}>
-                        <span style={{ fontSize: '14px', fontWeight: '600', marginRight: '5px' }}>
-                          Niveaus:
+                      <div className="classroom-levels">
+                        <span style={{ fontWeight: '600', marginRight: '5px' }}>
+                          niveaus:
                         </span>
                         {[1, 2, 3, 4, 5, 6].map(level => {
                           const isChecked = (classroom.allowed_levels || [1, 2, 3, 4, 5, 6]).includes(level)
                           return (
-                            <label key={level} style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
+                            <label key={level} className="classroom-level-label">
                               <input
                                 type="checkbox"
                                 checked={isChecked}
@@ -267,7 +271,6 @@ export default function TeacherDashboard({ user }) {
                                   level,
                                   classroom.allowed_levels || [1, 2, 3, 4, 5, 6]
                                 )}
-                                style={{ cursor: 'pointer' }}
                               />
                               <span>{level}</span>
                             </label>
@@ -276,26 +279,24 @@ export default function TeacherDashboard({ user }) {
                       </div>
                     </>
                   )}
-                  <div style={{ marginTop: '10px' }}>
+                  <div className="classroom-actions">
                     <button
                       onClick={() => loadClassroomProgress(classroom.id)}
-                      className="btn"
-                      style={{ marginRight: '10px' }}
+                      className="teacher-btn"
                     >
                       bekijk voortgang
                     </button>
                     <button
                       onClick={() => loadDifficultWords(classroom.id)}
-                      className="btn"
-                      style={{ marginRight: '10px' }}
+                      className="teacher-btn"
                     >
                       moeilijkste woorden
                     </button>
                     <button
                       onClick={() => exportClassroomExcel(classroom.id)}
-                      className="btn"
+                      className="teacher-btn"
                     >
-                      export naar Excel
+                      export naar excel
                     </button>
                   </div>
                 </div>
@@ -308,25 +309,36 @@ export default function TeacherDashboard({ user }) {
       {view === 'progress' && selectedClassroom && (
         <>
           <div style={{ marginBottom: '20px' }}>
-            <button onClick={backToClassrooms} className="btn">
+            <button onClick={backToClassrooms} className="teacher-btn">
               ← terug naar klassen
             </button>
           </div>
 
-          <h2>{selectedClassroom.name} - voortgang</h2>
+          <div className="teacher-section-title">{selectedClassroom.name} - voortgang</div>
 
           {loading ? (
-            <div className="loading">laden...</div>
+            <div style={{
+              fontFamily: '"Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif',
+              fontSize: 'clamp(14px, 1.2vw, 16px)',
+              letterSpacing: '0.02em'
+            }}>
+              laden...
+            </div>
           ) : progressData.length === 0 ? (
-            <p>geen leerlingen in deze klas.</p>
+            <p style={{
+              fontFamily: '"Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif',
+              fontSize: 'clamp(14px, 1.2vw, 16px)'
+            }}>
+              geen leerlingen in deze klas.
+            </p>
           ) : (
-            <div style={{ overflowX: 'auto', marginTop: '20px' }}>
-              <table className="progress-table" style={{ minWidth: '600px' }}>
+            <div className="progress-table-container">
+              <table className="teacher-progress-table">
                 <thead>
                   <tr>
-                    <th style={{ position: 'sticky', left: 0, backgroundColor: '#fff', zIndex: 10 }}>leerling</th>
+                    <th>leerling</th>
                     {modules.map(module => (
-                      <th key={module.id} style={{ minWidth: '120px', textAlign: 'center' }}>
+                      <th key={module.id}>
                         {module.name}
                       </th>
                     ))}
@@ -335,7 +347,7 @@ export default function TeacherDashboard({ user }) {
                 <tbody>
                   {progressData.map(student => (
                     <tr key={student.student_id}>
-                      <td style={{ position: 'sticky', left: 0, backgroundColor: '#fff', fontWeight: '600' }}>
+                      <td>
                         {student.student_email}
                       </td>
                       {modules.map(module => {
@@ -343,29 +355,23 @@ export default function TeacherDashboard({ user }) {
                         return (
                           <td
                             key={module.id}
-                            style={{
-                              textAlign: 'center',
-                              cursor: moduleData ? 'pointer' : 'default',
-                              backgroundColor: moduleData ? '#f9f9f9' : 'transparent'
-                            }}
+                            className={moduleData ? 'progress-cell' : ''}
                             onClick={() => moduleData && loadCellDetail(student.student_id, module.id)}
                           >
                             {moduleData ? (
-                              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                              <div className="progress-indicator">
                                 <div
+                                  className="progress-dot"
                                   style={{
-                                    width: '10px',
-                                    height: '10px',
-                                    borderRadius: '50%',
                                     backgroundColor: getColorForPercentage(moduleData.completion_percentage)
                                   }}
                                 />
-                                <span style={{ fontWeight: '600' }}>
+                                <span>
                                   {moduleData.completion_percentage}%
                                 </span>
                               </div>
                             ) : (
-                              <span style={{ color: '#ccc' }}>-</span>
+                              <span style={{ opacity: 0.3 }}>-</span>
                             )}
                           </td>
                         )
@@ -378,62 +384,48 @@ export default function TeacherDashboard({ user }) {
           )}
 
           {selectedCell && cellDetail && (
-            <div style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: 'rgba(0, 0, 0, 0.5)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 1000
-            }}>
-              <div style={{
-                backgroundColor: 'white',
-                padding: '24px',
-                borderRadius: '8px',
-                maxWidth: '90vw',
-                maxHeight: '90vh',
-                overflow: 'auto',
-                minWidth: 'min(600px, 90vw)'
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                  <h3 style={{ margin: 0 }}>
+            <div className="modal-overlay">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <div className="modal-title">
                     {cellDetail.student.email} - {cellDetail.module.name}
-                  </h3>
-                  <button onClick={closeCellDetail} className="btn">✕</button>
+                  </div>
+                  <button onClick={closeCellDetail} className="teacher-btn teacher-btn-small">✕</button>
                 </div>
 
-                <div style={{ marginBottom: '20px', padding: '16px', backgroundColor: '#f5f5f5', borderRadius: '4px' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                    <div>
-                      <strong>voortgang:</strong> {cellDetail.progress.completion_percentage}%
-                      <span style={{ color: '#666', fontSize: '14px', marginLeft: '8px' }}>
-                        ({cellDetail.progress.answered_words}/{cellDetail.progress.total_words} woorden)
-                      </span>
-                    </div>
-                    <div>
-                      <strong>score:</strong> {cellDetail.progress.score}% correct
-                      <span style={{ color: '#666', fontSize: '14px', marginLeft: '8px' }}>
-                        ({cellDetail.progress.correct_questions}/{cellDetail.progress.total_questions} vragen)
-                      </span>
-                    </div>
-                    <div>
-                      <strong>status:</strong> {cellDetail.progress.is_completed ? 'voltooid' : 'in uitvoering'}
-                    </div>
-                    <div>
-                      <strong>tijd besteed:</strong> {cellDetail.progress.time_spent ? `${Math.round(cellDetail.progress.time_spent / 60)} min` : '-'}
-                    </div>
+                <div className="modal-stats">
+                  <div className="modal-stat">
+                    <strong>voortgang:</strong> {cellDetail.progress.completion_percentage}%
+                    <span style={{ opacity: 0.7, fontSize: 'clamp(12px, 1vw, 14px)', marginLeft: '8px' }}>
+                      ({cellDetail.progress.answered_words}/{cellDetail.progress.total_words} woorden)
+                    </span>
+                  </div>
+                  <div className="modal-stat">
+                    <strong>score:</strong> {cellDetail.progress.score}% correct
+                    <span style={{ opacity: 0.7, fontSize: 'clamp(12px, 1vw, 14px)', marginLeft: '8px' }}>
+                      ({cellDetail.progress.correct_questions}/{cellDetail.progress.total_questions} vragen)
+                    </span>
+                  </div>
+                  <div className="modal-stat">
+                    <strong>status:</strong> {cellDetail.progress.is_completed ? 'voltooid' : 'in uitvoering'}
+                  </div>
+                  <div className="modal-stat">
+                    <strong>tijd besteed:</strong> {cellDetail.progress.time_spent ? `${Math.round(cellDetail.progress.time_spent / 60)} min` : '-'}
                   </div>
                 </div>
 
                 {cellDetail.question_progress.length > 0 && (
                   <>
-                    <h4>vraaggeschiedenis ({cellDetail.question_progress.length} pogingen)</h4>
-                    <div style={{ maxHeight: '400px', overflow: 'auto' }}>
-                      <table className="progress-table">
+                    <div style={{
+                      fontFamily: 'Perpetua, Georgia, "Times New Roman", Times, serif',
+                      fontSize: 'clamp(18px, 2vw, 24px)',
+                      marginTop: '20px',
+                      marginBottom: '15px'
+                    }}>
+                      vraaggeschiedenis ({cellDetail.question_progress.length} pogingen)
+                    </div>
+                    <div className="modal-table-container">
+                      <table className="teacher-progress-table">
                         <thead>
                           <tr>
                             <th>datum</th>
@@ -453,7 +445,7 @@ export default function TeacherDashboard({ user }) {
                               </td>
                               <td>fase {q.phase}</td>
                               <td>{q.user_answer}</td>
-                              <td>
+                              <td style={{ textAlign: 'center' }}>
                                 {q.is_correct ? (
                                   <span style={{ color: '#4caf50' }}>✓</span>
                                 ) : (
@@ -476,20 +468,31 @@ export default function TeacherDashboard({ user }) {
       {view === 'analytics' && (
         <>
           <div style={{ marginBottom: '20px' }}>
-            <button onClick={backToClassrooms} className="btn">
+            <button onClick={backToClassrooms} className="teacher-btn">
               ← terug naar klassen
             </button>
           </div>
 
-          <h2>moeilijkste woorden</h2>
+          <div className="teacher-section-title">moeilijkste woorden</div>
 
           {loading ? (
-            <div className="loading">laden...</div>
+            <div style={{
+              fontFamily: '"Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif',
+              fontSize: 'clamp(14px, 1.2vw, 16px)',
+              letterSpacing: '0.02em'
+            }}>
+              laden...
+            </div>
           ) : difficultWords.length === 0 ? (
-            <p>geen gegevens beschikbaar.</p>
+            <p style={{
+              fontFamily: '"Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif',
+              fontSize: 'clamp(14px, 1.2vw, 16px)'
+            }}>
+              geen gegevens beschikbaar.
+            </p>
           ) : (
-            <div className="difficult-words-container">
-              <table className="progress-table">
+            <div className="progress-table-container">
+              <table className="teacher-progress-table">
                 <thead>
                   <tr>
                     <th>#</th>
@@ -504,7 +507,7 @@ export default function TeacherDashboard({ user }) {
                       <td>{idx + 1}</td>
                       <td><strong>{word.word}</strong></td>
                       <td>{word.meaning}</td>
-                      <td>
+                      <td style={{ textAlign: 'center' }}>
                         <span style={{
                           backgroundColor: word.incorrect_count > 10 ? '#f44336' : word.incorrect_count > 5 ? '#ff9800' : '#ffc107',
                           color: '#fff',
@@ -523,6 +526,8 @@ export default function TeacherDashboard({ user }) {
           )}
         </>
       )}
+
+      </div>
     </div>
   )
 }

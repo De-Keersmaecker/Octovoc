@@ -1,0 +1,306 @@
+.teacher-stage {
+  min-height: 100vh;
+  width: 100%;
+  background: #000;
+  color: #fff;
+  padding: 20px;
+}
+
+.teacher-header {
+  max-width: 1400px;
+  margin: 0 auto 30px auto;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.teacher-title {
+  font-family: Perpetua, Georgia, "Times New Roman", Times, serif;
+  font-size: clamp(32px, 5vw, 56px);
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  font-weight: 400;
+}
+
+.teacher-user-info {
+  text-align: right;
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+  font-size: clamp(12px, 1vw, 14px);
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+}
+
+.teacher-content {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.teacher-section-title {
+  font-family: Perpetua, Georgia, "Times New Roman", Times, serif;
+  font-size: clamp(24px, 3vw, 36px);
+  margin-bottom: 30px;
+  font-weight: 400;
+}
+
+.classroom-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.classroom-card {
+  background: transparent;
+  border: 1px solid #fff;
+  padding: 20px;
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+}
+
+.classroom-card-title {
+  font-size: clamp(16px, 1.5vw, 20px);
+  margin-bottom: 15px;
+  letter-spacing: 0.02em;
+}
+
+.classroom-levels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 15px 0;
+  font-size: clamp(12px, 1vw, 14px);
+}
+
+.classroom-level-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.classroom-level-label input[type="checkbox"] {
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+}
+
+.classroom-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 15px;
+}
+
+.teacher-btn {
+  appearance: none;
+  background: transparent;
+  color: #fff;
+  border: 1px solid #fff;
+  padding: 8px 16px;
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+  font-size: clamp(12px, 1vw, 14px);
+  letter-spacing: 0.02em;
+  border-radius: 0;
+  cursor: pointer;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+
+.teacher-btn:hover {
+  background-color: #fff;
+  color: #000;
+}
+
+.teacher-btn-small {
+  padding: 4px 12px;
+  font-size: clamp(11px, 0.9vw, 13px);
+}
+
+.teacher-input {
+  appearance: none;
+  background: transparent;
+  color: #fff;
+  border: 1px solid #fff;
+  padding: 8px 12px;
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+  font-size: clamp(13px, 1.1vw, 15px);
+  letter-spacing: 0.02em;
+  border-radius: 0;
+  transition: background-color 160ms ease;
+}
+
+.teacher-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.teacher-input:focus {
+  outline: none;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.progress-table-container {
+  overflow-x: auto;
+  margin: 20px 0;
+}
+
+.teacher-progress-table {
+  width: 100%;
+  min-width: 800px;
+  border-collapse: collapse;
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+  font-size: clamp(12px, 1vw, 14px);
+}
+
+.teacher-progress-table th,
+.teacher-progress-table td {
+  padding: 12px;
+  text-align: left;
+  border: 1px solid #fff;
+}
+
+.teacher-progress-table th {
+  background: #fff;
+  color: #000;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+.teacher-progress-table tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.teacher-progress-table td {
+  background: #000;
+}
+
+.teacher-progress-table td:first-child {
+  position: sticky;
+  left: 0;
+  background: #000;
+  z-index: 3;
+  font-weight: 600;
+}
+
+.teacher-progress-table th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 10;
+  background: #fff;
+}
+
+.progress-cell {
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 160ms ease;
+}
+
+.progress-cell:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.progress-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.progress-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-content {
+  background: #000;
+  border: 1px solid #fff;
+  padding: 30px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: auto;
+  min-width: min(600px, 90vw);
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #fff;
+}
+
+.modal-title {
+  font-family: Perpetua, Georgia, "Times New Roman", Times, serif;
+  font-size: clamp(20px, 2.5vw, 28px);
+  font-weight: 400;
+}
+
+.modal-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+  padding: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.modal-stat {
+  font-size: clamp(13px, 1.1vw, 15px);
+}
+
+.modal-stat strong {
+  font-weight: 600;
+}
+
+.modal-table-container {
+  max-height: 400px;
+  overflow: auto;
+  margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+  .teacher-stage {
+    padding: 15px;
+  }
+
+  .classroom-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .teacher-progress-table {
+    font-size: 11px;
+  }
+
+  .teacher-progress-table th,
+  .teacher-progress-table td {
+    padding: 8px;
+  }
+
+  .modal-content {
+    padding: 20px;
+  }
+
+  .modal-stats {
+    grid-template-columns: 1fr;
+  }
+}
