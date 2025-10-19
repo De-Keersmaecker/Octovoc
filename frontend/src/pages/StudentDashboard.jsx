@@ -48,14 +48,14 @@ export default function StudentDashboard({ user, setUser }) {
   useEffect(() => {
     // When allowed levels change, ensure selected level is valid
     if (allowedLevels.length > 0 && !allowedLevels.includes(selectedLevel)) {
-      setSelectedLevel(allowedLevels[0])
+      const newLevel = allowedLevels[0]
+      setSelectedLevel(newLevel)
+      // Don't fetch here - let the next useEffect handle it
+    } else if (allowedLevels.length > 0 && allowedLevels.includes(selectedLevel)) {
+      // Level is valid, fetch modules
+      fetchModules(selectedLevel)
     }
   }, [allowedLevels, selectedLevel])
-
-  useEffect(() => {
-    // Fetch modules when selected level changes
-    fetchModules(selectedLevel)
-  }, [selectedLevel])
 
   const fetchAllowedLevels = async () => {
     try {

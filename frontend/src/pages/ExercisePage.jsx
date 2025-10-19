@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import api from '../services/api'
 import ModuleProgressFooter from '../components/common/ModuleProgressFooter'
@@ -8,6 +8,7 @@ import './Exercise.css'
 export default function ExercisePage({ user }) {
   const { moduleId } = useParams()
   const navigate = useNavigate()
+  const inputRef = useRef(null)
   const [loading, setLoading] = useState(true)
   const [currentWord, setCurrentWord] = useState(null)
   const [batteryWords, setBatteryWords] = useState([])
@@ -32,6 +33,13 @@ export default function ExercisePage({ user }) {
   useEffect(() => {
     startModule()
   }, [])
+
+  // Auto-focus input in phase 3 when currentWord changes or feedback clears
+  useEffect(() => {
+    if (phase === 3 && inputRef.current && !feedback) {
+      inputRef.current.focus()
+    }
+  }, [phase, currentWord, feedback])
 
   const startModule = async () => {
     try {
@@ -170,13 +178,17 @@ export default function ExercisePage({ user }) {
 
       // Handle anonymous mode
       if (res.data.anonymous || isAnonymous) {
+        // For phase 3 incorrect answers, show answer for 3 seconds
+        const delay = currentPhase === 3 && !res.data.is_correct ? 3000 : (currentPhase === 3 ? 800 : 1500)
         setTimeout(() => {
           handleAnonymousProgress(res.data.is_correct)
-        }, currentPhase === 3 ? 800 : 1500)
+        }, delay)
       } else {
         // Authenticated mode
         setBatteryProgress(res.data.battery_progress)
 
+        // For phase 3 incorrect answers, show answer for 3 seconds
+        const delay = currentPhase === 3 && !res.data.is_correct ? 3000 : (currentPhase === 3 ? 800 : 1500)
         setTimeout(() => {
           if (res.data.battery_complete) {
             startModule()
@@ -198,7 +210,7 @@ export default function ExercisePage({ user }) {
             console.error('Unexpected state', res.data)
             navigate('/')
           }
-        }, currentPhase === 3 ? 800 : 1500)
+        }, delay)
       }
     } catch (err) {
       console.error(err)
@@ -505,6 +517,7 @@ export default function ExercisePage({ user }) {
           {phase === 3 ? (
             <form onSubmit={handleTextSubmit} className="exercise-input-container">
               <input
+                ref={inputRef}
                 type="text"
                 value={feedback && !feedback.is_correct ? feedback.correct_answer : answer}
                 onChange={handleTextInput}
@@ -519,12 +532,15 @@ export default function ExercisePage({ user }) {
               {phase === 1 && batteryWords.map((word) => {
                 const isCorrectAnswer = word.meaning === currentWord.meaning
                 const wasClicked = feedback !== null
+                const isClickedAnswer = word.meaning === answer
                 let className = 'exercise-answer'
 
                 if (wasClicked && isCorrectAnswer) {
                   className += ' correct'
-                } else if (wasClicked && !feedback.is_correct && word.meaning === answer) {
+                } else if (wasClicked && !feedback.is_correct && isClickedAnswer) {
                   className += ' incorrect'
+                } else if (wasClicked && !feedback.is_correct && !isCorrectAnswer) {
+                  className += ' disabled'
                 }
 
                 return (
@@ -541,12 +557,15 @@ export default function ExercisePage({ user }) {
               {phase === 2 && batteryWords.map((word) => {
                 const isCorrectAnswer = word.word === currentWord.word
                 const wasClicked = feedback !== null
+                const isClickedAnswer = word.word === answer
                 let className = 'exercise-answer'
 
                 if (wasClicked && isCorrectAnswer) {
                   className += ' correct'
-                } else if (wasClicked && !feedback.is_correct && word.word === answer) {
+                } else if (wasClicked && !feedback.is_correct && isClickedAnswer) {
                   className += ' incorrect'
+                } else if (wasClicked && !feedback.is_correct && !isCorrectAnswer) {
+                  className += ' disabled'
                 }
 
                 return (

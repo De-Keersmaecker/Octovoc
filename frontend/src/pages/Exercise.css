@@ -107,6 +107,10 @@
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;
+  background-color: #fff;
+  color: #000;
+  padding: 2px 6px;
+  font-weight: 600;
 }
 
 .exercise-answers {
@@ -156,9 +160,37 @@
 }
 
 .exercise-answer.incorrect {
-  background-color: rgba(255, 255, 255, 0.15);
-  color: #fff;
-  opacity: 0.5;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.4);
+  cursor: default;
+}
+
+.exercise-answer.disabled {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.3);
+  cursor: default;
+  pointer-events: none;
+}
+
+.exercise-answer.correct {
+  background-color: #fff;
+  color: #000;
+  font-weight: 600;
+  animation: highlight 3s ease-out;
+}
+
+@keyframes highlight {
+  0% {
+    background-color: #fff;
+    transform: scale(1);
+  }
+  10% {
+    transform: scale(1.02);
+  }
+  100% {
+    background-color: #fff;
+    transform: scale(1);
+  }
 }
 
 .exercise-input-container {
@@ -198,6 +230,13 @@
 .exercise-input.incorrect {
   background-color: rgba(255, 255, 255, 0.15);
   color: #fff;
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
 }
 
 @media (max-width: 768px) {
