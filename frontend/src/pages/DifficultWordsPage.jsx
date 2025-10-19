@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../services/api'
 import ModuleProgressFooter from '../components/common/ModuleProgressFooter'
+import './Exercise.css'
+import './Dashboard.css'
 
 export default function DifficultWordsPage({ user }) {
   const navigate = useNavigate()
@@ -223,78 +225,99 @@ export default function DifficultWordsPage({ user }) {
   }
 
   if (loading) {
-    return <div className="loading">Laden...</div>
+    return (
+      <div className="dashboard-stage">
+        <div style={{
+          textAlign: 'center',
+          paddingTop: '100px',
+          fontFamily: '"Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif',
+          fontSize: 'clamp(14px, 1.2vw, 16px)',
+          letterSpacing: '0.02em'
+        }}>
+          laden...
+        </div>
+      </div>
+    )
   }
 
   if (!practicing) {
     return (
-      <div className="container">
-        <header className="exercise-header">
-          <div className="header-title">Octovoc</div>
-          <div className="user-info">
+      <div className="dashboard-stage">
+        <header className="dashboard-header">
+          <div className="dashboard-title">Octovoc</div>
+          <div className="dashboard-user-info">
             {user.email}<br />
-            Klas 4B
+            {user.classroom_name || ''}
           </div>
         </header>
 
-        <div style={{ marginBottom: '20px' }}>
-          <button onClick={() => navigate('/')} className="btn">
+        <div className="dashboard-content">
+          <div style={{
+            fontFamily: 'Perpetua, Georgia, "Times New Roman", Times, serif',
+            fontSize: 'clamp(24px, 3vw, 36px)',
+            marginBottom: '30px'
+          }}>
+            moeilijke woorden
+          </div>
+
+          {difficultWords.length === 0 ? (
+            <p style={{
+              fontFamily: '"Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif',
+              fontSize: 'clamp(14px, 1.2vw, 16px)',
+              letterSpacing: '0.02em'
+            }}>
+              je hebt momenteel geen moeilijke woorden. goed bezig!
+            </p>
+          ) : (
+            <>
+              <p style={{
+                fontFamily: '"Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif',
+                fontSize: 'clamp(14px, 1.2vw, 16px)',
+                letterSpacing: '0.02em',
+                marginBottom: '20px'
+              }}>
+                je hebt {difficultWords.length} {difficultWords.length === 1 ? 'woord' : 'woorden'} om te oefenen
+              </p>
+
+              <button onClick={startPractice} className="dashboard-btn" style={{ marginBottom: '30px', padding: '12px 24px' }}>
+                start oefenen
+              </button>
+
+              <ul className="module-list">
+                {difficultWords.map((dw) => (
+                  <li key={dw.id} className="module-item" style={{ cursor: 'default' }}>
+                    <p className="module-info">
+                      <strong>{dw.word.word}</strong>
+                      <span className="module-details">
+                        {' | '}
+                        {dw.word.meaning}
+                      </span>
+                      <br />
+                      <span style={{ opacity: 0.7, fontSize: 'clamp(12px, 1vw, 14px)', fontStyle: 'italic' }}>
+                        {dw.word.example_sentence.replace(/\*/g, '')}
+                      </span>
+                    </p>
+                    <button
+                      onClick={() => removeWord(dw.word_id)}
+                      className="dashboard-btn"
+                      style={{
+                        marginTop: '10px',
+                        padding: '4px 12px',
+                        fontSize: 'clamp(12px, 1vw, 14px)'
+                      }}
+                    >
+                      verwijder
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+
+          <button onClick={() => navigate('/')} className="dashboard-btn" style={{ marginTop: '30px' }}>
             ← terug naar dashboard
           </button>
         </div>
-
-        <h2>mijn moeilijke woorden</h2>
-
-        {difficultWords.length === 0 ? (
-          <p>Je hebt momenteel geen moeilijke woorden. Goed bezig!</p>
-        ) : (
-          <>
-            <p style={{ marginBottom: '20px' }}>
-              Je hebt {difficultWords.length} {difficultWords.length === 1 ? 'woord' : 'woorden'} om te oefenen.
-            </p>
-
-            <button onClick={startPractice} className="btn btn-primary" style={{ marginBottom: '20px' }}>
-              start oefenen
-            </button>
-
-            <table className="progress-table">
-              <thead>
-                <tr>
-                  <th>Woord</th>
-                  <th>Betekenis</th>
-                  <th>Voorbeeldzin</th>
-                  <th>Actie</th>
-                </tr>
-              </thead>
-              <tbody>
-                {difficultWords.map((dw) => (
-                  <tr key={dw.id}>
-                    <td><strong>{dw.word.word}</strong></td>
-                    <td>{dw.word.meaning}</td>
-                    <td style={{ fontSize: '14px', fontStyle: 'italic' }}>
-                      {dw.word.example_sentence.replace(/\*/g, '')}
-                    </td>
-                    <td>
-                      <button
-                        onClick={() => removeWord(dw.word_id)}
-                        className="btn"
-                        style={{
-                          padding: '4px 8px',
-                          fontSize: '14px',
-                          backgroundColor: '#f44336',
-                          borderColor: '#f44336',
-                          color: '#ffffff'
-                        }}
-                      >
-                        verwijder
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </>
-        )}
       </div>
     )
   }
@@ -303,34 +326,37 @@ export default function DifficultWordsPage({ user }) {
   const currentWord = difficultWords[currentWordIndex].word
 
   return (
-    <div className="container">
+    <div className="exercise-stage">
       <header className="exercise-header">
-        <div className="header-title">Octovoc</div>
-        <div className="user-info">
+        <div className="exercise-title">Octovoc</div>
+        <div className="exercise-user">
           {user.email}<br />
-          Klas 4B
+          {user.classroom_name || ''}
         </div>
       </header>
 
-      <div className="module-progress-container">
-        <div className="module-title">moeilijke woorden - oefenen</div>
-        <div style={{ fontSize: '14px', color: '#666' }}>
-          Nog {difficultWords.length} {difficultWords.length === 1 ? 'woord' : 'woorden'}
+      <div className="exercise-progress-bar">
+        <div className="exercise-module-name">moeilijke woorden - oefenen</div>
+        <div style={{ fontSize: 'clamp(12px, 1vw, 14px)', opacity: 0.85 }}>
+          nog {difficultWords.length} {difficultWords.length === 1 ? 'woord' : 'woorden'}
         </div>
       </div>
 
-      <div className="sentence" dangerouslySetInnerHTML={{ __html: renderSentence(currentWord) }} />
+      <div className="exercise-content">
+        <div className="exercise-sentence" dangerouslySetInnerHTML={{ __html: renderSentence(currentWord) }} />
 
-      <form onSubmit={handleTextSubmit} className={`text-input-container ${feedback?.is_correct ? 'correct-input' : feedback ? 'incorrect-input' : ''}`}>
-        <input
-          type="text"
-          value={feedback && !feedback.is_correct ? feedback.correct_answer : answer}
-          onChange={handleTextInput}
-          disabled={feedback !== null}
-          autoFocus
-          placeholder="Typ het woord..."
-        />
-      </form>
+        <form onSubmit={handleTextSubmit} className="exercise-input-container">
+          <input
+            type="text"
+            value={feedback && !feedback.is_correct ? feedback.correct_answer : answer}
+            onChange={handleTextInput}
+            disabled={feedback !== null}
+            autoFocus
+            placeholder="typ het woord..."
+            className={`exercise-input ${feedback?.is_correct ? 'correct' : feedback ? 'incorrect' : ''}`}
+          />
+        </form>
+      </div>
     </div>
   )
 }

@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import api from '../services/api'
 import ModuleProgressFooter from '../components/common/ModuleProgressFooter'
 import QuoteModal from '../components/common/QuoteModal'
+import './Exercise.css'
 
 export default function ExercisePage({ user }) {
   const { moduleId } = useParams()
@@ -392,11 +393,35 @@ export default function ExercisePage({ user }) {
   }
 
   if (loading) {
-    return <div className="loading">Laden...</div>
+    return (
+      <div className="exercise-stage">
+        <div style={{
+          textAlign: 'center',
+          paddingTop: '100px',
+          fontFamily: '"Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif',
+          fontSize: 'clamp(14px, 1.2vw, 16px)',
+          letterSpacing: '0.02em'
+        }}>
+          laden...
+        </div>
+      </div>
+    )
   }
 
   if (!currentWord) {
-    return <div className="loading">Geen vragen beschikbaar</div>
+    return (
+      <div className="exercise-stage">
+        <div style={{
+          textAlign: 'center',
+          paddingTop: '100px',
+          fontFamily: '"Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif',
+          fontSize: 'clamp(14px, 1.2vw, 16px)',
+          letterSpacing: '0.02em'
+        }}>
+          geen vragen beschikbaar
+        </div>
+      </div>
+    )
   }
 
   const renderSentence = () => {
@@ -445,95 +470,98 @@ export default function ExercisePage({ user }) {
 
   return (
     <>
-      <div className="container">
+      <div className="exercise-stage">
         <header className="exercise-header">
-          <div className="header-title">Octovoc</div>
-          <div className="user-info">
+          <div className="exercise-title">Octovoc</div>
+          <div className="exercise-user">
             {user ? (
               <>
                 {user.email}<br />
-                {user.classroom_name || 'Geen klas'}
+                {user.classroom_name || ''}
               </>
             ) : (
               <>
-                Gast<br />
-                <small>Log in om voortgang op te slaan</small>
+                gast<br />
+                <span style={{ opacity: 0.7 }}>voortgang wordt niet opgeslagen</span>
               </>
             )}
           </div>
         </header>
 
-        <div className="module-progress-container">
-          <div className="module-title">{moduleName}</div>
-          <div className="progress-bar">
+        <div className="exercise-progress-bar">
+          <div className="exercise-module-name">{moduleName}</div>
+          <div className="progress-blocks">
             {progressHistory.map((status, idx) => (
-              <div key={idx} className={`progress-block ${status === 'correct' ? 'correct' : status === 'incorrect' ? 'incorrect' : 'empty'}`}>
-                {status === 'correct' ? 'V' : status === 'incorrect' ? 'X' : ''}
+              <div key={idx} className={`progress-block ${status === 'correct' ? 'correct' : status === 'incorrect' ? 'incorrect' : ''}`}>
+                {status === 'correct' ? '✓' : status === 'incorrect' ? '✗' : ''}
               </div>
             ))}
           </div>
         </div>
 
-        <div className="sentence" dangerouslySetInnerHTML={{ __html: renderSentence() }} />
+        <div className="exercise-content">
+          <div className="exercise-sentence" dangerouslySetInnerHTML={{ __html: renderSentence() }} />
 
-        {phase === 3 ? (
-          <form onSubmit={handleTextSubmit} className={`text-input-container ${feedback?.is_correct ? 'correct-input' : feedback ? 'incorrect-input' : ''}`}>
-            <input
-              type="text"
-              value={feedback && !feedback.is_correct ? feedback.correct_answer : answer}
-              onChange={handleTextInput}
-              disabled={feedback !== null}
-              autoFocus
-              placeholder="Typ het woord..."
-            />
-          </form>
-        ) : (
-          <ul className="answers-list">
-            {phase === 1 && batteryWords.map((word) => {
-              const isCorrectAnswer = word.meaning === currentWord.meaning
-              const wasClicked = feedback !== null
-              let className = 'answer-option'
+          {phase === 3 ? (
+            <form onSubmit={handleTextSubmit} className="exercise-input-container">
+              <input
+                type="text"
+                value={feedback && !feedback.is_correct ? feedback.correct_answer : answer}
+                onChange={handleTextInput}
+                disabled={feedback !== null}
+                autoFocus
+                placeholder="typ het woord..."
+                className={`exercise-input ${feedback?.is_correct ? 'correct' : feedback ? 'incorrect' : ''}`}
+              />
+            </form>
+          ) : (
+            <ul className="exercise-answers">
+              {phase === 1 && batteryWords.map((word) => {
+                const isCorrectAnswer = word.meaning === currentWord.meaning
+                const wasClicked = feedback !== null
+                let className = 'exercise-answer'
 
-              if (wasClicked && isCorrectAnswer) {
-                className += ' correct-answer'
-              } else if (wasClicked && !feedback.is_correct && word.meaning === answer) {
-                className += ' incorrect-answer'
-              }
+                if (wasClicked && isCorrectAnswer) {
+                  className += ' correct'
+                } else if (wasClicked && !feedback.is_correct && word.meaning === answer) {
+                  className += ' incorrect'
+                }
 
-              return (
-                <li
-                  key={word.id}
-                  className={className}
-                  onClick={() => !feedback && handleAnswer(word.meaning)}
-                >
-                  {word.meaning}
-                </li>
-              )
-            })}
+                return (
+                  <li
+                    key={word.id}
+                    className={className}
+                    onClick={() => !feedback && handleAnswer(word.meaning)}
+                  >
+                    {word.meaning}
+                  </li>
+                )
+              })}
 
-            {phase === 2 && batteryWords.map((word) => {
-              const isCorrectAnswer = word.word === currentWord.word
-              const wasClicked = feedback !== null
-              let className = 'answer-option'
+              {phase === 2 && batteryWords.map((word) => {
+                const isCorrectAnswer = word.word === currentWord.word
+                const wasClicked = feedback !== null
+                let className = 'exercise-answer'
 
-              if (wasClicked && isCorrectAnswer) {
-                className += ' correct-answer'
-              } else if (wasClicked && !feedback.is_correct && word.word === answer) {
-                className += ' incorrect-answer'
-              }
+                if (wasClicked && isCorrectAnswer) {
+                  className += ' correct'
+                } else if (wasClicked && !feedback.is_correct && word.word === answer) {
+                  className += ' incorrect'
+                }
 
-              return (
-                <li
-                  key={word.id}
-                  className={className}
-                  onClick={() => !feedback && handleAnswer(word.word)}
-                >
-                  {word.word}
-                </li>
-              )
-            })}
-          </ul>
-        )}
+                return (
+                  <li
+                    key={word.id}
+                    className={className}
+                    onClick={() => !feedback && handleAnswer(word.word)}
+                  >
+                    {word.word}
+                  </li>
+                )
+              })}
+            </ul>
+          )}
+        </div>
       </div>
 
       <ModuleProgressFooter

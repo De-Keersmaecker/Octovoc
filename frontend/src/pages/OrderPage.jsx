@@ -7,6 +7,7 @@ export default function OrderPage() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    phone: '',
     schoolName: '',
     numClassrooms: '',
     numStudents: '',
@@ -36,6 +37,7 @@ export default function OrderPage() {
       setFormData({
         name: '',
         email: '',
+        phone: '',
         schoolName: '',
         numClassrooms: '',
         numStudents: '',
@@ -86,7 +88,7 @@ export default function OrderPage() {
         }}>
           <div style={{ marginBottom: '10px' }}>€1,90 per leerling per schooljaar</div>
           <div style={{ opacity: 0.85, fontSize: 'clamp(13px, 1.1vw, 15px)' }}>
-            voortgangsopvolging | onbeperkt oefenen | lerarenaccounts
+            inclusief voortgangsopvolging | onbeperkt oefenen | lerarenaccounts
           </div>
         </div>
 
@@ -110,6 +112,15 @@ export default function OrderPage() {
             onChange={handleChange}
             placeholder="email"
             required
+            className="input-field"
+          />
+
+          <input
+            type="tel"
+            name="phone"
+            value={formData.phone}
+            onChange={handleChange}
+            placeholder="telefoonnummer (optioneel - vermeld indien je graag telefonisch info krijgt)"
             className="input-field"
           />
 
@@ -157,7 +168,7 @@ export default function OrderPage() {
           />
 
           <button type="submit" className="btn submit-btn" disabled={loading}>
-            {loading ? 'verzenden...' : 'bestelling verzenden'}
+            {loading ? 'verzenden...' : 'info en offerte aanvragen'}
           </button>
         </form>
 

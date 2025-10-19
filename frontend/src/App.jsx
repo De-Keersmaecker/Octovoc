@@ -14,6 +14,7 @@ import ResetPasswordPage from './pages/ResetPasswordPage'
 import TeacherDashboard from './pages/TeacherDashboard'
 import AdminDashboard from './pages/AdminDashboard'
 import PrivacyPage from './pages/PrivacyPage'
+import ArticlePage from './pages/ArticlePage'
 import GDPRNotification from './components/common/GDPRNotification'
 import Footer from './components/common/Footer'
 import { getToken, getUser } from './utils/auth'
@@ -69,6 +70,7 @@ function App() {
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/guest-level-select" element={<GuestLevelSelect />} />
         <Route path="/bestellen" element={<OrderPage />} />
+        <Route path="/methodologie" element={<ArticlePage />} />
 
         {/* Landing page or redirect to dashboard based on login status */}
         <Route

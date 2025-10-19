@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import api from '../services/api'
 import QuoteModal from '../components/common/QuoteModal'
 import ModuleProgressFooter from '../components/common/ModuleProgressFooter'
+import './Exercise.css'
 
 export default function FinalRoundPage({ user }) {
   const { moduleId } = useParams()
@@ -156,11 +157,35 @@ export default function FinalRoundPage({ user }) {
   }
 
   if (loading) {
-    return <div className="loading">Laden...</div>
+    return (
+      <div className="exercise-stage">
+        <div style={{
+          textAlign: 'center',
+          paddingTop: '100px',
+          fontFamily: '"Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif',
+          fontSize: 'clamp(14px, 1.2vw, 16px)',
+          letterSpacing: '0.02em'
+        }}>
+          laden...
+        </div>
+      </div>
+    )
   }
 
   if (!currentWord) {
-    return <div className="loading">Geen vragen beschikbaar</div>
+    return (
+      <div className="exercise-stage">
+        <div style={{
+          textAlign: 'center',
+          paddingTop: '100px',
+          fontFamily: '"Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif',
+          fontSize: 'clamp(14px, 1.2vw, 16px)',
+          letterSpacing: '0.02em'
+        }}>
+          geen vragen beschikbaar
+        </div>
+      </div>
+    )
   }
 
   const renderSentence = () => {
@@ -205,34 +230,37 @@ export default function FinalRoundPage({ user }) {
 
   return (
     <>
-      <div className="container">
+      <div className="exercise-stage">
         <header className="exercise-header">
-          <div className="header-title">Octovoc</div>
-          <div className="user-info">
+          <div className="exercise-title">Octovoc</div>
+          <div className="exercise-user">
             {user.email}<br />
-            Klas 4B
+            {user.classroom_name || ''}
           </div>
         </header>
 
-        <div className="module-progress-container">
-          <div className="module-title">{moduleName} - eindronde</div>
-          <div style={{ fontSize: '14px', color: '#666' }}>
-            Nog {remaining} {remaining === 1 ? 'woord' : 'woorden'}
+        <div className="exercise-progress-bar">
+          <div className="exercise-module-name">{moduleName} - eindronde</div>
+          <div style={{ fontSize: 'clamp(12px, 1vw, 14px)', opacity: 0.85 }}>
+            nog {remaining} {remaining === 1 ? 'woord' : 'woorden'}
           </div>
         </div>
 
-        <div className="sentence" dangerouslySetInnerHTML={{ __html: renderSentence() }} />
+        <div className="exercise-content">
+          <div className="exercise-sentence" dangerouslySetInnerHTML={{ __html: renderSentence() }} />
 
-        <form onSubmit={handleTextSubmit} className={`text-input-container ${feedback?.is_correct ? 'correct-input' : feedback ? 'incorrect-input' : ''}`}>
-          <input
-            type="text"
-            value={feedback && !feedback.is_correct ? feedback.correct_answer : answer}
-            onChange={handleTextInput}
-            disabled={feedback !== null}
-            autoFocus
-            placeholder="Typ het woord..."
-          />
-        </form>
+          <form onSubmit={handleTextSubmit} className="exercise-input-container">
+            <input
+              type="text"
+              value={feedback && !feedback.is_correct ? feedback.correct_answer : answer}
+              onChange={handleTextInput}
+              disabled={feedback !== null}
+              autoFocus
+              placeholder="typ het woord..."
+              className={`exercise-input ${feedback?.is_correct ? 'correct' : feedback ? 'incorrect' : ''}`}
+            />
+          </form>
+        </div>
       </div>
 
       <ModuleProgressFooter moduleId={moduleId} user={user} />

@@ -43,7 +43,7 @@ export default function GuestLevelSelect() {
         </div>
 
         <div className="info-text">
-          Met een gast-login kan je alle modules gebruiken om te oefenen, maar wordt jouw voortgang niet bijgehouden. <a href="/bestellen" className="info-link">Bestel een licentie</a> als je de vorderingen systematisch wil opvolgen.
+          Met een gast-login kan je alle modules gebruiken om te oefenen, maar wordt jouw voortgang niet bijgehouden. <a href="/bestellen" className="info-link">Bestel een licentie</a> als je de vorderingen systematisch wil opvolgen. Lees meer over <a href="/methodologie" className="info-link">de methodologie achter Octovoc</a>.
         </div>
 
         <button
