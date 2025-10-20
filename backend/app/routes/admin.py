@@ -231,6 +231,8 @@ def update_module(module_id):
                 module.name = data['name']
             if 'difficulty' in data:
                 module.difficulty = data['difficulty']
+            if 'level' in data:
+                module.level = int(data['level'])
             if 'is_free' in data:
                 module.is_free = data['is_free']
 
@@ -256,6 +258,8 @@ def update_module(module_id):
         module.name = data['name']
     if 'difficulty' in data:
         module.difficulty = data['difficulty']
+    if 'level' in data:
+        module.level = int(data['level'])
     if 'is_free' in data:
         module.is_free = data['is_free']
     if 'is_active' in data:
