@@ -85,8 +85,8 @@
   cursor: pointer;
   width: 16px;
   height: 16px;
-  accent-color: #000;
-  background: #fff;
+  accent-color: #fff;
+  border: 1px solid #fff;
 }
 
 .classroom-actions {

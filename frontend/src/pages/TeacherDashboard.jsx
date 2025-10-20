@@ -61,14 +61,25 @@ export default function TeacherDashboard({ user }) {
       return
     }
 
+    // Optimistically update local state to prevent jumping
+    setClassrooms(prevClassrooms =>
+      prevClassrooms.map(c =>
+        c.id === classroomId
+          ? { ...c, allowed_levels: newLevels }
+          : c
+      )
+    )
+
     try {
       await api.put(`/admin/classroom/${classroomId}/rename`, {
         allowed_levels: newLevels
       })
-      loadClassrooms()
+      // Don't reload - we already updated the state optimistically
     } catch (err) {
       console.error(err)
       alert('Fout bij wijzigen van niveaus')
+      // Reload on error to restore correct state
+      loadClassrooms()
     }
   }
 
