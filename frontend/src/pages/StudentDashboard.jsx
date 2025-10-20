@@ -69,17 +69,22 @@ export default function StudentDashboard({ user, setUser }) {
 
   const fetchModules = async (level = selectedLevel) => {
     try {
+      setLoading(true)
+      console.log(`Fetching modules for level ${level}`)
       const response = await api.get(`/student/modules?level=${level}`)
       let modulesData = response.data
+      console.log(`Received ${modulesData.length} modules for level ${level}`, modulesData)
 
       // If guest, only show free modules
       if (isGuest) {
         modulesData = modulesData.filter(module => module.is_free)
+        console.log(`After free filter: ${modulesData.length} modules`)
       }
 
       setModules(modulesData)
     } catch (err) {
       console.error('Error fetching modules:', err)
+      setModules([]) // Clear modules on error
     } finally {
       setLoading(false)
     }
