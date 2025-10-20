@@ -148,9 +148,11 @@
   border-bottom: 1px solid #fff;
 }
 
-.exercise-answer:hover:not(.correct):not(.incorrect):not(.disabled) {
-  background-color: #fff;
-  color: #000;
+@media (hover: hover) and (pointer: fine) {
+  .exercise-answer:hover:not(.correct):not(.incorrect):not(.disabled) {
+    background-color: #fff;
+    color: #000;
+  }
 }
 
 .exercise-answer.correct {
