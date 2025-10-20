@@ -531,15 +531,15 @@ export default function ExercisePage({ user }) {
             <ul className="exercise-answers">
               {phase === 1 && batteryWords.map((word) => {
                 const isCorrectAnswer = word.meaning === currentWord.meaning
-                const wasClicked = feedback !== null
+                const hasAnswer = feedback !== null && answer !== ''
                 const isClickedAnswer = word.meaning === answer
                 let className = 'exercise-answer'
 
-                if (wasClicked && isCorrectAnswer) {
+                if (hasAnswer && isCorrectAnswer) {
                   className += ' correct'
-                } else if (wasClicked && !feedback.is_correct && isClickedAnswer) {
+                } else if (hasAnswer && !feedback.is_correct && isClickedAnswer) {
                   className += ' incorrect'
-                } else if (wasClicked && !feedback.is_correct && !isCorrectAnswer) {
+                } else if (hasAnswer && !feedback.is_correct && !isCorrectAnswer) {
                   className += ' disabled'
                 }
 
@@ -556,15 +556,15 @@ export default function ExercisePage({ user }) {
 
               {phase === 2 && batteryWords.map((word) => {
                 const isCorrectAnswer = word.word === currentWord.word
-                const wasClicked = feedback !== null
+                const hasAnswer = feedback !== null && answer !== ''
                 const isClickedAnswer = word.word === answer
                 let className = 'exercise-answer'
 
-                if (wasClicked && isCorrectAnswer) {
+                if (hasAnswer && isCorrectAnswer) {
                   className += ' correct'
-                } else if (wasClicked && !feedback.is_correct && isClickedAnswer) {
+                } else if (hasAnswer && !feedback.is_correct && isClickedAnswer) {
                   className += ' incorrect'
-                } else if (wasClicked && !feedback.is_correct && !isCorrectAnswer) {
+                } else if (hasAnswer && !feedback.is_correct && !isCorrectAnswer) {
                   className += ' disabled'
                 }
 

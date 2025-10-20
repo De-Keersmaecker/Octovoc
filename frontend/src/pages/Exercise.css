@@ -74,13 +74,15 @@
 }
 
 .progress-block.correct {
-  background: #fff;
-  color: #000;
+  background: #4caf50;
+  color: #fff;
+  border-color: #4caf50;
 }
 
 .progress-block.incorrect {
-  background: #fff;
-  color: #000;
+  background: #f44336;
+  color: #fff;
+  border-color: #f44336;
 }
 
 .exercise-content {
@@ -88,7 +90,7 @@
   max-width: 1000px;
   width: 100%;
   margin: 0 auto;
-  padding: 40px 20px;
+  padding: 20px 20px 40px 20px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -104,9 +106,6 @@
 }
 
 .exercise-sentence .underline {
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 3px;
   background-color: #fff;
   color: #000;
   padding: 2px 6px;
@@ -148,20 +147,24 @@
   border-bottom: 1px solid #fff;
 }
 
-.exercise-answer:hover {
+.exercise-answer:hover:not(.correct):not(.incorrect):not(.disabled) {
   background-color: #fff;
   color: #000;
 }
 
 .exercise-answer.correct {
-  background-color: #fff;
-  color: #000;
+  background-color: #4caf50;
+  color: #fff;
   font-weight: 600;
+  border-color: #4caf50;
+  animation: highlight 3s ease-out;
+  cursor: default;
 }
 
 .exercise-answer.incorrect {
-  background-color: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.4);
+  background-color: #f44336;
+  color: #fff;
+  border-color: #f44336;
   cursor: default;
 }
 
@@ -172,23 +175,16 @@
   pointer-events: none;
 }
 
-.exercise-answer.correct {
-  background-color: #fff;
-  color: #000;
-  font-weight: 600;
-  animation: highlight 3s ease-out;
-}
-
 @keyframes highlight {
   0% {
-    background-color: #fff;
+    background-color: #4caf50;
     transform: scale(1);
   }
   10% {
     transform: scale(1.02);
   }
   100% {
-    background-color: #fff;
+    background-color: #4caf50;
     transform: scale(1);
   }
 }
@@ -223,13 +219,15 @@
 }
 
 .exercise-input.correct {
-  background-color: #fff;
-  color: #000;
+  background-color: #4caf50;
+  color: #fff;
+  border-color: #4caf50;
 }
 
 .exercise-input.incorrect {
-  background-color: rgba(255, 255, 255, 0.15);
+  background-color: #f44336;
   color: #fff;
+  border-color: #f44336;
   animation: shake 0.5s ease-in-out;
 }
 
