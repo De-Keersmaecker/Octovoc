@@ -60,38 +60,41 @@ const ModuleProgressFooter = ({ moduleId, user, masteredWordsOverride, totalWord
 
   return (
     <footer style={{
+      position: 'fixed',
+      bottom: 0,
+      left: 0,
+      right: 0,
       width: '100%',
-      maxWidth: '800px',
-      margin: '-40px auto 40px auto',
-      padding: '0 10px'
+      backgroundColor: '#000',
+      borderTop: '1px solid #fff',
+      padding: '12px 20px',
+      zIndex: 100
     }}>
       <div style={{
-        width: '100%',
-        backgroundColor: '#f0f0f0',
-        border: '2px solid #ccc',
-        borderRadius: '4px',
-        padding: '8px',
-        boxSizing: 'border-box'
+        maxWidth: '1000px',
+        margin: '0 auto'
       }}>
         <div style={{
-          fontSize: '11px',
-          color: '#666',
-          marginBottom: '4px',
-          textAlign: 'center'
+          fontSize: 'clamp(11px, 0.9vw, 13px)',
+          color: '#fff',
+          marginBottom: '6px',
+          textAlign: 'center',
+          fontFamily: '"Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif',
+          letterSpacing: '0.02em'
         }}>
           {progressData.masteredWords} van {progressData.totalWords} woorden onder de knie
         </div>
         <div style={{
           width: '100%',
-          height: '12px',
-          backgroundColor: '#e0e0e0',
-          borderRadius: '6px',
+          height: '8px',
+          backgroundColor: 'rgba(255, 255, 255, 0.2)',
+          borderRadius: '4px',
           overflow: 'hidden'
         }}>
           <div style={{
             width: `${progressData.percentage}%`,
             height: '100%',
-            backgroundColor: '#000',
+            backgroundColor: '#4caf50',
             transition: 'width 0.5s ease-out'
           }} />
         </div>
