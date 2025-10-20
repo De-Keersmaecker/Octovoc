@@ -7,7 +7,7 @@ from app.models.module import Module, Word, Battery
 
 class ModuleService:
     @staticmethod
-    def create_module_from_excel(filepath, name, difficulty='', is_free=False):
+    def create_module_from_excel(filepath, name, difficulty='', is_free=False, level=1):
         """
         Create a module from an Excel file
         Expected format:
@@ -27,6 +27,7 @@ class ModuleService:
             module = Module(
                 name=name,
                 difficulty=difficulty,
+                level=level,
                 is_free=is_free,
                 is_active=True,
                 version=1
@@ -184,7 +185,7 @@ class ModuleService:
             raise e
 
     @staticmethod
-    def create_module_from_csv(csv_data, name, difficulty='', is_free=False):
+    def create_module_from_csv(csv_data, name, difficulty='', is_free=False, level=1):
         """
         Create a module from CSV data string
         Expected format:
@@ -195,6 +196,7 @@ class ModuleService:
             module = Module(
                 name=name,
                 difficulty=difficulty,
+                level=level,
                 is_free=is_free,
                 is_active=True,
                 version=1

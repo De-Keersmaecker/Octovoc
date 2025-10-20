@@ -127,12 +127,14 @@ def upload_module():
     try:
         name = request.form.get('name', filename.replace('.xlsx', ''))
         difficulty = request.form.get('difficulty', '')
+        level = int(request.form.get('level', '1'))
         is_free = request.form.get('is_free', 'false').lower() == 'true'
 
         module = ModuleService.create_module_from_excel(
             filepath,
             name=name,
             difficulty=difficulty,
+            level=level,
             is_free=is_free
         )
 
@@ -172,6 +174,7 @@ def upload_module_csv():
     csv_data = data.get('csv_data')
     name = data.get('name')
     difficulty = data.get('difficulty', '')
+    level = int(data.get('level', 1))
     is_free = data.get('is_free', False)
 
     if not csv_data or not name:
@@ -182,6 +185,7 @@ def upload_module_csv():
             csv_data,
             name=name,
             difficulty=difficulty,
+            level=level,
             is_free=is_free
         )
 

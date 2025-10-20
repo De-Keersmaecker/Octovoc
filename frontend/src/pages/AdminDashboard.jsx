@@ -11,6 +11,7 @@ export default function AdminDashboard({ user }) {
   const [file, setFile] = useState(null)
   const [moduleName, setModuleName] = useState('')
   const [difficulty, setDifficulty] = useState('')
+  const [level, setLevel] = useState(6)
   const [isFree, setIsFree] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [message, setMessage] = useState('')
@@ -19,6 +20,7 @@ export default function AdminDashboard({ user }) {
   const [csvData, setCsvData] = useState('')
   const [csvModuleName, setCsvModuleName] = useState('')
   const [csvDifficulty, setCsvDifficulty] = useState('')
+  const [csvLevel, setCsvLevel] = useState(6)
   const [csvIsFree, setCsvIsFree] = useState(false)
   const [csvUploading, setCsvUploading] = useState(false)
   const [csvMessage, setCsvMessage] = useState('')
@@ -449,6 +451,7 @@ export default function AdminDashboard({ user }) {
     formData.append('file', file)
     formData.append('name', moduleName)
     formData.append('difficulty', difficulty)
+    formData.append('level', level)
     formData.append('is_free', isFree)
 
     try {
@@ -459,6 +462,7 @@ export default function AdminDashboard({ user }) {
       setFile(null)
       setModuleName('')
       setDifficulty('')
+      setLevel(6)
       setIsFree(false)
       loadModules()
     } catch (err) {
@@ -485,6 +489,7 @@ export default function AdminDashboard({ user }) {
           csv_data: csvData,
           name: csvModuleName,
           difficulty: csvDifficulty,
+          level: csvLevel,
           is_free: csvIsFree
         })
         setCsvMessage('Module succesvol bijgewerkt!')
@@ -494,6 +499,7 @@ export default function AdminDashboard({ user }) {
           csv_data: csvData,
           name: csvModuleName,
           difficulty: csvDifficulty,
+          level: csvLevel,
           is_free: csvIsFree
         })
         setCsvMessage('Module succesvol geüpload!')
@@ -502,6 +508,7 @@ export default function AdminDashboard({ user }) {
       setCsvData('')
       setCsvModuleName('')
       setCsvDifficulty('')
+      setCsvLevel(6)
       setCsvIsFree(false)
       setEditingCsvModuleId(null)
       loadModules()
@@ -518,6 +525,7 @@ export default function AdminDashboard({ user }) {
       setCsvData(res.data.csv_data)
       setCsvModuleName(res.data.name)
       setCsvDifficulty(res.data.difficulty || '')
+      setCsvLevel(res.data.level || 6)
       setCsvIsFree(res.data.is_free)
       setEditingCsvModuleId(moduleId)
       setCsvMessage('Bewerk mode: pas de CSV aan en klik opslaan')
@@ -1148,13 +1156,19 @@ export default function AdminDashboard({ user }) {
               </div>
 
               <div className="form-group">
-                <label>moeilijkheidsgraad</label>
-                <input
-                  type="text"
-                  value={difficulty}
-                  onChange={(e) => setDifficulty(e.target.value)}
-                  placeholder="bijv. beginner, gevorderd"
-                />
+                <label>niveau</label>
+                <select
+                  value={level}
+                  onChange={(e) => setLevel(parseInt(e.target.value))}
+                  required
+                >
+                  <option value={1}>1</option>
+                  <option value={2}>2</option>
+                  <option value={3}>3</option>
+                  <option value={4}>4</option>
+                  <option value={5}>5</option>
+                  <option value={6}>6</option>
+                </select>
               </div>
 
               <div className="form-group">
@@ -1210,13 +1224,19 @@ export default function AdminDashboard({ user }) {
               </div>
 
               <div className="form-group">
-                <label>moeilijkheidsgraad</label>
-                <input
-                  type="text"
-                  value={csvDifficulty}
-                  onChange={(e) => setCsvDifficulty(e.target.value)}
-                  placeholder="bijv. beginner, gevorderd"
-                />
+                <label>niveau</label>
+                <select
+                  value={csvLevel}
+                  onChange={(e) => setCsvLevel(parseInt(e.target.value))}
+                  required
+                >
+                  <option value={1}>1</option>
+                  <option value={2}>2</option>
+                  <option value={3}>3</option>
+                  <option value={4}>4</option>
+                  <option value={5}>5</option>
+                  <option value={6}>6</option>
+                </select>
               </div>
 
               <div className="form-group">
