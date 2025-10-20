@@ -17,11 +17,13 @@ api.interceptors.request.use((config) => {
   return config
 })
 
-// Handle 401 errors
+// Handle 401 and 422 errors
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    if (error.response?.status === 401 || error.response?.status === 422) {
+      console.error('Authentication error:', error.response?.status, error.response?.data)
+      // 422 from Flask-JWT-Extended usually means invalid/expired token
       logout()
     }
     return Promise.reject(error)

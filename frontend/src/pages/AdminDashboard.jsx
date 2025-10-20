@@ -5,6 +5,7 @@ import './Teacher.css'
 
 export default function AdminDashboard({ user }) {
   const [view, setView] = useState('modules') // 'modules', 'codes', 'users', 'quotes', 'analytics', 'schools'
+  const [authError, setAuthError] = useState(false)
 
   // Module upload state
   const [file, setFile] = useState(null)
@@ -111,11 +112,20 @@ export default function AdminDashboard({ user }) {
 
   const loadModules = async () => {
     try {
+      console.log('AdminDashboard: Loading modules...')
       const res = await api.get('/admin/modules')
+      console.log('AdminDashboard: Received modules:', res.data.length, res.data)
       setModules(res.data)
       setLoading(false)
     } catch (err) {
-      console.error(err)
+      console.error('AdminDashboard: Error loading modules:', err)
+      console.error('AdminDashboard: Error response:', err.response?.data)
+      console.error('AdminDashboard: Error status:', err.response?.status)
+      console.error('AdminDashboard: Token present:', !!localStorage.getItem('token'))
+      if (err.response?.status === 422) {
+        setAuthError(true)
+      }
+      setModules([])
       setLoading(false)
     }
   }
@@ -125,43 +135,56 @@ export default function AdminDashboard({ user }) {
       const classUrl = schoolFilter ? `/admin/codes/class?school_id=${schoolFilter}` : '/admin/codes/class'
       const teacherUrl = schoolFilter ? `/admin/codes/teacher?school_id=${schoolFilter}` : '/admin/codes/teacher'
 
+      console.log('AdminDashboard: Loading codes...')
       const [classRes, teacherRes] = await Promise.all([
         api.get(classUrl),
         api.get(teacherUrl)
       ])
+      console.log('AdminDashboard: Received class codes:', classRes.data.length, 'teacher codes:', teacherRes.data.length)
       setClassCodes(classRes.data)
       setTeacherCodes(teacherRes.data)
       setSelectedClassCodes([])
       setSelectedTeacherCodes([])
     } catch (err) {
-      console.error(err)
+      console.error('AdminDashboard: Error loading codes:', err)
+      setClassCodes([])
+      setTeacherCodes([])
     }
   }
 
   const loadClassrooms = async () => {
     try {
+      console.log('AdminDashboard: Loading classrooms...')
       const res = await api.get('/admin/classrooms')
+      console.log('AdminDashboard: Received classrooms:', res.data.length, res.data)
       setClassrooms(res.data)
     } catch (err) {
-      console.error(err)
+      console.error('AdminDashboard: Error loading classrooms:', err)
+      setClassrooms([])
     }
   }
 
   const loadTeachers = async () => {
     try {
+      console.log('AdminDashboard: Loading teachers...')
       const res = await api.get('/admin/users?role=teacher')
+      console.log('AdminDashboard: Received teachers:', res.data.length, res.data)
       setTeachers(res.data)
     } catch (err) {
-      console.error(err)
+      console.error('AdminDashboard: Error loading teachers:', err)
+      setTeachers([])
     }
   }
 
   const loadQuotes = async () => {
     try {
+      console.log('AdminDashboard: Loading quotes...')
       const res = await api.get('/admin/quotes')
+      console.log('AdminDashboard: Received quotes:', res.data.length, res.data)
       setQuotes(res.data)
     } catch (err) {
-      console.error(err)
+      console.error('AdminDashboard: Error loading quotes:', err)
+      setQuotes([])
     }
   }
 
@@ -173,21 +196,28 @@ export default function AdminDashboard({ user }) {
       if (schoolFilter) params.push(`school_id=${schoolFilter}`)
       if (params.length > 0) url += '?' + params.join('&')
 
+      console.log('AdminDashboard: Loading users from:', url)
       const res = await api.get(url)
+      console.log('AdminDashboard: Received users:', res.data.length, res.data)
       setUsers(res.data)
       setSelectedUsers([])
     } catch (err) {
-      console.error(err)
+      console.error('AdminDashboard: Error loading users:', err)
+      setUsers([])
+      setSelectedUsers([])
     }
   }
 
   // School functions
   const loadSchools = async () => {
     try {
+      console.log('AdminDashboard: Loading schools...')
       const res = await api.get('/admin/schools')
+      console.log('AdminDashboard: Received schools:', res.data.length, res.data)
       setSchools(res.data)
     } catch (err) {
-      console.error(err)
+      console.error('AdminDashboard: Error loading schools:', err)
+      setSchools([])
     }
   }
 
@@ -953,6 +983,16 @@ export default function AdminDashboard({ user }) {
 
       <div className="teacher-content">
         <div className="teacher-section-title">administrator dashboard</div>
+
+      {authError && (
+        <div className="error" style={{ marginBottom: '20px', padding: '16px', border: '1px solid #f44336', backgroundColor: 'rgba(244, 67, 54, 0.1)' }}>
+          <strong>authenticatiefout:</strong> je sessie is verlopen of ongeldig. log uit en log opnieuw in als administrator.
+          <br />
+          <button onClick={logout} className="teacher-btn" style={{ marginTop: '10px', backgroundColor: '#f44336', borderColor: '#f44336' }}>
+            uitloggen en opnieuw inloggen
+          </button>
+        </div>
+      )}
 
       {/* Navigation */}
       <div style={{ marginBottom: '30px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
