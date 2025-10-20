@@ -6,6 +6,7 @@ import './LoginPage.css'
 export default function RegisterPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [code, setCode] = useState('')
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
   const navigate = useNavigate()
@@ -15,7 +16,11 @@ export default function RegisterPage() {
     setError('')
 
     try {
-      await api.post('/auth/register', { email, password })
+      const payload = { email, password }
+      if (code.trim()) {
+        payload.code = code.trim()
+      }
+      await api.post('/auth/register', payload)
       setSuccess(true)
       setTimeout(() => navigate('/login'), 2000)
     } catch (err) {
@@ -54,6 +59,15 @@ export default function RegisterPage() {
             placeholder="wachtwoord"
             required
             className="input-field"
+          />
+
+          <input
+            type="text"
+            value={code}
+            onChange={(e) => setCode(e.target.value.toUpperCase())}
+            placeholder="klascode of lerarencode (optioneel)"
+            className="input-field"
+            style={{ textTransform: 'uppercase' }}
           />
 
           <button type="submit" className="btn submit-btn">

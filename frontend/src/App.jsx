@@ -16,7 +16,7 @@ import AdminDashboard from './pages/AdminDashboard'
 import PrivacyPage from './pages/PrivacyPage'
 import ArticlePage from './pages/ArticlePage'
 import GDPRNotification from './components/common/GDPRNotification'
-import Footer from './components/common/Footer'
+// Footer component removed
 import { getToken, getUser } from './utils/auth'
 
 function App() {
@@ -145,12 +145,6 @@ function App() {
       </Routes>
 
       <GDPRNotification />
-
-      {/* Don't show footer on exercise pages */}
-      {!location.pathname.startsWith('/exercise') &&
-       !location.pathname.startsWith('/final-round') &&
-       !location.pathname.startsWith('/difficult-words') &&
-       <Footer />}
     </>
   )
 }
