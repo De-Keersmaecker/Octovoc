@@ -18,9 +18,9 @@ export default function LoginPage({ setUser: setAppUser }) {
 
     try {
       const response = await api.post('/auth/login', { email, password })
-      const { access_token, user } = response.data
+      const { token, user } = response.data
 
-      setToken(access_token)
+      setToken(token)
       setUser(user)
       setAppUser(user)
 
