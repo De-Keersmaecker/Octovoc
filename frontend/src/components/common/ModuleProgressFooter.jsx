@@ -6,16 +6,21 @@ const ModuleProgressFooter = ({ moduleId, user, masteredWordsOverride, totalWord
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (!moduleId) return
+    if (!moduleId) {
+      setLoading(false)
+      return
+    }
 
-    // If override values are provided, use them directly
+    // If override values are provided, use them directly (for phase 3 real-time updates)
     if (masteredWordsOverride !== undefined && totalWordsOverride !== undefined) {
       const percentage = totalWordsOverride > 0 ? (masteredWordsOverride / totalWordsOverride * 100) : 0
-      setProgressData({
+      const data = {
         totalWords: totalWordsOverride,
         masteredWords: masteredWordsOverride,
         percentage
-      })
+      }
+      console.log('ModuleProgressFooter: Using override values', data)
+      setProgressData(data)
       setLoading(false)
       return
     }
@@ -28,8 +33,6 @@ const ModuleProgressFooter = ({ moduleId, user, masteredWordsOverride, totalWord
 
         if (module) {
           // Calculate mastered words
-          // For now, use completion_percentage as a proxy
-          // Later we can add a specific "mastered_words" field
           const totalWords = module.word_count || 0
           const masteredWords = Math.round(totalWords * (module.completion_percentage || 0) / 100)
 
@@ -38,23 +41,33 @@ const ModuleProgressFooter = ({ moduleId, user, masteredWordsOverride, totalWord
             masteredWords,
             percentage: module.completion_percentage || 0
           })
+        } else {
+          setLoading(false)
         }
       } catch (err) {
         console.error('Error fetching module progress:', err)
+        setLoading(false)
       } finally {
         setLoading(false)
       }
     }
 
-    // Only fetch for logged in users
+    // Fetch for logged in users, or set loading false for guests without override
     if (user) {
       fetchModuleProgress()
     } else {
+      // For guests without override data, just hide the footer
       setLoading(false)
     }
   }, [moduleId, user, masteredWordsOverride, totalWordsOverride])
 
-  if (loading || !progressData) {
+  // Don't render if loading or no data
+  if (loading) {
+    return null
+  }
+
+  // Don't render if no progress data available
+  if (!progressData) {
     return null
   }
 
@@ -68,7 +81,7 @@ const ModuleProgressFooter = ({ moduleId, user, masteredWordsOverride, totalWord
       backgroundColor: '#000',
       borderTop: '1px solid #fff',
       padding: '12px 20px',
-      zIndex: 100
+      zIndex: 1000
     }}>
       <div style={{
         maxWidth: '1000px',
