@@ -1390,3 +1390,44 @@ def export_student_excel(student_id):
     file_path = ExportService.export_student_to_excel(student_id)
 
     return send_file(file_path, as_attachment=True, download_name=f'student_{student_id}_progress.xlsx')
+
+
+@bp.route('/migrate-add-names', methods=['POST'])
+def migrate_add_names():
+    """Add first_name and last_name columns to users table (one-time migration)"""
+    try:
+        from sqlalchemy import text
+
+        # Add first_name column if it doesn't exist
+        try:
+            db.session.execute(text('ALTER TABLE users ADD COLUMN first_name VARCHAR(100)'))
+            db.session.commit()
+            print('Added first_name column')
+        except Exception as e:
+            db.session.rollback()
+            if 'already exists' in str(e) or 'duplicate column' in str(e).lower():
+                print('first_name column already exists')
+            else:
+                raise
+
+        # Add last_name column if it doesn't exist
+        try:
+            db.session.execute(text('ALTER TABLE users ADD COLUMN last_name VARCHAR(100)'))
+            db.session.commit()
+            print('Added last_name column')
+        except Exception as e:
+            db.session.rollback()
+            if 'already exists' in str(e) or 'duplicate column' in str(e).lower():
+                print('last_name column already exists')
+            else:
+                raise
+
+        return jsonify({
+            'message': 'Migration completed successfully',
+            'columns_added': ['first_name', 'last_name']
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            'error': f'Migration failed: {str(e)}'
+        }), 500
