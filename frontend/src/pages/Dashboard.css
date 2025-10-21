@@ -152,6 +152,7 @@
 
 .module-info {
   margin: 0;
+  padding-left: 10px;
 }
 
 .module-info strong {
