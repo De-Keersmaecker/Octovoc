@@ -1024,6 +1024,8 @@ def get_classroom_progress(classroom_id):
         student_row = {
             'student_id': student.id,
             'student_email': student.email,
+            'student_first_name': student.first_name,
+            'student_last_name': student.last_name,
             'modules': {}
         }
 

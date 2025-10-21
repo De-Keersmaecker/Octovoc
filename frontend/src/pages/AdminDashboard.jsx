@@ -978,6 +978,9 @@ export default function AdminDashboard({ user }) {
 
   return (
     <div className="teacher-stage">
+      <a href="#admin-content" className="skip-link">
+        Spring naar inhoud
+      </a>
       <header className="teacher-header">
         <div className="teacher-title">Octovoc</div>
         <div className="teacher-user-info">
@@ -989,7 +992,7 @@ export default function AdminDashboard({ user }) {
         </div>
       </header>
 
-      <div className="teacher-content">
+      <div id="admin-content" className="teacher-content">
         <div className="teacher-section-title">administrator dashboard</div>
 
       {authError && (
@@ -2128,7 +2131,9 @@ export default function AdminDashboard({ user }) {
                         />
                       )}
                     </td>
-                    <td style={{ wordBreak: 'break-word' }}>{u.email}</td>
+                    <td style={{ wordBreak: 'break-word' }} title={u.email}>
+                      {u.first_name && u.last_name ? `${u.first_name} ${u.last_name}` : u.email}
+                    </td>
                     <td>{u.role}</td>
                     <td style={{ wordBreak: 'break-word' }}>{u.school_name || '-'}</td>
                     <td style={{ wordBreak: 'break-word' }}>{u.classroom_name || '-'}</td>
@@ -2172,7 +2177,11 @@ export default function AdminDashboard({ user }) {
             </button>
           </div>
 
-          <h3>{studentDetail.student.email} - voortgang</h3>
+          <h3 title={studentDetail.student.email}>
+            {studentDetail.student.first_name && studentDetail.student.last_name
+              ? `${studentDetail.student.first_name} ${studentDetail.student.last_name}`
+              : studentDetail.student.email} - voortgang
+          </h3>
 
           {loading ? (
             <div className="loading">laden...</div>
@@ -2192,10 +2201,18 @@ export default function AdminDashboard({ user }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {progressData.map(student => (
+                  {progressData.map(student => {
+                    const displayName = student.student_first_name && student.student_last_name
+                      ? `${student.student_first_name} ${student.student_last_name}`
+                      : student.student_email
+
+                    return (
                     <tr key={student.student_id}>
-                      <td style={{ position: 'sticky', left: 0, backgroundColor: '#fff', color: '#000', fontWeight: '600' }}>
-                        {student.student_email}
+                      <td
+                        style={{ position: 'sticky', left: 0, backgroundColor: '#fff', color: '#000', fontWeight: '600' }}
+                        title={student.student_email}
+                      >
+                        {displayName}
                       </td>
                       {matrixModules.map(module => {
                         const moduleData = student.modules[module.id]
@@ -2230,7 +2247,8 @@ export default function AdminDashboard({ user }) {
                         )
                       })}
                     </tr>
-                  ))}
+                    )
+                  })}
                 </tbody>
               </table>
             </div>
@@ -2240,8 +2258,10 @@ export default function AdminDashboard({ user }) {
             <div className="modal-overlay">
               <div className="modal-content">
                 <div className="modal-header">
-                  <div className="modal-title">
-                    {cellDetail.student.email} - {cellDetail.module.name}
+                  <div className="modal-title" title={cellDetail.student.email}>
+                    {cellDetail.student.first_name && cellDetail.student.last_name
+                      ? `${cellDetail.student.first_name} ${cellDetail.student.last_name}`
+                      : cellDetail.student.email} - {cellDetail.module.name}
                   </div>
                   <button onClick={closeCellDetail} className="teacher-btn teacher-btn-small">✕</button>
                 </div>
@@ -2395,10 +2415,18 @@ export default function AdminDashboard({ user }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {progressData.map(student => (
+                  {progressData.map(student => {
+                    const displayName = student.student_first_name && student.student_last_name
+                      ? `${student.student_first_name} ${student.student_last_name}`
+                      : student.student_email
+
+                    return (
                     <tr key={student.student_id}>
-                      <td style={{ position: 'sticky', left: 0, backgroundColor: '#fff', color: '#000', fontWeight: '600' }}>
-                        {student.student_email}
+                      <td
+                        style={{ position: 'sticky', left: 0, backgroundColor: '#fff', color: '#000', fontWeight: '600' }}
+                        title={student.student_email}
+                      >
+                        {displayName}
                       </td>
                       {matrixModules.map(module => {
                         const moduleData = student.modules[module.id]
@@ -2433,7 +2461,8 @@ export default function AdminDashboard({ user }) {
                         )
                       })}
                     </tr>
-                  ))}
+                    )
+                  })}
                 </tbody>
               </table>
             </div>
@@ -2443,8 +2472,10 @@ export default function AdminDashboard({ user }) {
             <div className="modal-overlay">
               <div className="modal-content">
                 <div className="modal-header">
-                  <div className="modal-title">
-                    {cellDetail.student.email} - {cellDetail.module.name}
+                  <div className="modal-title" title={cellDetail.student.email}>
+                    {cellDetail.student.first_name && cellDetail.student.last_name
+                      ? `${cellDetail.student.first_name} ${cellDetail.student.last_name}`
+                      : cellDetail.student.email} - {cellDetail.module.name}
                   </div>
                   <button onClick={closeCellDetail} className="teacher-btn teacher-btn-small">✕</button>
                 </div>
@@ -2535,7 +2566,11 @@ export default function AdminDashboard({ user }) {
             </button>
           </div>
 
-          <h3>leerling details: {studentDetail.student.email}</h3>
+          <h3 title={studentDetail.student.email}>
+            leerling details: {studentDetail.student.first_name && studentDetail.student.last_name
+              ? `${studentDetail.student.first_name} ${studentDetail.student.last_name}`
+              : studentDetail.student.email}
+          </h3>
 
           {loading ? (
             <div className="loading">laden...</div>

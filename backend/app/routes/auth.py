@@ -18,14 +18,23 @@ def register():
 
     email = data.get('email', '').strip().lower()
     password = data.get('password')
+    first_name = data.get('first_name', '').strip()
+    last_name = data.get('last_name', '').strip()
     code = data.get('code', '').strip().upper()  # Can be class code or teacher code
 
+    # Validate required fields
     if not email or not password:
-        return jsonify({'error': 'Email and password are required'}), 400
+        return jsonify({'error': 'E-mail en wachtwoord zijn verplicht'}), 400
+
+    if not first_name or not last_name:
+        return jsonify({'error': 'Voornaam en achternaam zijn verplicht'}), 400
+
+    if not code:
+        return jsonify({'error': 'Klas- of lerarencode is verplicht'}), 400
 
     # Check if user already exists
     if User.query.filter_by(email=email).first():
-        return jsonify({'error': 'Email already registered'}), 400
+        return jsonify({'error': 'E-mailadres is al geregistreerd'}), 400
 
     # Determine role based on code
     role = 'student'
@@ -33,24 +42,28 @@ def register():
     teacher_code = None
     classroom_id = None
 
-    if code:
-        # Check if it's a teacher code
-        tc = TeacherCode.query.filter_by(code=code, is_active=True).first()
-        if tc:
-            role = 'teacher'
-            teacher_code = code
+    # Check if it's a teacher code
+    tc = TeacherCode.query.filter_by(code=code, is_active=True).first()
+    if tc:
+        role = 'teacher'
+        teacher_code = code
+    else:
+        # Check if it's a class code
+        cc = ClassCode.query.filter_by(code=code, is_active=True).first()
+        if cc:
+            role = 'student'
+            class_code = code
+            if cc.classroom_id:
+                classroom_id = cc.classroom_id
         else:
-            # Check if it's a class code
-            cc = ClassCode.query.filter_by(code=code, is_active=True).first()
-            if cc:
-                role = 'student'
-                class_code = code
-                if cc.classroom_id:
-                    classroom_id = cc.classroom_id
+            # Code is invalid
+            return jsonify({'error': 'Ongeldige of inactieve code'}), 400
 
     # Create user
     user = User(
         email=email,
+        first_name=first_name,
+        last_name=last_name,
         role=role,
         class_code=class_code,
         teacher_code=teacher_code,
@@ -68,7 +81,7 @@ def register():
     access_token = create_access_token(identity=str(user.id))
 
     return jsonify({
-        'message': 'Registration successful. Please verify your email.',
+        'message': 'Registratie geslaagd!',
         'token': access_token,
         'user': user.to_dict(),
         'verification_token': user.verification_token  # In production, send via email
@@ -84,15 +97,19 @@ def login():
     password = data.get('password')
 
     if not email or not password:
-        return jsonify({'error': 'Email and password are required'}), 400
+        return jsonify({'error': 'E-mail en wachtwoord zijn verplicht'}), 400
 
     user = User.query.filter_by(email=email).first()
 
     if not user or not user.check_password(password):
-        return jsonify({'error': 'Invalid email or password'}), 401
+        return jsonify({'error': 'Ongeldig e-mailadres of wachtwoord'}), 401
 
     if not user.is_active:
-        return jsonify({'error': 'Account is not active'}), 401
+        return jsonify({'error': 'Account is niet actief'}), 401
+
+    # Check if user has a class code or teacher code (except for admins)
+    if user.role != 'admin' and not user.class_code and not user.teacher_code:
+        return jsonify({'error': 'Je account heeft geen klas- of lerarencode. Registreer opnieuw met een geldige code.'}), 401
 
     # Update last activity
     user.last_activity = db.func.now()

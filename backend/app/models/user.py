@@ -9,6 +9,8 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False, index=True)
     password_hash = db.Column(db.String(255), nullable=False)
     role = db.Column(db.String(20), nullable=False)  # 'student', 'teacher', 'admin'
+    first_name = db.Column(db.String(100), nullable=True)
+    last_name = db.Column(db.String(100), nullable=True)
 
     # Student specific
     class_code = db.Column(db.String(9), db.ForeignKey('class_codes.code'), nullable=True)
@@ -62,6 +64,8 @@ class User(db.Model):
         return {
             'id': self.id,
             'email': self.email,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
             'role': self.role,
             'class_code': self.class_code,
             'classroom_id': self.classroom_id,

@@ -10,8 +10,6 @@ export default function StudentDashboard({ user, setUser }) {
   const [loading, setLoading] = useState(true)
   const [showCodeInput, setShowCodeInput] = useState(false)
   const [code, setCode] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
   const [isValidating, setIsValidating] = useState(false)
   const [shouldBlink, setShouldBlink] = useState(false)
   const [selectedLevel, setSelectedLevel] = useState(1)
@@ -99,31 +97,6 @@ export default function StudentDashboard({ user, setUser }) {
     }
   }
 
-  const handleLogin = async (e) => {
-    e.preventDefault()
-    try {
-      const response = await api.post('/auth/login', { email, password })
-      localStorage.setItem('token', response.data.token)
-      localStorage.setItem('user', JSON.stringify(response.data.user))
-      setUser(response.data.user)
-      fetchModules(selectedLevel)
-    } catch (err) {
-      alert(err.response?.data?.error || 'Login mislukt')
-    }
-  }
-
-  const handleRegister = async (e) => {
-    e.preventDefault()
-    try {
-      const response = await api.post('/auth/register', { email, password })
-      localStorage.setItem('token', response.data.token)
-      localStorage.setItem('user', JSON.stringify(response.data.user))
-      setUser(response.data.user)
-      fetchModules(selectedLevel)
-    } catch (err) {
-      alert(err.response?.data?.error || 'Registratie mislukt')
-    }
-  }
 
   const handleAddCode = async (codeValue) => {
     if (isValidating) return
@@ -211,6 +184,9 @@ export default function StudentDashboard({ user, setUser }) {
 
   return (
     <div className="dashboard-stage">
+      <a href="#main-content" className="skip-link">
+        Spring naar modules
+      </a>
       <header className="dashboard-header" role="banner">
         <h1 className="dashboard-title">Octovoc</h1>
         {isGuest ? (
@@ -225,7 +201,7 @@ export default function StudentDashboard({ user, setUser }) {
         ) : user ? (
           <div className="dashboard-user-info">
             <div style={{ marginBottom: '8px' }}>
-              {user.email}
+              {user.first_name && user.last_name ? `${user.first_name} ${user.last_name}` : user.email}
               {user.classroom_name && (
                 <>
                   <br />
@@ -255,52 +231,18 @@ export default function StudentDashboard({ user, setUser }) {
             </div>
           </div>
         ) : (
-          <div className="dashboard-user-info" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <form onSubmit={handleLogin} style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center', justifyContent: 'flex-end' }}>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="email"
-                required
-                className="dashboard-input"
-                style={{ width: '150px' }}
-              />
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="wachtwoord"
-                required
-                className="dashboard-input"
-                style={{ width: '120px' }}
-              />
-              <button type="submit" className="dashboard-btn">
-                login
-              </button>
-              <button type="button" onClick={handleRegister} className="dashboard-btn">
-                registreer
-              </button>
-              <a
-                href="/forgot-password"
-                style={{
-                  fontSize: 'clamp(11px, 0.9vw, 12px)',
-                  color: '#fff',
-                  textDecoration: 'underline',
-                  cursor: 'pointer',
-                  flexBasis: '100%',
-                  textAlign: 'right',
-                  opacity: 0.7
-                }}
-              >
-                wachtwoord vergeten?
-              </a>
-            </form>
+          <div className="dashboard-user-info" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <button onClick={() => navigate('/login')} className="dashboard-btn">
+              login
+            </button>
+            <button onClick={() => navigate('/register')} className="dashboard-btn">
+              registreer
+            </button>
           </div>
         )}
       </header>
 
-      <main className="dashboard-content" role="main">
+      <main id="main-content" className="dashboard-content" role="main">
         {allowedLevels.length === 1 ? (
           <div style={{
             textAlign: 'center',

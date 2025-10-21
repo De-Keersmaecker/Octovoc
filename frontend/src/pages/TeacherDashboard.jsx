@@ -185,6 +185,9 @@ export default function TeacherDashboard({ user }) {
 
   return (
     <div className="teacher-stage">
+      <a href="#teacher-content" className="skip-link">
+        Spring naar inhoud
+      </a>
       <header className="teacher-header">
         <div className="teacher-title">Octovoc</div>
         <div className="teacher-user-info">
@@ -196,7 +199,7 @@ export default function TeacherDashboard({ user }) {
         </div>
       </header>
 
-      <div className="teacher-content">
+      <div id="teacher-content" className="teacher-content">
 
       {view === 'classrooms' && (
         <>
@@ -356,10 +359,15 @@ export default function TeacherDashboard({ user }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {progressData.map(student => (
+                  {progressData.map(student => {
+                    const displayName = student.student_first_name && student.student_last_name
+                      ? `${student.student_first_name} ${student.student_last_name}`
+                      : student.student_email
+
+                    return (
                     <tr key={student.student_id}>
-                      <td>
-                        {student.student_email}
+                      <td title={student.student_email}>
+                        {displayName}
                       </td>
                       {modules.map(module => {
                         const moduleData = student.modules[module.id]
@@ -388,7 +396,8 @@ export default function TeacherDashboard({ user }) {
                         )
                       })}
                     </tr>
-                  ))}
+                    )
+                  })}
                 </tbody>
               </table>
             </div>
@@ -398,8 +407,10 @@ export default function TeacherDashboard({ user }) {
             <div className="modal-overlay">
               <div className="modal-content">
                 <div className="modal-header">
-                  <div className="modal-title">
-                    {cellDetail.student.email} - {cellDetail.module.name}
+                  <div className="modal-title" title={cellDetail.student.email}>
+                    {cellDetail.student.first_name && cellDetail.student.last_name
+                      ? `${cellDetail.student.first_name} ${cellDetail.student.last_name}`
+                      : cellDetail.student.email} - {cellDetail.module.name}
                   </div>
                   <button onClick={closeCellDetail} className="teacher-btn teacher-btn-small">✕</button>
                 </div>

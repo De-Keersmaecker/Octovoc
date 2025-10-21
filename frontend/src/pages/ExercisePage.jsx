@@ -483,6 +483,9 @@ export default function ExercisePage({ user }) {
   return (
     <>
       <div className="exercise-stage">
+        <a href="#exercise-content" className="skip-link">
+          Spring naar oefening
+        </a>
         <header className="exercise-header">
           <div className="exercise-title">Octovoc</div>
           <div className="exercise-user">
@@ -511,7 +514,7 @@ export default function ExercisePage({ user }) {
           </div>
         </div>
 
-        <div className="exercise-content">
+        <div id="exercise-content" className="exercise-content">
           <div className="exercise-sentence" dangerouslySetInnerHTML={{ __html: renderSentence() }} />
 
           {phase === 3 ? (
