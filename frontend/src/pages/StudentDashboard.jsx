@@ -211,8 +211,8 @@ export default function StudentDashboard({ user, setUser }) {
 
   return (
     <div className="dashboard-stage">
-      <header className="dashboard-header">
-        <div className="dashboard-title">Octovoc</div>
+      <header className="dashboard-header" role="banner">
+        <h1 className="dashboard-title">Octovoc</h1>
         {isGuest ? (
           <div className="dashboard-user-info">
             <div style={{ marginBottom: '8px' }}>
@@ -300,7 +300,7 @@ export default function StudentDashboard({ user, setUser }) {
         )}
       </header>
 
-      <div className="dashboard-content">
+      <main className="dashboard-content" role="main">
         {allowedLevels.length === 1 ? (
           <div style={{
             textAlign: 'center',
@@ -314,7 +314,7 @@ export default function StudentDashboard({ user, setUser }) {
             niveau {selectedLevel}
           </div>
         ) : (
-          <div className="level-selector">
+          <nav className="level-selector" role="navigation" aria-label="Niveau selectie">
             {[1, 2, 3, 4, 5, 6].map(level => {
               const isAllowed = allowedLevels.includes(level)
               const isSelected = selectedLevel === level
@@ -325,12 +325,14 @@ export default function StudentDashboard({ user, setUser }) {
                   onClick={() => isAllowed && setSelectedLevel(level)}
                   disabled={!isAllowed}
                   className={`level-btn-small ${isSelected ? 'active' : ''}`}
+                  aria-label={`Niveau ${level}${isSelected ? ', geselecteerd' : ''}${!isAllowed ? ', niet beschikbaar' : ''}`}
+                  aria-pressed={isSelected}
                 >
                   {level}
                 </button>
               )
             })}
-          </div>
+          </nav>
         )}
 
         {modules.length === 0 ? (
@@ -343,15 +345,19 @@ export default function StudentDashboard({ user, setUser }) {
             geen modules beschikbaar
           </p>
         ) : (
-          <ul className="module-list">
+          <ul className="module-list" role="list" aria-label="Beschikbare modules">
             {user && !isGuest && difficultWords.length > 0 && (
               <li
                 className="module-item"
                 onClick={() => navigate('/difficult-words')}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate('/difficult-words'); } }}
+                aria-label={`Oefenen op moeilijkste woorden, ${difficultWords.length} ${difficultWords.length === 1 ? 'woord' : 'woorden'}`}
               >
                 <p className="module-info">
                   <strong>oefenen op moeilijkste woorden</strong>
-                  <span className="module-details">
+                  <span className="module-details" aria-hidden="true">
                     {' | '}
                     {difficultWords.length} {difficultWords.length === 1 ? 'woord' : 'woorden'}
                   </span>
@@ -361,16 +367,23 @@ export default function StudentDashboard({ user, setUser }) {
             {modules.map((module) => {
               const isAccessible = isGuest ? module.is_free : (module.is_free || (user && user.class_code))
               const isLocked = !isAccessible
+              const progressText = module.progress && !isGuest ? `, ${Math.round(module.completion_percentage)}% voltooid` : ''
+              const lockText = isLocked ? `, ${isGuest ? 'niet gratis' : 'klascode vereist'}` : ''
 
               return (
                 <li
                   key={module.id}
                   className={`module-item ${isLocked ? 'locked' : ''}`}
                   onClick={() => isAccessible && startModule(module.id, module.is_free)}
+                  role="button"
+                  tabIndex={isAccessible ? 0 : -1}
+                  onKeyDown={(e) => { if (isAccessible && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); startModule(module.id, module.is_free); } }}
+                  aria-label={`${module.name}, ${module.word_count} woorden${progressText}${lockText}`}
+                  aria-disabled={isLocked}
                 >
                   <p className="module-info">
                     <strong>{module.name}</strong>
-                    <span className="module-details">
+                    <span className="module-details" aria-hidden="true">
                       {' | '}
                       {module.word_count} woorden
                       {module.progress && !isGuest && ` | ${Math.round(module.completion_percentage)}% voltooid`}
@@ -382,7 +395,7 @@ export default function StudentDashboard({ user, setUser }) {
             })}
           </ul>
         )}
-      </div>
+      </main>
     </div>
   )
 }

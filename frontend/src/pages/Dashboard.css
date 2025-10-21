@@ -70,6 +70,11 @@
   color: #000;
 }
 
+.level-btn-small:focus {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+
 .level-btn-small:disabled {
   opacity: 0.3;
   cursor: not-allowed;
@@ -89,7 +94,7 @@
 .module-item {
   background: transparent;
   border: 1px solid #fff;
-  padding: 16px 20px;
+  padding: 16px 20px 16px 30px;
   margin-bottom: 10px;
   cursor: pointer;
   transition: background-color 160ms ease, color 160ms ease;
@@ -100,6 +105,13 @@
 }
 
 .module-item:hover {
+  background-color: #fff;
+  color: #000;
+}
+
+.module-item:focus {
+  outline: 3px solid #fff;
+  outline-offset: -3px;
   background-color: #fff;
   color: #000;
 }
