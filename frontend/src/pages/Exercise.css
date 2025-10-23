@@ -132,10 +132,11 @@
 }
 
 .exercise-sentence .underline {
-  background-color: #fff;
-  color: #000;
-  padding: 2px 6px;
-  font-weight: 600;
+  background-color: transparent;
+  color: #fff;
+  text-decoration: underline;
+  text-decoration-color: #fff;
+  text-underline-offset: 3px;
 }
 
 .exercise-answers {
