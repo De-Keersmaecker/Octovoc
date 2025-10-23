@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../services/api'
 import { logout } from '../utils/auth'
@@ -16,59 +16,89 @@ export default function StudentDashboard({ user, setUser }) {
   const [allowedLevels, setAllowedLevels] = useState([1, 2, 3, 4, 5, 6])
   const navigate = useNavigate()
 
+  // Track if initial setup is complete to prevent race conditions
+  const isInitialized = useRef(false)
+  const currentFetchLevel = useRef(null)
+
   // Check if user is guest
   const isGuest = sessionStorage.getItem('userType') === 'guest'
   const guestLevel = isGuest ? parseInt(sessionStorage.getItem('guestLevel')) : null
 
+  // Initialize on mount - fetch allowed levels and set initial level
   useEffect(() => {
-    // If guest, set level to guestLevel
-    if (isGuest && guestLevel) {
-      setSelectedLevel(guestLevel)
-      setAllowedLevels([guestLevel])
-    } else {
-      fetchAllowedLevels()
-    }
+    const initialize = async () => {
+      setLoading(true)
 
-    // Don't fetch modules here - let the selectedLevel useEffect handle it
-    // This prevents a race condition where modules are fetched twice
+      if (isGuest && guestLevel) {
+        // Guest user - set level and allowed levels
+        setSelectedLevel(guestLevel)
+        setAllowedLevels([guestLevel])
+        // Fetch modules for guest level
+        await fetchModules(guestLevel)
+      } else {
+        // Logged in user - fetch allowed levels first
+        const levels = await fetchAllowedLevels()
 
-    if (user && !isGuest) {
-      fetchDifficultWords()
-      if (!user.class_code) {
-        setShowCodeInput(true)
-        setShouldBlink(true)
-        // Stop blinking after 4 seconds
-        setTimeout(() => setShouldBlink(false), 4000)
+        // Determine initial level
+        const initialLevel = levels.includes(selectedLevel) ? selectedLevel : levels[0]
+        setSelectedLevel(initialLevel)
+
+        // Fetch modules for initial level
+        await fetchModules(initialLevel)
+
+        // Fetch difficult words if logged in
+        if (user && !isGuest) {
+          fetchDifficultWords()
+          if (!user.class_code) {
+            setShowCodeInput(true)
+            setShouldBlink(true)
+            setTimeout(() => setShouldBlink(false), 4000)
+          }
+        }
       }
-    }
-  }, [user, isGuest, guestLevel])
 
+      isInitialized.current = true
+      setLoading(false)
+    }
+
+    initialize()
+  }, []) // Only run on mount
+
+  // Handle level changes after initialization
   useEffect(() => {
-    // When allowed levels change, ensure selected level is valid
-    if (allowedLevels.length > 0 && !allowedLevels.includes(selectedLevel)) {
-      const newLevel = allowedLevels[0]
-      setSelectedLevel(newLevel)
-      // Don't fetch here - let the next useEffect handle it
-    } else if (allowedLevels.length > 0 && allowedLevels.includes(selectedLevel)) {
-      // Level is valid, fetch modules
+    if (!isInitialized.current) return // Skip during initialization
+
+    // Fetch modules when user manually changes level
+    if (allowedLevels.includes(selectedLevel)) {
       fetchModules(selectedLevel)
     }
-  }, [allowedLevels, selectedLevel])
+  }, [selectedLevel]) // Only depend on selectedLevel
 
   const fetchAllowedLevels = async () => {
     try {
       const response = await api.get('/student/allowed-levels')
-      setAllowedLevels(response.data.allowed_levels || [1, 2, 3, 4, 5, 6])
+      const levels = response.data.allowed_levels || [1, 2, 3, 4, 5, 6]
+      setAllowedLevels(levels)
+      return levels
     } catch (err) {
       console.error('Error fetching allowed levels:', err)
-      setAllowedLevels([1, 2, 3, 4, 5, 6])
+      const defaultLevels = [1, 2, 3, 4, 5, 6]
+      setAllowedLevels(defaultLevels)
+      return defaultLevels
     }
   }
 
-  const fetchModules = async (level = selectedLevel) => {
+  const fetchModules = async (level) => {
+    // Prevent concurrent fetches for the same level
+    if (currentFetchLevel.current === level) {
+      console.log(`Already fetching modules for level ${level}, skipping...`)
+      return
+    }
+
     try {
-      setLoading(true)
+      currentFetchLevel.current = level
       console.log(`Fetching modules for level ${level}`)
+
       const response = await api.get(`/student/modules?level=${level}`)
       let modulesData = response.data
       console.log(`Received ${modulesData.length} modules for level ${level}`, modulesData)
@@ -84,7 +114,7 @@ export default function StudentDashboard({ user, setUser }) {
       console.error('Error fetching modules:', err)
       setModules([]) // Clear modules on error
     } finally {
-      setLoading(false)
+      currentFetchLevel.current = null
     }
   }
 
@@ -96,7 +126,6 @@ export default function StudentDashboard({ user, setUser }) {
       console.error('Error fetching difficult words:', err)
     }
   }
-
 
   const handleAddCode = async (codeValue) => {
     if (isValidating) return
