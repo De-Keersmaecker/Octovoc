@@ -59,6 +59,10 @@ def register():
             # Code is invalid
             return jsonify({'error': 'Ongeldige of inactieve code'}), 400
 
+    # Create verification token with 24 hour expiry
+    verification_token = secrets.token_urlsafe(32)
+    verification_expiry = datetime.utcnow() + timedelta(hours=24)
+
     # Create user
     user = User(
         email=email,
@@ -68,23 +72,30 @@ def register():
         class_code=class_code,
         teacher_code=teacher_code,
         classroom_id=classroom_id,
-        is_active=True,
+        is_active=False,  # Not active until verified
         is_verified=False,
-        verification_token=secrets.token_urlsafe(32)
+        verification_token=verification_token,
+        verification_token_expiry=verification_expiry
     )
     user.set_password(password)
 
     db.session.add(user)
     db.session.commit()
 
-    # Create access token for immediate login
-    access_token = create_access_token(identity=str(user.id))
+    # Send verification email
+    try:
+        from flask import current_app
+        from app.utils.email import send_verification_email
+
+        frontend_url = current_app.config.get('FRONTEND_URL', 'https://www.octovoc.be')
+        send_verification_email(email, verification_token, frontend_url, first_name)
+    except Exception as e:
+        print(f"Error sending verification email: {str(e)}")
+        # Continue anyway - user can request new verification email
 
     return jsonify({
-        'message': 'Registratie geslaagd!',
-        'token': access_token,
-        'user': user.to_dict(),
-        'verification_token': user.verification_token  # In production, send via email
+        'message': 'Registratie geslaagd! Check je email voor de activatielink.',
+        'email': email
     }), 201
 
 
@@ -103,6 +114,10 @@ def login():
 
     if not user or not user.check_password(password):
         return jsonify({'error': 'Ongeldig e-mailadres of wachtwoord'}), 401
+
+    # Check if email is verified
+    if not user.is_verified:
+        return jsonify({'error': 'Email nog niet geverifieerd. Check je inbox voor de activatielink.'}), 401
 
     if not user.is_active:
         return jsonify({'error': 'Account is niet actief'}), 401
@@ -130,13 +145,20 @@ def verify_email(token):
     user = User.query.filter_by(verification_token=token).first()
 
     if not user:
-        return jsonify({'error': 'Invalid verification token'}), 400
+        return jsonify({'error': 'Ongeldige activatielink'}), 400
 
+    # Check if token has expired
+    if user.verification_token_expiry and user.verification_token_expiry < datetime.utcnow():
+        return jsonify({'error': 'Activatielink is verlopen. Vraag een nieuwe aan.'}), 400
+
+    # Activate and verify user
     user.is_verified = True
+    user.is_active = True
     user.verification_token = None
+    user.verification_token_expiry = None
     db.session.commit()
 
-    return jsonify({'message': 'Email verified successfully'}), 200
+    return jsonify({'message': 'Email succesvol geverifieerd! Je kunt nu inloggen.'}), 200
 
 
 @bp.route('/forgot-password', methods=['POST'])

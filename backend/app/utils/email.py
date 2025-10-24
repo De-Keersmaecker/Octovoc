@@ -23,6 +23,93 @@ def _send_async_email(app, msg, to_email):
         # Restore default timeout
         socket.setdefaulttimeout(default_timeout)
 
+def send_verification_email(to_email, verification_token, frontend_url, first_name):
+    """Send email verification link via Flask-Mail in background thread"""
+
+    try:
+        app = current_app._get_current_object()
+
+        verification_url = f"{frontend_url}/verify-email?token={verification_token}"
+
+        # Create email message
+        msg = Message(
+            subject="Activeer je Octovoc account",
+            recipients=[to_email],
+            sender=app.config.get('MAIL_DEFAULT_SENDER')
+        )
+
+        # Plain text version
+        msg.body = f"""
+Hallo {first_name},
+
+Welkom bij Octovoc!
+
+Klik op de volgende link om je account te activeren:
+{verification_url}
+
+Deze link is 24 uur geldig.
+
+Na activatie kun je inloggen en aan de slag met de woordenschat oefeningen.
+
+Met vriendelijke groet,
+Het Octovoc Team
+"""
+
+        # HTML version
+        msg.html = f"""
+<html>
+  <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+    <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+      <h2 style="color: #000;">Welkom bij Octovoc!</h2>
+      <p>Hallo {first_name},</p>
+      <p>Bedankt voor je registratie bij Octovoc. Klik op de knop hieronder om je account te activeren:</p>
+      <p style="margin: 30px 0;">
+        <a href="{verification_url}"
+           style="background-color: #000;
+                  color: #fff;
+                  padding: 12px 30px;
+                  text-decoration: none;
+                  border-radius: 4px;
+                  display: inline-block;">
+          Activeer account
+        </a>
+      </p>
+      <p style="font-size: 14px; color: #666;">
+        Of kopieer deze link naar je browser:<br>
+        <a href="{verification_url}" style="color: #0066cc;">{verification_url}</a>
+      </p>
+      <p style="font-size: 14px; color: #666;">
+        Deze link is 24 uur geldig.
+      </p>
+      <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+      <p style="font-size: 12px; color: #999;">
+        Met vriendelijke groet,<br>
+        Het Octovoc Team
+      </p>
+    </div>
+  </body>
+</html>
+"""
+
+        # Send email in background thread
+        print(f"Starting background verification email send to {to_email}")
+        thread = threading.Thread(
+            target=_send_async_email,
+            args=(app, msg, to_email),
+            daemon=True
+        )
+        thread.start()
+
+        print(f"Background verification email thread started for {to_email}")
+        return True
+
+    except Exception as e:
+        print(f"Failed to start verification email thread: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return False
+
+
 def send_password_reset_email(to_email, reset_token):
     """Send password reset email via Flask-Mail in background thread"""
 

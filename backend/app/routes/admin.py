@@ -1431,3 +1431,59 @@ def migrate_add_names():
         return jsonify({
             'error': f'Migration failed: {str(e)}'
         }), 500
+
+
+@bp.route('/migrate-email-verification', methods=['POST'])
+def migrate_email_verification():
+    """Add email verification columns and activate existing users (one-time migration)"""
+    try:
+        from sqlalchemy import text
+
+        columns_added = []
+
+        # Add verification_token_expiry column if it doesn't exist
+        try:
+            db.session.execute(text('ALTER TABLE users ADD COLUMN verification_token_expiry TIMESTAMP'))
+            db.session.commit()
+            columns_added.append('verification_token_expiry')
+            print('Added verification_token_expiry column')
+        except Exception as e:
+            db.session.rollback()
+            if 'already exists' in str(e) or 'duplicate column' in str(e).lower():
+                print('verification_token_expiry column already exists')
+            else:
+                raise
+
+        # Add reset_token_expiry column if it doesn't exist
+        try:
+            db.session.execute(text('ALTER TABLE users ADD COLUMN reset_token_expiry TIMESTAMP'))
+            db.session.commit()
+            columns_added.append('reset_token_expiry')
+            print('Added reset_token_expiry column')
+        except Exception as e:
+            db.session.rollback()
+            if 'already exists' in str(e) or 'duplicate column' in str(e).lower():
+                print('reset_token_expiry column already exists')
+            else:
+                raise
+
+        # Activate all existing users (set is_verified and is_active to True)
+        users_updated = db.session.execute(text('''
+            UPDATE users
+            SET is_verified = TRUE, is_active = TRUE
+            WHERE is_verified = FALSE OR is_active = FALSE
+        ''')).rowcount
+        db.session.commit()
+        print(f'Activated {users_updated} existing users')
+
+        return jsonify({
+            'message': 'Migration completed successfully',
+            'columns_added': columns_added,
+            'users_activated': users_updated
+        }), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'error': f'Migration failed: {str(e)}'
+        }), 500

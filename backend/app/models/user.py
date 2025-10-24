@@ -23,8 +23,9 @@ class User(db.Model):
     is_active = db.Column(db.Boolean, default=False)
     is_verified = db.Column(db.Boolean, default=False)
     verification_token = db.Column(db.String(100), nullable=True)
+    verification_token_expiry = db.Column(db.DateTime, nullable=True)
     reset_token = db.Column(db.String(100), nullable=True)
-    # reset_token_expiry = db.Column(db.DateTime, nullable=True)  # TODO: Add after column exists in DB
+    reset_token_expiry = db.Column(db.DateTime, nullable=True)
     gdpr_accepted = db.Column(db.Boolean, default=False)
     gdpr_accepted_at = db.Column(db.DateTime, nullable=True)
 

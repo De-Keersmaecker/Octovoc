@@ -12,6 +12,7 @@ export default function RegisterPage({ setUser: setAppUser }) {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [code, setCode] = useState('')
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
@@ -59,17 +60,12 @@ export default function RegisterPage({ setUser: setAppUser }) {
         code
       })
 
-      const { token, user } = response.data
-
-      // Set token and user in localStorage
-      setToken(token)
-      setUser(user)
-      setAppUser(user)
-
-      // Navigate to dashboard (user is already logged in)
-      navigate('/dashboard')
+      // Show success message - user needs to verify email
+      setSuccess(true)
+      setError('')
     } catch (err) {
       setError(err.response?.data?.error || 'Registratie mislukt')
+      setSuccess(false)
     } finally {
       setLoading(false)
     }
@@ -83,8 +79,13 @@ export default function RegisterPage({ setUser: setAppUser }) {
         <div className="underline" aria-hidden="true"></div>
 
         {error && <div className="error-msg">{error}</div>}
+        {success && (
+          <div className="error-msg" style={{ background: 'rgba(76, 175, 80, 0.2)', borderColor: '#4caf50', color: '#4caf50' }}>
+            Registratie geslaagd! Check je email voor de activatielink.
+          </div>
+        )}
 
-        <form onSubmit={handleSubmit} className="login-form">
+        {!success && <form onSubmit={handleSubmit} className="login-form">
           <input
             type="email"
             value={email}
@@ -144,7 +145,7 @@ export default function RegisterPage({ setUser: setAppUser }) {
           <button type="submit" className="btn submit-btn" disabled={loading}>
             {loading ? 'laden...' : 'registreer'}
           </button>
-        </form>
+        </form>}
 
         <div className="links">
           <Link to="/login" className="link">login</Link>
