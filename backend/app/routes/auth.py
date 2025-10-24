@@ -158,7 +158,47 @@ def verify_email(token):
     user.verification_token_expiry = None
     db.session.commit()
 
-    return jsonify({'message': 'Email succesvol geverifieerd! Je kunt nu inloggen.'}), 200
+    # Create access token for auto-login
+    access_token = create_access_token(identity=str(user.id))
+
+    return jsonify({
+        'message': 'Email succesvol geverifieerd!',
+        'token': access_token,
+        'user': user.to_dict()
+    }), 200
+
+
+@bp.route('/resend-verification', methods=['POST'])
+def resend_verification():
+    """Resend verification email"""
+    data = request.get_json()
+    email = data.get('email', '').strip().lower()
+
+    if not email:
+        return jsonify({'error': 'Email is verplicht'}), 400
+
+    user = User.query.filter_by(email=email).first()
+
+    # Always return success message (don't reveal if email exists)
+    if user and not user.is_verified:
+        # Generate new verification token
+        user.verification_token = secrets.token_urlsafe(32)
+        user.verification_token_expiry = datetime.utcnow() + timedelta(hours=24)
+        db.session.commit()
+
+        # Send verification email
+        try:
+            from flask import current_app
+            from app.utils.email import send_verification_email
+
+            frontend_url = current_app.config.get('FRONTEND_URL', 'https://www.octovoc.be')
+            send_verification_email(email, user.verification_token, frontend_url, user.first_name)
+        except Exception as e:
+            print(f"Error sending verification email: {str(e)}")
+
+    return jsonify({
+        'message': 'Als dit e-mailadres bij ons bekend is en nog niet geverifieerd, ontvang je een nieuwe activatielink.'
+    }), 200
 
 
 @bp.route('/forgot-password', methods=['POST'])

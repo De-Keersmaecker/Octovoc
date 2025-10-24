@@ -5,6 +5,7 @@ import GuestLevelSelect from './pages/GuestLevelSelect'
 import OrderPage from './pages/OrderPage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
+import VerifyEmailPage from './pages/VerifyEmailPage'
 import StudentDashboard from './pages/StudentDashboard'
 import ExercisePage from './pages/ExercisePage'
 import FinalRoundPage from './pages/FinalRoundPage'
@@ -65,6 +66,7 @@ function App() {
         {/* Public routes */}
         <Route path="/login" element={<LoginPage setUser={setUser} />} />
         <Route path="/register" element={<RegisterPage setUser={setUser} />} />
+        <Route path="/verify-email" element={<VerifyEmailPage setUser={setUser} />} />
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
