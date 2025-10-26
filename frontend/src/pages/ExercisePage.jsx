@@ -348,10 +348,40 @@ export default function ExercisePage({ user }) {
     setAnswer(value)
 
     if (!feedback && currentWord && value.length > 0) {
-      // Check if answer is correct (respecting case sensitivity setting)
-      const isCorrect = caseSensitive
-        ? value === currentWord.word
-        : value.toLowerCase() === currentWord.word.toLowerCase()
+      // Extract the inflected form from example sentence (word between asterisks)
+      const match = currentWord.example_sentence.match(/\*([^*]+)\*/)
+      const inflectedForm = match ? match[1] : null
+
+      // Check if answer matches either the base form or the inflected form
+      let isCorrect = false
+      let correctWord = currentWord.word
+
+      if (caseSensitive) {
+        isCorrect = value === currentWord.word || (inflectedForm && value === inflectedForm)
+        // Use inflected form for mistake counting if user input is closer to it
+        if (inflectedForm && !isCorrect && value.length > 0) {
+          const distanceToBase = Math.abs(value.length - currentWord.word.length)
+          const distanceToInflected = Math.abs(value.length - inflectedForm.length)
+          if (distanceToInflected < distanceToBase) {
+            correctWord = inflectedForm
+          }
+        }
+      } else {
+        const valueLower = value.toLowerCase()
+        const baseLower = currentWord.word.toLowerCase()
+        const inflectedLower = inflectedForm ? inflectedForm.toLowerCase() : null
+
+        isCorrect = valueLower === baseLower || (inflectedLower && valueLower === inflectedLower)
+
+        // Use inflected form for mistake counting if user input is closer to it
+        if (inflectedLower && !isCorrect && valueLower.length > 0) {
+          const distanceToBase = Math.abs(valueLower.length - baseLower.length)
+          const distanceToInflected = Math.abs(valueLower.length - inflectedLower.length)
+          if (distanceToInflected < distanceToBase) {
+            correctWord = inflectedForm
+          }
+        }
+      }
 
       if (isCorrect) {
         handleAnswer(value)
@@ -359,11 +389,11 @@ export default function ExercisePage({ user }) {
         // Count mistakes: number of character positions that are wrong
         let mistakes = 0
         const userValue = caseSensitive ? value : value.toLowerCase()
-        const correctWord = caseSensitive ? currentWord.word : currentWord.word.toLowerCase()
+        const correctValue = caseSensitive ? correctWord : correctWord.toLowerCase()
 
         // Compare each character position
         for (let i = 0; i < userValue.length; i++) {
-          if (i >= correctWord.length || userValue[i] !== correctWord[i]) {
+          if (i >= correctValue.length || userValue[i] !== correctValue[i]) {
             mistakes++
           }
         }
