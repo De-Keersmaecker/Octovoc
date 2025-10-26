@@ -59,6 +59,7 @@ export default function AdminDashboard({ user }) {
   const [numClassrooms, setNumClassrooms] = useState(5)
   const [numTeacherCodes, setNumTeacherCodes] = useState(3)
   const [schoolFilter, setSchoolFilter] = useState('')
+  const [classroomFilter, setClassroomFilter] = useState('')
 
   // Bulk actions state
   const [selectedClassCodes, setSelectedClassCodes] = useState([])
@@ -110,7 +111,7 @@ export default function AdminDashboard({ user }) {
     if (view === 'users') {
       loadUsers()
     }
-  }, [userRole, schoolFilter, view])
+  }, [userRole, schoolFilter, classroomFilter, view])
 
   const loadModules = async () => {
     try {
@@ -195,7 +196,12 @@ export default function AdminDashboard({ user }) {
       let url = '/admin/users'
       const params = []
       if (userRole) params.push(`role=${userRole}`)
-      if (schoolFilter) params.push(`school_id=${schoolFilter}`)
+      if (classroomFilter) {
+        // Classroom filter takes precedence over school filter
+        params.push(`classroom_id=${classroomFilter}`)
+      } else if (schoolFilter) {
+        params.push(`school_id=${schoolFilter}`)
+      }
       if (params.length > 0) url += '?' + params.join('&')
 
       console.log('AdminDashboard: Loading users from:', url)
@@ -2058,7 +2064,10 @@ export default function AdminDashboard({ user }) {
                 <label style={{marginRight: '10px'}}>Filter op school:</label>
                 <select
                   value={schoolFilter}
-                  onChange={(e) => setSchoolFilter(e.target.value)}
+                  onChange={(e) => {
+                    setSchoolFilter(e.target.value)
+                    setClassroomFilter('') // Reset classroom filter when school changes
+                  }}
                   style={{ padding: '6px 10px' }}
                 >
                   <option value="">alle scholen</option>
@@ -2069,6 +2078,25 @@ export default function AdminDashboard({ user }) {
                   ))}
                 </select>
               </div>
+              {schoolFilter && (
+                <div>
+                  <label style={{marginRight: '10px'}}>Filter op klas:</label>
+                  <select
+                    value={classroomFilter}
+                    onChange={(e) => setClassroomFilter(e.target.value)}
+                    style={{ padding: '6px 10px' }}
+                  >
+                    <option value="">alle klassen</option>
+                    {classrooms
+                      .filter(classroom => classroom.school_id === parseInt(schoolFilter))
+                      .map(classroom => (
+                        <option key={classroom.id} value={classroom.id}>
+                          {classroom.name}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+              )}
               <button
                 onClick={bulkDeleteUsers}
                 className="teacher-btn"

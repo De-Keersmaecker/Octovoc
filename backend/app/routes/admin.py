@@ -857,19 +857,23 @@ def compose_email():
 @bp.route('/users', methods=['GET'])
 @jwt_required()
 def get_all_users():
-    """Get all users with optional role and school filters"""
+    """Get all users with optional role, school, and classroom filters"""
     error = admin_required()
     if error:
         return error
 
     role = request.args.get('role')
     school_id = request.args.get('school_id', type=int)
+    classroom_id = request.args.get('classroom_id', type=int)
 
     query = User.query
     if role:
         query = query.filter_by(role=role)
 
-    if school_id:
+    if classroom_id:
+        # Filter by specific classroom
+        query = query.filter_by(classroom_id=classroom_id)
+    elif school_id:
         # Filter students by their classroom's school_id
         query = query.join(Classroom, User.classroom_id == Classroom.id, isouter=True)
         query = query.filter(Classroom.school_id == school_id)
