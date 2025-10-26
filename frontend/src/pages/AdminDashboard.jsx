@@ -94,6 +94,7 @@ export default function AdminDashboard({ user }) {
     } else if (view === 'users') {
       loadUsers()
       loadSchools()
+      loadClassrooms()
     } else if (view === 'analytics') {
       loadClassrooms()
     } else if (view === 'schools') {
