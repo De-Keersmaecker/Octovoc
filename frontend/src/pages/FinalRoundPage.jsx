@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import api from '../services/api'
-import QuoteModal from '../components/common/QuoteModal'
+import YouTubeRewardModal from '../components/common/YouTubeRewardModal'
 import ModuleProgressFooter from '../components/common/ModuleProgressFooter'
 import './Exercise.css'
 
@@ -14,8 +14,8 @@ export default function FinalRoundPage({ user }) {
   const [feedback, setFeedback] = useState(null)
   const [remaining, setRemaining] = useState(0)
   const [moduleName, setModuleName] = useState('')
-  const [showQuote, setShowQuote] = useState(false)
-  const [quote, setQuote] = useState(null)
+  const [showVideo, setShowVideo] = useState(false)
+  const [videoUrl, setVideoUrl] = useState(null)
 
   useEffect(() => {
     startFinalRound()
@@ -49,9 +49,9 @@ export default function FinalRoundPage({ user }) {
   const showCompletionQuote = async () => {
     try {
       const res = await api.post(`/student/module/${moduleId}/complete`)
-      if (res.data.quote) {
-        setQuote(res.data.quote)
-        setShowQuote(true)
+      if (res.data.quote && res.data.quote.video_url) {
+        setVideoUrl(res.data.quote.video_url)
+        setShowVideo(true)
       } else {
         navigate('/')
       }
@@ -265,7 +265,7 @@ export default function FinalRoundPage({ user }) {
 
       <ModuleProgressFooter moduleId={moduleId} user={user} />
 
-      {showQuote && <QuoteModal quote={quote} onClose={() => navigate('/')} />}
+      {showVideo && <YouTubeRewardModal videoUrl={videoUrl} onClose={() => navigate('/')} />}
     </>
   )
 }

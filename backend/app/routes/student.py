@@ -606,3 +606,10 @@ def get_random_quote():
         return jsonify({'quote': quote.to_dict()}), 200
     else:
         return jsonify({'quote': None}), 200
+
+
+@bp.route('/quotes', methods=['GET'])
+def get_all_quotes():
+    """Get all quotes - available for anonymous users"""
+    quotes = Quote.query.filter_by(is_active=True).all()
+    return jsonify({'quotes': [q.to_dict() for q in quotes]}), 200

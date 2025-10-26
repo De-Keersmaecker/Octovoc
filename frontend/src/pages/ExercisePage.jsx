@@ -29,8 +29,11 @@ export default function ExercisePage({ user }) {
   const [masteredWords, setMasteredWords] = useState(0)
   const [baselineMasteredWords, setBaselineMasteredWords] = useState(0)
   const [caseSensitive, setCaseSensitive] = useState(false)
+  const [quotes, setQuotes] = useState([])
+  const [currentQuote, setCurrentQuote] = useState(null)
 
   useEffect(() => {
+    loadQuotes()
     startModule()
   }, [])
 
@@ -40,6 +43,27 @@ export default function ExercisePage({ user }) {
       inputRef.current.focus()
     }
   }, [phase, currentWord, feedback])
+
+  const loadQuotes = async () => {
+    try {
+      const res = await api.get('/student/quotes')
+      setQuotes(res.data.quotes || [])
+      // Set initial random quote
+      if (res.data.quotes && res.data.quotes.length > 0) {
+        const randomQuote = res.data.quotes[Math.floor(Math.random() * res.data.quotes.length)]
+        setCurrentQuote(randomQuote)
+      }
+    } catch (err) {
+      console.error('Failed to load quotes:', err)
+    }
+  }
+
+  const selectRandomQuote = () => {
+    if (quotes.length > 0) {
+      const randomQuote = quotes[Math.floor(Math.random() * quotes.length)]
+      setCurrentQuote(randomQuote)
+    }
+  }
 
   const startModule = async () => {
     try {
@@ -191,6 +215,7 @@ export default function ExercisePage({ user }) {
         const delay = currentPhase === 3 && !res.data.is_correct ? 3000 : (currentPhase === 3 ? 800 : 1500)
         setTimeout(() => {
           if (res.data.battery_complete) {
+            selectRandomQuote() // Change quote for new battery
             startModule()
           } else if (res.data.phase_complete) {
             setPhase(res.data.battery_progress.current_phase)
@@ -245,6 +270,7 @@ export default function ExercisePage({ user }) {
         setProgressWordMap({})
       } else {
         // Battery complete
+        selectRandomQuote() // Change quote for new battery
         const nextBatteryIndex = currentBatteryIndex + 1
         if (nextBatteryIndex < batteryOrder.length) {
           setCurrentBatteryIndex(nextBatteryIndex)
@@ -614,6 +640,31 @@ export default function ExercisePage({ user }) {
             </ul>
           )}
         </div>
+
+        {/* Quote display - 50px below exercise, above progress bar */}
+        {currentQuote && (
+          <div style={{
+            marginTop: '50px',
+            padding: '20px',
+            textAlign: 'center',
+            fontFamily: '"Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif',
+            fontSize: 'clamp(14px, 1.2vw, 16px)',
+            fontStyle: 'italic',
+            opacity: 0.8,
+            letterSpacing: '0.02em'
+          }}>
+            "{currentQuote.text}"
+            {currentQuote.author && (
+              <div style={{
+                marginTop: '8px',
+                fontWeight: '600',
+                fontStyle: 'normal'
+              }}>
+                — {currentQuote.author}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       <ModuleProgressFooter
