@@ -385,6 +385,14 @@ export default function ExercisePage({ user }) {
       const match = currentWord.example_sentence.match(/\*([^*]+)\*/)
       const inflectedForm = match ? match[1] : null
 
+      // Debug log
+      console.log('Input validation:', {
+        input: value,
+        baseWord: currentWord.word,
+        inflectedForm: inflectedForm,
+        caseSensitive: caseSensitive
+      })
+
       // Check if answer matches either the base form or the inflected form
       let isCorrect = false
       let correctWord = currentWord.word

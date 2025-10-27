@@ -265,7 +265,7 @@ export default function FinalRoundPage({ user }) {
 
       <ModuleProgressFooter moduleId={moduleId} user={user} />
 
-      {showVideo && <YouTubeRewardModal videoUrl={videoUrl} onClose={() => navigate('/')} />}
+      {showVideo && <YouTubeRewardModal videoUrl={videoUrl} moduleName={moduleName} onClose={() => navigate('/')} />}
     </>
   )
 }

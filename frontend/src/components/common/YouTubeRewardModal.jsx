@@ -1,4 +1,4 @@
-export default function YouTubeRewardModal({ videoUrl, onClose }) {
+export default function YouTubeRewardModal({ videoUrl, moduleName, onClose }) {
   if (!videoUrl) return null
 
   // Extract YouTube video ID from URL
@@ -69,6 +69,37 @@ export default function YouTubeRewardModal({ videoUrl, onClose }) {
         >
           ✕ sluiten
         </button>
+
+        {/* Congratulations text */}
+        <div style={{
+          textAlign: 'center',
+          color: '#ffffff',
+          marginBottom: '30px',
+          fontFamily: '"Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif'
+        }}>
+          <h2 style={{
+            fontSize: 'clamp(24px, 3vw, 32px)',
+            marginBottom: '10px',
+            fontWeight: '600',
+            letterSpacing: '0.02em'
+          }}>
+            Proficiat!
+          </h2>
+          <p style={{
+            fontSize: 'clamp(16px, 2vw, 20px)',
+            marginBottom: '8px',
+            letterSpacing: '0.02em'
+          }}>
+            Je hebt de module <strong>{moduleName}</strong> helemaal afgerond!
+          </p>
+          <p style={{
+            fontSize: 'clamp(14px, 1.5vw, 18px)',
+            letterSpacing: '0.02em',
+            opacity: 0.9
+          }}>
+            Als beloning een filmpje met schattige katjes:
+          </p>
+        </div>
 
         <div style={{
           position: 'relative',
