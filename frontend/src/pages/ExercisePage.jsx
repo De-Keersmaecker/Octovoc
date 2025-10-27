@@ -137,7 +137,6 @@ export default function ExercisePage({ user }) {
       setProgressHistory(Array(totalWords).fill(null))
       setProgressWordMap({})
       setFeedback(null)
-      setInstantFeedback(null)
       setAnswer('')
 
       // Set baseline mastered words when starting a new battery (for phase 3 tracking)
@@ -168,7 +167,6 @@ export default function ExercisePage({ user }) {
       })
 
       setFeedback(res.data)
-      setInstantFeedback(null) // Clear instant feedback once real feedback arrives
 
       // Play feedback sound and haptic
       playFeedbackSound(res.data.is_correct)
@@ -227,7 +225,6 @@ export default function ExercisePage({ user }) {
             }
             setAnswer('')
             setFeedback(null)
-            setInstantFeedback(null)
             const totalWords = batteryWords.length
             setProgressHistory(Array(totalWords).fill(null))
             setProgressWordMap({})
@@ -235,7 +232,6 @@ export default function ExercisePage({ user }) {
             setCurrentWord(res.data.next_word)
             setAnswer('')
             setFeedback(null)
-            setInstantFeedback(null)
           } else {
             console.error('Unexpected state', res.data)
             navigate('/')
@@ -294,7 +290,6 @@ export default function ExercisePage({ user }) {
       }
       setAnswer('')
       setFeedback(null)
-      setInstantFeedback(null)
     } else {
       // Next question in same phase
       const nextWordId = newQueue[0]
@@ -302,7 +297,6 @@ export default function ExercisePage({ user }) {
       setCurrentWord(nextWord)
       setAnswer('')
       setFeedback(null)
-      setInstantFeedback(null)
     }
   }
 
@@ -434,6 +428,8 @@ export default function ExercisePage({ user }) {
       if (isCorrect) {
         // Set instant visual feedback immediately
         setInstantFeedback({ is_correct: true })
+        // Clear instant feedback after the API response should have arrived
+        setTimeout(() => setInstantFeedback(null), 1000)
         handleAnswer(value)
       } else {
         // Count mistakes: number of character positions that are wrong

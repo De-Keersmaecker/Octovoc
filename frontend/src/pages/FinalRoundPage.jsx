@@ -71,6 +71,8 @@ export default function FinalRoundPage({ user }) {
       // If exactly correct, submit immediately as correct
       if (value === currentWord.word) {
         setInstantFeedback({ is_correct: true })
+        // Clear instant feedback after the API response should have arrived
+        setTimeout(() => setInstantFeedback(null), 1000)
         handleAnswer(value)
       }
       // Check if user has typed enough to evaluate
@@ -136,7 +138,6 @@ export default function FinalRoundPage({ user }) {
       })
 
       setFeedback(res.data)
-      setInstantFeedback(null) // Clear instant feedback once real feedback arrives
 
       setTimeout(() => {
         if (res.data.final_round_complete) {
@@ -148,7 +149,6 @@ export default function FinalRoundPage({ user }) {
           setRemaining(res.data.remaining)
           setAnswer('')
           setFeedback(null)
-          setInstantFeedback(null)
         }
       }, 800)
     } catch (err) {
