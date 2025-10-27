@@ -664,13 +664,13 @@ export default function ExercisePage({ user }) {
           )}
         </div>
 
-        {/* Quote display - 50px below exercise, above progress bar */}
+        {/* Quote display - 10px below exercise, above progress bar */}
         {currentQuote && (
           <div style={{
-            marginTop: '50px',
+            marginTop: '10px',
             maxWidth: '700px',
             width: '100%',
-            margin: '50px auto 0 auto',
+            margin: '10px auto 0 auto',
             padding: '0 20px',
             textAlign: 'center',
             fontFamily: 'Perpetua, Georgia, "Times New Roman", Times, serif',

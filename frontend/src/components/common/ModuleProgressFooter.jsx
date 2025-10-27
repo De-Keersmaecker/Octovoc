@@ -73,7 +73,7 @@ const ModuleProgressFooter = ({ moduleId, user, masteredWordsOverride, totalWord
   return (
     <footer style={{
       position: 'fixed',
-      bottom: 0,
+      bottom: '40px',
       left: 0,
       right: 0,
       width: '100%',

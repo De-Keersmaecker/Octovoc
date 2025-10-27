@@ -5,7 +5,7 @@
   color: #fff;
   display: flex;
   flex-direction: column;
-  padding-bottom: 80px; /* Space for fixed footer */
+  padding-bottom: 120px; /* Space for fixed footer (80px + 40px higher position) */
   position: relative;
 }
 
@@ -33,10 +33,10 @@
 }
 
 .exercise-header {
-  max-width: 700px;
-  width: 100%;
+  max-width: 660px;
+  width: calc(100% - 40px);
   margin: 0 auto;
-  padding: 20px 20px 15px 20px;
+  padding: 20px 0px 15px 0px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -72,10 +72,10 @@
 }
 
 .exercise-progress-bar {
-  max-width: 700px;
-  width: 100%;
+  max-width: 660px;
+  width: calc(100% - 40px);
   margin: 0 auto;
-  padding: 6px 20px;
+  padding: 6px 0px;
   display: flex;
   justify-content: space-between;
   align-items: center;
