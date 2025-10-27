@@ -673,7 +673,7 @@ export default function ExercisePage({ user }) {
             margin: '50px auto 0 auto',
             padding: '0 20px',
             textAlign: 'center',
-            fontFamily: '"Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif',
+            fontFamily: 'Perpetua, Georgia, "Times New Roman", Times, serif',
             fontSize: 'clamp(14px, 1.2vw, 16px)',
             fontStyle: 'italic',
             opacity: 0.8,
