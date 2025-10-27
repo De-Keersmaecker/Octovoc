@@ -16,6 +16,7 @@ export default function FinalRoundPage({ user }) {
   const [moduleName, setModuleName] = useState('')
   const [showVideo, setShowVideo] = useState(false)
   const [videoUrl, setVideoUrl] = useState(null)
+  const [instantFeedback, setInstantFeedback] = useState(null) // Immediate visual feedback before API call
 
   useEffect(() => {
     startFinalRound()
@@ -69,6 +70,7 @@ export default function FinalRoundPage({ user }) {
     if (!feedback && currentWord && value.length > 0) {
       // If exactly correct, submit immediately as correct
       if (value === currentWord.word) {
+        setInstantFeedback({ is_correct: true })
         handleAnswer(value)
       }
       // Check if user has typed enough to evaluate
@@ -134,6 +136,7 @@ export default function FinalRoundPage({ user }) {
       })
 
       setFeedback(res.data)
+      setInstantFeedback(null) // Clear instant feedback once real feedback arrives
 
       setTimeout(() => {
         if (res.data.final_round_complete) {
@@ -145,6 +148,7 @@ export default function FinalRoundPage({ user }) {
           setRemaining(res.data.remaining)
           setAnswer('')
           setFeedback(null)
+          setInstantFeedback(null)
         }
       }, 800)
     } catch (err) {
@@ -257,7 +261,10 @@ export default function FinalRoundPage({ user }) {
               disabled={feedback !== null}
               autoFocus
               placeholder="typ het woord..."
-              className={`exercise-input ${feedback?.is_correct ? 'correct' : feedback ? 'incorrect' : ''}`}
+              className={`exercise-input ${
+                instantFeedback?.is_correct || feedback?.is_correct ? 'correct' :
+                feedback ? 'incorrect' : ''
+              }`}
             />
           </form>
         </div>
