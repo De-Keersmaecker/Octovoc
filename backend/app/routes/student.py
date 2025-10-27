@@ -7,8 +7,15 @@ from app.models.progress import StudentProgress, BatteryProgress, QuestionProgre
 from app.models.quote import Quote
 from datetime import datetime
 import random
+import re
 
 bp = Blueprint('student', __name__, url_prefix='/api/student')
+
+
+def extract_inflected_form(example_sentence):
+    """Extract the word between asterisks from the example sentence."""
+    match = re.search(r'\*([^*]+)\*', example_sentence)
+    return match.group(1) if match else None
 
 
 @bp.route('/allowed-levels', methods=['GET'])
@@ -289,11 +296,12 @@ def answer_question():
         else:
             is_correct = user_answer.strip().lower() == word.word.strip().lower()
     elif phase == 3:
-        # Phase 3: Type the word
+        # Phase 3: Type the word - accept both base form and inflected form
+        inflected_form = extract_inflected_form(word.example_sentence)
         if case_sensitive:
-            is_correct = user_answer == word.word
+            is_correct = user_answer == word.word or (inflected_form and user_answer == inflected_form)
         else:
-            is_correct = user_answer.lower() == word.word.lower()
+            is_correct = user_answer.lower() == word.word.lower() or (inflected_form and user_answer.lower() == inflected_form.lower())
 
     # Anonymous user - just check answer, no progress tracking
     if not user_id:
@@ -479,11 +487,12 @@ def answer_final_round(module_id):
     module = Module.query.get(word.module_id)
     case_sensitive = module.case_sensitive if module else False
 
-    # Check answer
+    # Check answer - accept both base form and inflected form
+    inflected_form = extract_inflected_form(word.example_sentence)
     if case_sensitive:
-        is_correct = user_answer == word.word
+        is_correct = user_answer == word.word or (inflected_form and user_answer == inflected_form)
     else:
-        is_correct = user_answer.lower() == word.word.lower()
+        is_correct = user_answer.lower() == word.word.lower() or (inflected_form and user_answer.lower() == inflected_form.lower())
 
     # Update word list
     word_ids = student_progress.final_round_word_ids.copy()

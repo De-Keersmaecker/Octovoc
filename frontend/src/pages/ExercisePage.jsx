@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import api from '../services/api'
 import ModuleProgressFooter from '../components/common/ModuleProgressFooter'
-import QuoteModal from '../components/common/QuoteModal'
+import YouTubeRewardModal from '../components/common/YouTubeRewardModal'
 import './Exercise.css'
 
 export default function ExercisePage({ user }) {
@@ -23,8 +23,8 @@ export default function ExercisePage({ user }) {
   const [questionQueue, setQuestionQueue] = useState([])
   const [batteryOrder, setBatteryOrder] = useState([])
   const [currentBatteryIndex, setCurrentBatteryIndex] = useState(0)
-  const [showQuote, setShowQuote] = useState(false)
-  const [quote, setQuote] = useState(null)
+  const [showVideo, setShowVideo] = useState(false)
+  const [videoUrl, setVideoUrl] = useState(null)
   const [totalWordsInModule, setTotalWordsInModule] = useState(0)
   const [masteredWords, setMasteredWords] = useState(0)
   const [baselineMasteredWords, setBaselineMasteredWords] = useState(0)
@@ -303,9 +303,9 @@ export default function ExercisePage({ user }) {
   const showCompletionQuote = async () => {
     try {
       const res = await api.get('/student/quote/random')
-      if (res.data.quote) {
-        setQuote(res.data.quote)
-        setShowQuote(true)
+      if (res.data.quote && res.data.quote.video_url) {
+        setVideoUrl(res.data.quote.video_url)
+        setShowVideo(true)
       } else {
         navigate('/')
       }
@@ -700,7 +700,7 @@ export default function ExercisePage({ user }) {
         totalWordsOverride={isAnonymous || phase === 3 ? totalWordsInModule : undefined}
       />
 
-      {showQuote && <QuoteModal quote={quote} onClose={() => navigate('/')} />}
+      {showVideo && <YouTubeRewardModal videoUrl={videoUrl} moduleName={moduleName} onClose={() => navigate('/')} />}
     </>
   )
 }
