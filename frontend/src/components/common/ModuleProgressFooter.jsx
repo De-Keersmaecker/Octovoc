@@ -52,11 +52,10 @@ const ModuleProgressFooter = ({ moduleId, user, masteredWordsOverride, totalWord
       }
     }
 
-    // Fetch for logged in users, or set loading false for guests without override
+    // Fetch for logged in users only (guests use override values)
     if (user) {
       fetchModuleProgress()
     } else {
-      // For guests without override data, just hide the footer
       setLoading(false)
     }
   }, [moduleId, user, masteredWordsOverride, totalWordsOverride])

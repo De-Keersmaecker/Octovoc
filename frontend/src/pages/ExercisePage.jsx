@@ -272,6 +272,13 @@ export default function ExercisePage({ user }) {
         // Battery complete
         selectRandomQuote() // Change quote for new battery
         const nextBatteryIndex = currentBatteryIndex + 1
+
+        // Update mastered words for anonymous mode (completed batteries / total batteries)
+        if (totalWordsInModule > 0 && batteryOrder.length > 0) {
+          const newMasteredWords = Math.round((totalWordsInModule * nextBatteryIndex) / batteryOrder.length)
+          setMasteredWords(newMasteredWords)
+        }
+
         if (nextBatteryIndex < batteryOrder.length) {
           setCurrentBatteryIndex(nextBatteryIndex)
           startBattery(batteryOrder[nextBatteryIndex], true)
@@ -660,7 +667,7 @@ export default function ExercisePage({ user }) {
                 fontWeight: '600',
                 fontStyle: 'normal'
               }}>
-                — {currentQuote.author}
+                — {currentQuote.author} —
               </div>
             )}
           </div>
@@ -670,8 +677,8 @@ export default function ExercisePage({ user }) {
       <ModuleProgressFooter
         moduleId={moduleId}
         user={user}
-        masteredWordsOverride={phase === 3 ? masteredWords : undefined}
-        totalWordsOverride={phase === 3 ? totalWordsInModule : undefined}
+        masteredWordsOverride={isAnonymous || phase === 3 ? masteredWords : undefined}
+        totalWordsOverride={isAnonymous || phase === 3 ? totalWordsInModule : undefined}
       />
 
       {showQuote && <QuoteModal quote={quote} onClose={() => navigate('/')} />}
