@@ -652,7 +652,10 @@ export default function ExercisePage({ user }) {
         {currentQuote && (
           <div style={{
             marginTop: '50px',
-            padding: '20px',
+            maxWidth: '700px',
+            width: '100%',
+            margin: '50px auto 0 auto',
+            padding: '0 20px',
             textAlign: 'center',
             fontFamily: '"Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif',
             fontSize: 'clamp(14px, 1.2vw, 16px)',

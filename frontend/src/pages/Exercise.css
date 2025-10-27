@@ -124,7 +124,7 @@
 
 .exercise-sentence {
   font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
-  font-size: clamp(17px, 2vw, 23px);
+  font-size: clamp(16.5px, 2vw, 22.5px);
   line-height: 1.6;
   letter-spacing: 0.02em;
   margin-bottom: 30px;

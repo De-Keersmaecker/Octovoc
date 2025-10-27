@@ -31,7 +31,7 @@
 }
 
 .dashboard-header {
-  max-width: 1200px;
+  max-width: 700px;
   margin: 0 auto 30px auto;
   padding-bottom: 20px;
   border-bottom: 1px solid #fff;
@@ -59,7 +59,7 @@
 }
 
 .dashboard-content {
-  max-width: 1200px;
+  max-width: 700px;
   margin: 0 auto;
 }
 
