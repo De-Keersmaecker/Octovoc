@@ -46,8 +46,8 @@
   content: '';
   position: absolute;
   bottom: 0;
-  left: 20px;
-  right: 20px;
+  left: 0;
+  right: 0;
   height: 1px;
   background-color: #fff;
 }
