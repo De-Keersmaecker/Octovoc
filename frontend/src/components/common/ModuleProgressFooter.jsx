@@ -83,7 +83,8 @@ const ModuleProgressFooter = ({ moduleId, user, masteredWordsOverride, totalWord
       zIndex: 1000
     }}>
       <div style={{
-        maxWidth: '1000px',
+        maxWidth: '660px',
+        width: 'calc(100% - 40px)',
         margin: '0 auto'
       }}>
         <div style={{
