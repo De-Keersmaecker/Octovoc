@@ -75,7 +75,7 @@
   max-width: 660px;
   width: calc(100% - 40px);
   margin: 0 auto;
-  padding: 10px 0px;
+  padding: 0px 0px 20px 0px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -290,7 +290,7 @@
   }
 
   .exercise-progress-bar {
-    padding: 12px 0px;
+    padding: 0px 0px 20px 0px;
   }
 
   .exercise-content {
