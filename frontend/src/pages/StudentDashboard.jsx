@@ -221,10 +221,7 @@ export default function StudentDashboard({ user, setUser }) {
         <div className="exercise-title">Octovoc</div>
         {isGuest ? (
           <div className="exercise-user">
-            gast<br />
-            <button onClick={handleSwitchLevel} className="dashboard-btn" style={{ marginTop: '4px' }}>
-              wissel niveau
-            </button>
+            gast
           </div>
         ) : user ? (
           <div className="exercise-user">
@@ -270,7 +267,11 @@ export default function StudentDashboard({ user, setUser }) {
 
       <div className="exercise-progress-bar">
         <div className="exercise-module-name">niveau {selectedLevel}</div>
-        {allowedLevels.length > 1 && (
+        {isGuest ? (
+          <button onClick={handleSwitchLevel} className="dashboard-btn">
+            wissel niveau
+          </button>
+        ) : allowedLevels.length > 1 ? (
           <div style={{ display: 'flex', gap: '6px' }}>
             {[1, 2, 3, 4, 5, 6].map(level => {
               const isAllowed = allowedLevels.includes(level)
@@ -295,7 +296,7 @@ export default function StudentDashboard({ user, setUser }) {
               )
             })}
           </div>
-        )}
+        ) : null}
       </div>
 
       <main id="main-content" className="dashboard-content" role="main">
