@@ -274,13 +274,17 @@ export default function StudentDashboard({ user, setUser }) {
       <main id="main-content" className="dashboard-content" role="main">
         {allowedLevels.length === 1 ? (
           <div style={{
-            textAlign: 'center',
+            maxWidth: '660px',
+            width: 'calc(100% - 40px)',
+            margin: '0 auto 30px auto',
+            padding: '0px 0px 20px 0px',
+            textAlign: 'left',
             fontFamily: '"Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif',
             fontSize: 'clamp(16px, 1.5vw, 20px)',
             letterSpacing: '0.03em',
-            marginBottom: '30px',
-            paddingBottom: '15px',
-            borderBottom: '1px solid #fff'
+            borderTop: '1px solid #fff',
+            borderBottom: '1px solid #fff',
+            position: 'relative'
           }}>
             niveau {selectedLevel}
           </div>
