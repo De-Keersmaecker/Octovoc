@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import api from '../services/api'
 import { logout } from '../utils/auth'
 import './Dashboard.css'
+import './Exercise.css'
 
 export default function StudentDashboard({ user, setUser }) {
   const [modules, setModules] = useState([])
@@ -216,29 +217,25 @@ export default function StudentDashboard({ user, setUser }) {
       <a href="#main-content" className="skip-link">
         Spring naar modules
       </a>
-      <header className="dashboard-header" role="banner">
-        <h1 className="dashboard-title">Octovoc</h1>
+      <header className="exercise-header" role="banner">
+        <div className="exercise-title">Octovoc</div>
         {isGuest ? (
-          <div className="dashboard-user-info">
-            <div style={{ marginBottom: '8px' }}>
-              gast - niveau {guestLevel}
-            </div>
-            <button onClick={handleSwitchLevel} className="dashboard-btn">
+          <div className="exercise-user">
+            gast<br />
+            <button onClick={handleSwitchLevel} className="dashboard-btn" style={{ marginTop: '4px' }}>
               wissel niveau
             </button>
           </div>
         ) : user ? (
-          <div className="dashboard-user-info">
-            <div style={{ marginBottom: '8px' }}>
-              {user.first_name && user.last_name ? `${user.first_name} ${user.last_name}` : user.email}
-              {user.classroom_name && (
-                <>
-                  <br />
-                  {user.school_name && `${user.school_name} | `}{user.classroom_name}
-                </>
-              )}
-            </div>
-            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', justifyContent: 'flex-end' }}>
+          <div className="exercise-user">
+            {user.first_name && user.last_name ? `${user.first_name} ${user.last_name}` : user.email}
+            {user.classroom_name && (
+              <>
+                <br />
+                {user.school_name && `${user.school_name} | `}{user.classroom_name}
+              </>
+            )}
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', justifyContent: 'flex-end', marginTop: '4px' }}>
               {showCodeInput && (
                 <input
                   type="text"
@@ -260,7 +257,7 @@ export default function StudentDashboard({ user, setUser }) {
             </div>
           </div>
         ) : (
-          <div className="dashboard-user-info" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <div className="exercise-user" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
             <button onClick={() => navigate('/login')} className="dashboard-btn">
               login
             </button>
@@ -271,25 +268,10 @@ export default function StudentDashboard({ user, setUser }) {
         )}
       </header>
 
-      <main id="main-content" className="dashboard-content" role="main">
-        {allowedLevels.length === 1 ? (
-          <div style={{
-            maxWidth: '660px',
-            width: 'calc(100% - 40px)',
-            margin: '0 auto 30px auto',
-            padding: '0px 0px 20px 0px',
-            textAlign: 'left',
-            fontFamily: '"Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif',
-            fontSize: 'clamp(16px, 1.5vw, 20px)',
-            letterSpacing: '0.03em',
-            borderTop: '1px solid #fff',
-            borderBottom: '1px solid #fff',
-            position: 'relative'
-          }}>
-            niveau {selectedLevel}
-          </div>
-        ) : (
-          <nav className="level-selector" role="navigation" aria-label="Niveau selectie">
+      <div className="exercise-progress-bar">
+        <div className="exercise-module-name">niveau {selectedLevel}</div>
+        {allowedLevels.length > 1 && (
+          <div style={{ display: 'flex', gap: '6px' }}>
             {[1, 2, 3, 4, 5, 6].map(level => {
               const isAllowed = allowedLevels.includes(level)
               const isSelected = selectedLevel === level
@@ -302,13 +284,21 @@ export default function StudentDashboard({ user, setUser }) {
                   className={`level-btn-small ${isSelected ? 'active' : ''}`}
                   aria-label={`Niveau ${level}${isSelected ? ', geselecteerd' : ''}${!isAllowed ? ', niet beschikbaar' : ''}`}
                   aria-pressed={isSelected}
+                  style={{
+                    minWidth: '30px',
+                    padding: '4px 8px',
+                    fontSize: 'clamp(12px, 1vw, 14px)'
+                  }}
                 >
                   {level}
                 </button>
               )
             })}
-          </nav>
+          </div>
         )}
+      </div>
+
+      <main id="main-content" className="dashboard-content" role="main">
 
         {modules.length === 0 ? (
           <p style={{
