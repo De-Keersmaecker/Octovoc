@@ -286,15 +286,15 @@
 
 @media (max-width: 768px) {
   .exercise-header {
-    padding: 15px 15px 10px 15px;
+    padding: 15px 0px 12px 0px;
   }
 
   .exercise-progress-bar {
-    padding: 10px 15px;
+    padding: 12px 0px;
   }
 
   .exercise-content {
-    padding: 15px 15px 30px 15px;
+    padding: 15px 20px 30px 20px;
   }
 
   .exercise-sentence {

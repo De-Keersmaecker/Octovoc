@@ -673,7 +673,7 @@ export default function ExercisePage({ user }) {
             margin: '10px auto 0 auto',
             padding: '0 20px',
             textAlign: 'center',
-            fontFamily: 'Perpetua, Georgia, "Times New Roman", Times, serif',
+            fontFamily: '"Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif',
             fontSize: 'clamp(14px, 1.2vw, 16px)',
             fontStyle: 'italic',
             opacity: 0.8,
@@ -683,6 +683,7 @@ export default function ExercisePage({ user }) {
             {currentQuote.author && (
               <div style={{
                 marginTop: '8px',
+                fontFamily: 'Perpetua, Georgia, "Times New Roman", Times, serif',
                 fontWeight: '600',
                 fontStyle: 'normal'
               }}>
