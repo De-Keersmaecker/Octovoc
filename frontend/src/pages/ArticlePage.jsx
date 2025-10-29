@@ -16,7 +16,7 @@ export default function ArticlePage() {
           textAlign: 'center',
           letterSpacing: '0.02em'
         }}>
-          <strong>slimme selectie, slimme didactiek</strong>
+          <strong>wetenschappelijke basis</strong>
         </p>
 
         <div className="underline" aria-hidden="true"></div>
@@ -38,59 +38,23 @@ export default function ArticlePage() {
             marginTop: '40px',
             marginBottom: '20px'
           }}>
-            A. De nood aan een slimme woordenlijst en duidelijke didactiek
+            De dagelijkse drempel
           </h2>
 
           <p style={{ marginBottom: '20px' }}>
-            Het woordenschatonderwijs in Vlaanderen en Nederland mist een doordachte aanpak.
+            Als leerkracht krijg je mogelijk het idee dat leerlingen steeds vaker vastlopen op het begrijpen van alledaagse handboekteksten, niet omdat het onderwerp te complex is, maar omdat de taal een barrière vormt. Woorden als 'analyseren', 'essentieel' of 'enigszins' vormen voor heel wat leerlingen drempels op weg naar schoolsucces. Een stabiele basiswoordenschat in het Nederlands is de sleutel tot diepgaand leren en maatschappelijke participatie, maar de weg daarnaartoe is in het Vlaamse onderwijs soms onduidelijk.
           </p>
 
           <p style={{ marginBottom: '20px' }}>
-            In Vlaanderen is het onderwijs zo ingericht dat de door de overheid opgelegde doelstellingen heel breed geformuleerd worden en heel weinig concrete doelen inhouden: lezen en schrijven staan centraal volgens het leerplan, maar hoeveel teksten leerlingen dan moeten lezen of hoeveel teksten ze minimaal moeten schrijven, wordt zelfs niet gesuggereerd. Heel wat handboekreeksen die het leven van de leerkracht niet te complex willen maken, laten leerlingen in het totaal vaak slechts enkele alinea's schrijven en hooguit een korte tekst of twee schematiseren.
+            De oorzaak ligt in de structuur van ons onderwijssysteem. De grondwettelijke 'vrijheid van onderwijs' geeft scholen en koepels de autonomie om de door de overheid breed geformuleerde eindtermen zelf te vertalen naar concrete leerplannen. Dit garandeert pedagogische diversiteit, maar leidt in de praktijk tot een gebrek aan stabiele houvast: leerplannen stellen groei in taalvaardigheid als doel voorop, maar vermelden nergens het aantal teksten dat daartoe geschreven of gelezen moet worden; leerplannen vermelden woordenschatuitbreiding als essentieel middel voor taalvaardigheid, maar leggen geen lijsten op. De manier waarop en de mate waarin systematisch aan taalvaardigheid (en ook woordenschatuitbreiding als middel daartoe) wordt gewerkt, verschilt daardoor sterk van school tot school en zelfs van leerkracht tot leerkracht.
           </p>
 
           <p style={{ marginBottom: '20px' }}>
-            In diezelfde leerplannen wordt ook het belang van een brede woordenschat en schooltaalwoorden aangestipt, maar er worden specifieke woorden of woordenlijsten als standaard benoemd. Ook door de overheid gesubsidieerde partnerinstituten die rond taal werken of lerarenopleidingen ontplooiden in het verleden geen of weinig impactvolle initiatieven in die richting. De meeste ontwikkeling blijven anekdotisch of vooral gericht op het aanreiken van tekst zelf (rijketeksten.org). Orient, een app van de UCLL, mee ontwikkeld door Bruno Vandamme is een zeldzame en populaire uitzondering.
+            Een mooi initiatief zoals de populaire Orient-app van UCLL, die laatstejaarsstudenten voorbereidt op de taaleisen van de universiteit of hogeschool, is een waardevolle remediërende tool, maar hij signaleert ook een dieperliggend probleem: de basis wordt niet altijd systematisch gelegd in het secundair onderwijs.
           </p>
 
           <p style={{ marginBottom: '20px' }}>
-            Het onderwijsveld wacht al jaren op een slim samengestelde woordenlijst om de woordenschat van leerlingen systematisch uit te breiden. Tot nu toe was het samenstellen van dergelijke lijsten vaak nattevingerwerk, gebaseerd op de intuïtie van auteurs en lesgevers. Octovoc verenigt echter 3 wetenschappelijke datastromen om zo tot een slimme selectie te komen. Die doordachte selectie wordt vervolgens via de Octovoc-app in het brein verankerd met een didactische methode die retrieval practice met spacing combineert.
-          </p>
-
-          <p style={{ marginBottom: '20px' }}>
-            Voor het uitwerken van de woordlijsten was de eerste stap het combineren van twee krachtige, maar voorheen mogelijk nooit in een productieve context gecombineerde, datasets. Enerzijds wordt gebruikgemaakt van psycholinguïstische data over de Age of Acquisition (AoA), ofwel de gemiddelde leeftijd waarop een woord wordt geleerd (Brysbaert et al., 2014). Dit maakt het mogelijk om woorden te identificeren die een leerling van een bepaalde leeftijd waarschijnlijk nog niet kent.
-          </p>
-
-          <p style={{ marginBottom: '20px' }}>
-            Anderzijds worden corpuslinguïstische frequentielijsten gebruikt, die aangeven hoe vaak een woord in de Nederlandse taal voorkomt (zie bv. Hazenberg & Hulstijn, 1996). Een hoge frequentie is een indicator voor het nut van een woord; Omdat er sowieso te veel woorden te leren zijn is het rendabeler om een woord te leren dat je wellicht vaker zult tegenkomen.
-          </p>
-
-          <p style={{ marginBottom: '20px' }}>
-            Door deze twee filters te combineren, ontstaat een unieke selectie: woorden met een hoge AoA (nog onbekend) én een hoge frequentie (zeer nuttig).
-          </p>
-
-          <p style={{ marginBottom: '20px' }}>
-            Tegelijk leert een leerling concrete woorden als 'fiets' of 'tafel' vaak vanzelf via de context of een afbeelding. De echte uitdaging voor tekstbegrip op school ligt bij abstracte woorden zoals 'principe', 'analyse' of 'consequentie'. Deze woorden vereisen vaak expliciete instructie (Sadoski & Lawrence, 2023).
-          </p>
-
-          <p style={{ marginBottom: '20px' }}>
-            Daarom werd een extra filter toegepast die vertrekt van de abstractiegraad van de woorden. De data hiervoor zijn afkomstig uit dezelfde grootschalige studie als de AoA-ratings (Brysbaert et al., 2014). Door te filteren op een hogere abstractiegraad, worden de lijsten verder toegespitst op de woorden waar het onderwijs de grootste meerwaarde kan bieden en waar de nood voor het begrijpen van complexe teksten het hoogst is.
-          </p>
-
-          <p style={{ marginBottom: '20px' }}>
-            Een te lange, willekeurige lijst met woorden is cognitief inefficiënt. Daarom werd per niveau gekozen voor de 800 meest frequente woorden. Die afbakening is pittig, maar haalbaar op een schooljaar. De ervaring leert dat leerlingen voor het aanleren van nieuwe woorden met de gebruikte methode makkelijk 50 minuten geconcentreerd kunnen werken en ook gedreven zijn om de nieuwe woorden met deze laagdrempelige methode te leren.
-          </p>
-
-          <p style={{ marginBottom: '20px' }}>
-            Het menselijk brein onthoudt nieuwe informatie beter wanneer deze georganiseerd is in een logisch netwerk van betekenissen, het zogenaamde mentale lexicon (Aitchison, 2012). De laatste stap was daarom het ordenen van de gefilterde woorden in semantische velden: clusters van woorden die thematisch bij elkaar horen, zoals 'rechtspraak' of 'emoties'.
-          </p>
-
-          <p style={{ marginBottom: '20px' }}>
-            Om deze omvangrijke taak objectief en efficiënt uit te voeren, werd artificiële intelligentie (AI) ingezet. Door de analyse van de context waarin woorden in miljoenen teksten voorkomen, kan AI wiskundig bepalen welke woorden semantisch aan elkaar verwant zijn en deze automatisch groeperen. Deze door de computer gegenereerde clusters werden vervolgens nog menselijk uitgefilterd.
-          </p>
-
-          <p style={{ marginBottom: '20px' }}>
-            Deze methodologie markeert dus een doorbraak in de ontwikkeling van een slimme woordenschatselectie door psycholinguïstische data (AoA, abstractiegraad) te verenigen met corpuslinguïstische data (frequentie) en deze te structureren met behulp van AI. Hierdoor ontstaan voor het eerst woordenlijsten die niet gebaseerd zijn op intuïtie, maar op een transparant en wetenschappelijk fundament.
+            Er is ook nood aan slimme woordenschatuitbreiding doorheen het secundair onderwijs.
           </p>
 
           <h2 style={{
@@ -100,19 +64,93 @@ export default function ArticlePage() {
             marginTop: '40px',
             marginBottom: '20px'
           }}>
-            De didactiek
+            Voorbij intuïtie: een slimme selectie van woorden
           </h2>
 
           <p style={{ marginBottom: '20px' }}>
-            De app introduceert nieuwe woordenschat via een zorgvuldig gestructureerd, drieledig proces dat de gebruiker begeleidt van ontdekking naar beheersing. In de eerste fase wordt een nieuw woord gepresenteerd binnen een betekenisvolle contextzin. De gebruiker wordt hier niet verondersteld het woord al te kennen; in plaats daarvan wordt hij aangemoedigd om de betekenis af te leiden door beredeneerd te gokken uit een beperkte lijst van vijf mogelijke definities. Dit zorgt voor een laagdrempelige, maar cognitief actieve eerste kennismaking. Zodra de juiste betekenis is gekoppeld, vordert de gebruiker naar fase twee. Hier wordt dezelfde contextzin getoond, maar nu is het doelwoord weggelaten. De taak is om het juiste woord te selecteren uit de oorspronkelijke vijf woorden, wat de moeilijkheidsgraad verhoogt van herkenning naar actieve herinnering. De laatste fase vereist de hoogste cognitieve inspanning: de gebruiker moet het woord nu zelfstandig en correct intypen in de zin, zonder hulp van keuzemogelijkheden.
+            Een effectieve aanpak begint bij de selectie van de juiste woorden. Traditioneel was deze keuze vaak afhankelijk van de expertise en intuïtie van handboekauteurs of leerkrachten. Een nieuwe, voor de Octovoc-applicatie ontwikkelde methodologie brengt hier verandering in door deze keuze te baseren op de slimme combinatie van drie databronnen: de leeftijd waarop een woord gemiddeld wordt aangeleerd, de frequentie waarmee het woord voorkomt in onze taal en de abstractheidsgraad van het woord.
           </p>
 
           <p style={{ marginBottom: '20px' }}>
-            Deze gefaseerde methodologie is diep geworteld in gevestigde cognitieve principes. De progressie van de drie fasen is een schoolvoorbeeld van retrieval practice (het ophaaleffect), waarbij de cognitieve inspanning systematisch wordt opgevoerd. Fase één (het kiezen van de betekenis) is een vorm van herkenning (recognition), terwijl fase twee en drie overgaan op steeds moeilijkere vormen van herinnering (recall) (Roediger & Butler, 2011). De laatste, generatieve fase, waarbij de gebruiker het woord zelf produceert, is bewezen het meest effectief voor het creëren van een duurzaam geheugenspoor (Karpicke & Blunt, 2011). Dit proces sluit ook aan bij Hebbiaans leren: door de connectie tussen een woord, zijn context en zijn betekenis herhaaldelijk en in toenemende intensiteit te activeren, worden de onderliggende neurale paden versterkt ("neurons that fire together, wire together") (Hebb, 1949). De oplopende moeilijkheidsgraad is bovendien een doelbewuste toepassing van desirable difficulty (wenselijke moeilijkheidsgraad), die diepere verwerking stimuleert en leidt tot robuustere kennis dan passieve herhaling (Bjork & Bjork, 2020).
+            De aanpak werkt als een reeks van drie slimme filters die samen die woorden selecteren die het nuttigst zijn om te leren omdat de kans het grootst is dat ze nog niet gekend zijn (filter 1), de kans het grootst is dat de leerling ze zal tegenkomen in teksten (filter 2) en de kans het grootst is dat ze niet zomaar afleidbaar zijn uit de context (filter 3).
           </p>
 
           <p style={{ marginBottom: '20px' }}>
-            Ten slotte integreert de app een gepersonaliseerde vorm van het spacing effect (gespreide herhaling) via de "moeilijke woorden"-batterij. Woorden die in de meest uitdagende fase foutief worden beantwoord, worden hierin geplaatst om later opnieuw te worden aangeboden. Deze strategie zorgt ervoor dat de herhaling van de lastigste woorden gespreid wordt in de tijd, wat significant effectiever is voor langetermijnretentie dan het onmiddellijk opnieuw oefenen (Goossens et al., 2012). Door deze woorden op een later, optimaal moment opnieuw aan te bieden, wordt de vergeetcurve doorbroken precies op het punt dat de herinnering dreigt te vervagen, wat het geheugen versterkt (Cepeda et al., 2006). De voorwaarde dat een woord pas uit deze pool verdwijnt na een correcte eerste poging, garandeert dat het woord daadwerkelijk is verankerd en niet slechts tijdelijk is onthouden.
+            Voor de eerste filter gebruiken we psycholinguïstische data over de Age of Acquisition (AoA) – de gemiddelde leeftijd waarop een woord wordt geleerd. Deze data, afkomstig uit een grootschalige studie bij 30.000 Nederlandse woorden, helpen ons te voorspellen welke woorden een leerling van een bepaalde leeftijd waarschijnlijk nog niet kent (Brysbaert et al., 2014).
+          </p>
+
+          <p style={{ marginBottom: '20px' }}>
+            Vervolgens filteren we deze woorden op basis van hun frequentie in de taal. Daarvoor worden corpuslinguïstische frequentielijsten gehanteerd zoals het Corpus Hedendaags Nederlands (Instituut voor de Nederlandse Taal) en SUBTLEX-NL (Keuleers, Brysbaert, & New, 2010). Een hoge frequentie suggereert dat een leerling het woord vaak zal tegenkomen, wat de investering in het leren ervan rendabel maakt.
+          </p>
+
+          <p style={{ marginBottom: '20px' }}>
+            De grootste uitdaging voor tekstbegrip op school ligt niet bij concrete woorden zoals 'maquette', 'aula' of 'thuisbatterij'. Deze worden vaak vanzelf opgepikt uit de context. De echte struikelblokken zijn de abstracte woorden die concepten en relaties beschrijven, zoals 'principe', 'analyse' of 'relatief'. Door ten slotte te filteren op een hogere abstractiegraad, op basis van data uit dezelfde studie van Brysbaert et al. (2014), spitsen we de woordenlijsten toe op de woordenschat waar expliciete instructie de grootste meerwaarde biedt.
+          </p>
+
+          <p style={{ marginBottom: '20px' }}>
+            Vervolgens wordt de geselecteerde woordenschat gestructureerd om de cognitieve verwerking te optimaliseren. Het menselijk brein slaat informatie efficiënter op wanneer deze georganiseerd is in een logisch netwerk, het zogenaamde mentale lexicon (Aitchison, 2012). Daarom worden de woorden met behulp van artificiële intelligentie (AI) geordend in semantische velden – clusters van thematisch verwante woorden. Per onderwijsniveau wordt een lijst van 500 tot 800 woorden geselecteerd, een volume dat ambitieus maar haalbaar is binnen een schooljaar.
+          </p>
+
+          <p style={{ marginBottom: '20px' }}>
+            Het resultaat zijn woordenlijsten die niet gebaseerd zijn op intuïtie, maar op een combinatie van data die de kans maximaliseren dat het aanleren van de geselecteerde woorden nuttig en nodig is.
+          </p>
+
+          <p style={{ marginBottom: '20px' }}>
+            Ook voor het genereren van de zinnen werd gebruikgemaakt van AI. Daarbij werd aan de AI gevraagd om voorbeeldzinnen te formuleren waarbij de betekenis van het woord te achterhalen is vanuit de context. Tegelijk bleek de 'human in the loop' nog altijd belangrijk en werden voorbeeldzinnen soms nog aangepast. Er werd daarbij dus niet gekozen voor reële voorbeeldzinnen, maar wel voor zinnen die een didactisch doel dienen: de leerlingen al enigszins intuïtief naar de betekenis toeleiden.
+          </p>
+
+          <h2 style={{
+            fontFamily: 'Perpetua, Georgia, "Times New Roman", Times, serif',
+            fontSize: 'clamp(20px, 2vw, 28px)',
+            fontWeight: 400,
+            marginTop: '40px',
+            marginBottom: '20px'
+          }}>
+            Leren dat blijft hangen: retrieval en spacing
+          </h2>
+
+          <p style={{ marginBottom: '20px' }}>
+            Een doordachte woordenlijst is slechts het begin. Om ervoor te zorgen dat de expliciete instructie ook zorgt voor een grotere kans op begrip wanneer het woord later effectief opduikt, steunt Octovoc op drie bewezen principes uit de cognitieve wetenschap.
+          </p>
+
+          <p style={{ marginBottom: '20px' }}>
+            <strong>1. Hoe zorgen we dat leerlingen actief nadenken?</strong> Passief woorden en definities bestuderen is inefficiënt. De methodologie gebruikt daarom een drietrapsraket die de cognitieve inspanning systematisch opvoert, een principe dat bekendstaat als retrieval practice (het testeffect).
+          </p>
+
+          <p style={{ marginBottom: '20px', paddingLeft: '20px' }}>
+            <strong>Fase 1: Herkenning.</strong> De leerling ziet een nieuw woord in een zin en kiest de juiste betekenis uit vijf opties. Dit is een actieve, maar laagdrempelige eerste kennismaking.
+          </p>
+
+          <p style={{ marginBottom: '20px', paddingLeft: '20px' }}>
+            <strong>Fase 2: Actieve herinnering.</strong> Dezelfde zin verschijnt, maar nu is het doelwoord weggelaten. De leerling moet het juiste woord selecteren. De moeilijkheidsgraad stijgt van passief herkennen naar actief herinneren.
+          </p>
+
+          <p style={{ marginBottom: '20px', paddingLeft: '20px' }}>
+            <strong>Fase 3: Vrije productie.</strong> De leerling moet het woord zelfstandig en correct intypen in de zin, zonder hulp. Dit vereist de hoogste cognitieve inspanning.
+          </p>
+
+          <p style={{ marginBottom: '20px' }}>
+            Onderzoek toont aan dat deze actieve vorm van informatie ophalen uit het geheugen leidt tot veel duurzamer leren dan passieve herhaling (Roediger & Butler, 2011; Karpicke & Blunt, 2011).
+          </p>
+
+          <p style={{ marginBottom: '20px' }}>
+            Leren is daarbij het meest effectief wanneer het moeite kost, maar niet zoveel dat het tot frustratie leidt. Dit principe heet desirable difficulty (wenselijke moeilijkheid) (Bjork & Bjork, 2020). De drieledige opbouw is een perfect voorbeeld: elke fase verhoogt de uitdaging op een behapbare manier.
+          </p>
+
+          <p style={{ marginBottom: '20px' }}>
+            Centraal staat natuurlijk ook het verlangen om ervoor te zorgen dat zoveel mogelijk woorden ook op langere termijn verankerd blijven. Ons brein vergeet informatie volgens een voorspelbare curve. De meest effectieve manier om deze curve te doorbreken is door informatie te herhalen op het moment dat we die bijna vergeten zijn. Dit heet het spacing effect (gespreide herhaling). Woorden die in de moeilijkste fase fout worden beantwoord, worden eerst onmiddellijk opnieuw aangeboden, maar komen ook in een aparte pool terecht waarmee ze later herhaald worden. Deze gespreide herhaling is significant effectiever voor langetermijnretentie dan het onmiddellijk opnieuw oefenen (Goossens et al., 2012).
+          </p>
+
+          <p style={{ marginBottom: '20px' }}>
+            Tot slot: expliciete woordenschattraining kan en mag natuurlijk nooit een vervanging zijn voor een rijke, talige omgeving waarin leerlingen veelvuldig in aanraking komen met complexe en authentieke teksten. Impliciete woordenschatverwerving door middel van lezen, zoals gestimuleerd door initiatieven als Rijketeksten.org, blijft de hoeksteen van een diepgaande en flexibele taalbeheersing.
+          </p>
+
+          <p style={{ marginBottom: '20px' }}>
+            Een tool gebaseerd op deze methodologie moet dus niet worden gezien als een totaaloplossing, maar als een waardevol complement op een curriculum dat rijk lezen centraal stelt. Het functioneert als een precisie-instrument: een gerichte interventie om de kennis van cruciale, hoogfrequente en voor de leeftijd uitdagende woorden te versnellen.
+          </p>
+
+          <p style={{ marginBottom: '20px' }}>
+            De feedback van leerlingen tijdens testfases, die het oefenen omschrijven als 'leerrijk', 'nuttig' en zelfs 'rustgevend', suggereert dat een dergelijke gestructureerde aanpak motiverend kan werken. Expliciete woordenschattraining in het Nederlands op basis van slim geselecteerde woorden kan zo een krachtige pijler zijn van een taalbeleid dat op zoek is naar makkelijk implementeerbare, effectieve acties.
           </p>
 
           <h2 style={{
@@ -122,52 +160,30 @@ export default function ArticlePage() {
             marginTop: '40px',
             marginBottom: '15px'
           }}>
-            Bibliografie woordenlijst
-          </h2>
-
-          <div style={{ fontSize: 'clamp(12px, 1vw, 14px)', lineHeight: '1.8' }}>
-            <p style={{ marginBottom: '12px' }}>
-              Aitchison, J. (2012). <em>Words in the mind: An introduction to the mental lexicon</em> (4th ed.). John Wiley & Sons.
-            </p>
-            <p style={{ marginBottom: '12px' }}>
-              Brysbaert, M., Stevens, M., De Deyne, S., Voorspoels, W., & Storms, G. (2014). Norms of age of acquisition and concreteness for 30,000 Dutch words. <em>Acta Psychologica, 150</em>, 80-84.
-            </p>
-            <p style={{ marginBottom: '12px' }}>
-              Garlock, V. M., Walley, A. C., & Metsala, J. L. (2001). Age-of-acquisition, word frequency, and neighborhood density effects on spoken word recognition by children and adults. <em>Journal of Memory and Language, 45</em>(3), 468-492.
-            </p>
-            <p style={{ marginBottom: '12px' }}>
-              Hazenberg, S., & Hulstijn, J. H. (1996). Defining a minimal receptive second-language vocabulary for non-native university students: an empirical investigation. <em>Applied Linguistics, 17</em>(2), 145-163.
-            </p>
-            <p style={{ marginBottom: '12px' }}>
-              Sadoski, M., & Lawrence, B. (2023). Abstract Vocabulary Development: Embodied Theory and Practice. <em>Educational Psychology Review</em>.
-            </p>
-          </div>
-
-          <h2 style={{
-            fontFamily: 'Perpetua, Georgia, "Times New Roman", Times, serif',
-            fontSize: 'clamp(18px, 1.8vw, 24px)',
-            fontWeight: 400,
-            marginTop: '30px',
-            marginBottom: '15px'
-          }}>
-            Bibliografie didactiek
+            Bibliografie
           </h2>
 
           <div style={{ fontSize: 'clamp(12px, 1vw, 14px)', lineHeight: '1.8', marginBottom: '40px' }}>
             <p style={{ marginBottom: '12px' }}>
-              Bjork, R. A., & Bjork, E. L. (2020). Desirable difficulties in theory and practice. <em>Journal of Applied Research in Memory and Cognition, 9</em>(4), 475-479.
+              Aitchison, J. (2012). <em>Words in the mind: An introduction to the mental lexicon</em> (4th ed.). John Wiley & Sons.
             </p>
             <p style={{ marginBottom: '12px' }}>
-              Cepeda, N. J., Pashler, H., Vul, E., Wixted, J. T., & Rohrer, D. (2006). Distributed practice in verbal recall tasks: A review and quantitative synthesis. <em>Psychological Bulletin, 132</em>(3), 354–380.
+              Bjork, R. A., & Bjork, E. L. (2020). Desirable difficulties in theory and practice. <em>Journal of Applied Research in Memory and Cognition, 9</em>(4), 475-479. <a href="https://doi.org/10.1016/j.jarmac.2020.09.004" style={{ color: '#fff', textDecoration: 'underline' }}>https://doi.org/10.1016/j.jarmac.2020.09.004</a>
             </p>
             <p style={{ marginBottom: '12px' }}>
-              Goossens, N., Camp, G., Verkoeijen, P., Tabbers, H., & Zwaan, R. (2012). Spreading the words: A spacing effect in vocabulary learning. <em>Journal of Cognitive Psychology, 24</em>(8), 965-971.
+              Brysbaert, M., Stevens, M., De Deyne, S., Voorspoels, W., & Storms, G. (2014). Norms of age of acquisition and concreteness for 30,000 Dutch words. <em>Acta Psychologica, 150</em>, 80-84. <a href="https://doi.org/10.1016/j.actpsy.2014.04.010" style={{ color: '#fff', textDecoration: 'underline' }}>https://doi.org/10.1016/j.actpsy.2014.04.010</a>
             </p>
             <p style={{ marginBottom: '12px' }}>
-              Hebb, D. O. (1949). <em>The Organization of Behavior: A Neuropsychological Theory</em>. John Wiley & Sons.
+              Goossens, N., Camp, G., Verkoeijen, P., Tabbers, H., & Zwaan, R. (2012). Spreading the words: A spacing effect in vocabulary learning. <em>Journal of Cognitive Psychology, 24</em>(8), 965-971. <a href="https://research.ou.nl/ws/portalfiles/portal/1015431/Goossens%20et%20al.%202012%20JCP.pdf" style={{ color: '#fff', textDecoration: 'underline' }}>https://research.ou.nl/ws/portalfiles/portal/1015431/Goossens%20et%20al.%202012%20JCP.pdf</a>
             </p>
             <p style={{ marginBottom: '12px' }}>
-              Karpicke, J. D., & Blunt, J. R. (2011). Retrieval practice produces more learning than elaborative studying with concept mapping. <em>Science, 331</em>(6018), 772–775.
+              Instituut voor de Nederlandse Taal. (z.d.). <em>Corpus Hedendaags Nederlands (CHN)</em>
+            </p>
+            <p style={{ marginBottom: '12px' }}>
+              Karpicke, J. D., & Blunt, J. R. (2011). Retrieval practice produces more learning than elaborative studying with concept mapping. <em>Science, 331</em>(6018), 772–775. <a href="https://doi.org/10.1126/science.1199327" style={{ color: '#fff', textDecoration: 'underline' }}>https://doi.org/10.1126/science.1199327</a>
+            </p>
+            <p style={{ marginBottom: '12px' }}>
+              Keuleers, E., Brysbaert, M., & New, B. (2010). SUBTLEX-NL: A new frequency measure for Dutch words based on film subtitles. <em>Behavior Research Methods, 42</em>(3), 643–650. <a href="https://doi.org/10.3758/BRM.42.3.643" style={{ color: '#fff', textDecoration: 'underline' }}>https://doi.org/10.3758/BRM.42.3.643</a>
             </p>
             <p style={{ marginBottom: '12px' }}>
               Roediger III, H. L., & Butler, A. C. (2011). The critical role of retrieval practice in long-term retention. <em>Trends in Cognitive Sciences, 15</em>(1), 20-27.
