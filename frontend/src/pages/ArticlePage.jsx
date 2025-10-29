@@ -42,19 +42,19 @@ export default function ArticlePage() {
           </h2>
 
           <p style={{ marginBottom: '20px' }}>
-            Als leerkracht krijg je mogelijk het idee dat leerlingen steeds vaker vastlopen op het begrijpen van alledaagse handboekteksten, niet omdat het onderwerp te complex is, maar omdat de taal een barrière vormt. Woorden als 'analyseren', 'essentieel' of 'enigszins' vormen voor heel wat leerlingen drempels op weg naar schoolsucces. Een stabiele basiswoordenschat in het Nederlands is de sleutel tot diepgaand leren en maatschappelijke participatie, maar de weg daarnaartoe is in het Vlaamse onderwijs soms onduidelijk.
+            Als leerkracht ervaar je wellicht dat leerlingen steeds vaker vastlopen op het begrijpen van alledaagse handboekteksten, niet omdat het onderwerp te complex is, maar omdat de taal een barrière vormt. Woorden als 'analyseren', 'essentieel' of 'enigszins' vormen dagelijkse drempels op weg naar schoolsucces. Een stabiele basiswoordenschat in het Nederlands is de sleutel tot diepgaand leren en maatschappelijke participatie, maar de weg daarnaartoe is in het Vlaamse onderwijs soms onduidelijk.
           </p>
 
           <p style={{ marginBottom: '20px' }}>
-            De oorzaak ligt in de structuur van ons onderwijssysteem. De grondwettelijke 'vrijheid van onderwijs' geeft scholen en koepels de autonomie om de door de overheid breed geformuleerde eindtermen zelf te vertalen naar concrete leerplannen. Dit garandeert pedagogische diversiteit, maar leidt in de praktijk tot een gebrek aan stabiele houvast: leerplannen stellen groei in taalvaardigheid als doel voorop, maar vermelden nergens het aantal teksten dat daartoe geschreven of gelezen moet worden; leerplannen vermelden woordenschatuitbreiding als essentieel middel voor taalvaardigheid, maar leggen geen lijsten op. De manier waarop en de mate waarin systematisch aan taalvaardigheid (en ook woordenschatuitbreiding als middel daartoe) wordt gewerkt, verschilt daardoor sterk van school tot school en zelfs van leerkracht tot leerkracht.
+            De grondwettelijke 'vrijheid van onderwijs' geeft scholen en koepels de autonomie om de door de overheid breed geformuleerde eindtermen zelf te vertalen naar concrete leerplannen. Dit garandeert didactische diversiteit, maar leidt in de praktijk tot een gebrek aan stabiele houvast: leerplannen stellen groei in taalvaardigheid als doel voorop, maar vermelden nergens het aantal teksten dat daartoe moet worden geschreven of gelezen; leerplannen vermelden woordenschatuitbreiding als essentieel middel voor taalvaardigheid, maar leggen geen lijsten op.
           </p>
 
           <p style={{ marginBottom: '20px' }}>
-            Een mooi initiatief zoals de populaire Orient-app van UCLL, die laatstejaarsstudenten voorbereidt op de taaleisen van de universiteit of hogeschool, is een waardevolle remediërende tool, maar hij signaleert ook een dieperliggend probleem: de basis wordt niet altijd systematisch gelegd in het secundair onderwijs.
+            Een mooi initiatief zoals de rijke en populaire Orient-app van UCLL, die laatstejaarsleerlingen voorbereidt op de taaleisen van de universiteit of hogeschool, is een waardevolle remediërende tool, maar signaleert ook een dieperliggend probleem: de basis wordt niet altijd voldoende gelegd in het secundair onderwijs.
           </p>
 
           <p style={{ marginBottom: '20px' }}>
-            Er is ook nood aan slimme woordenschatuitbreiding doorheen het secundair onderwijs.
+            Er is nood aan slimme woordenschatuitbreiding doorheen het secundair onderwijs.
           </p>
 
           <h2 style={{
@@ -68,11 +68,11 @@ export default function ArticlePage() {
           </h2>
 
           <p style={{ marginBottom: '20px' }}>
-            Een effectieve aanpak begint bij de selectie van de juiste woorden. Traditioneel was deze keuze vaak afhankelijk van de expertise en intuïtie van handboekauteurs of leerkrachten. Een nieuwe, voor de Octovoc-applicatie ontwikkelde methodologie brengt hier verandering in door deze keuze te baseren op de slimme combinatie van drie databronnen: de leeftijd waarop een woord gemiddeld wordt aangeleerd, de frequentie waarmee het woord voorkomt in onze taal en de abstractheidsgraad van het woord.
+            Een effectieve aanpak begint bij de selectie van de juiste woorden. Traditioneel was deze keuze vaak afhankelijk van de expertise en intuïtie van handboekauteurs of leerkrachten. Een nieuwe, voor de Octovoc-applicatie ontwikkelde methodologie brengt hier verandering in door deze keuze te baseren op de slimme combinatie van 3 databronnen: (1) de leeftijd waarop een woord gemiddeld wordt aangeleerd, (2) de frequentie waarmee het woord voorkomt in onze taal en (3) de abstractheidsgraad van het woord.
           </p>
 
           <p style={{ marginBottom: '20px' }}>
-            De aanpak werkt als een reeks van drie slimme filters die samen die woorden selecteren die het nuttigst zijn om te leren omdat de kans het grootst is dat ze nog niet gekend zijn (filter 1), de kans het grootst is dat de leerling ze zal tegenkomen in teksten (filter 2) en de kans het grootst is dat ze niet zomaar afleidbaar zijn uit de context (filter 3).
+            De aanpak werkt als een reeks van 3 slimme filters die samen die woorden selecteren die het nuttigst zijn om te leren omdat de kans het grootst is dat ze nog niet gekend zijn (filter 1), de kans het grootst is dat de leerling ze zal tegenkomen in teksten (filter 2) en de kans het grootst is dat ze niet zomaar afleidbaar zijn uit de context (filter 3).
           </p>
 
           <p style={{ marginBottom: '20px' }}>
@@ -84,7 +84,7 @@ export default function ArticlePage() {
           </p>
 
           <p style={{ marginBottom: '20px' }}>
-            De grootste uitdaging voor tekstbegrip op school ligt niet bij concrete woorden zoals 'maquette', 'aula' of 'thuisbatterij'. Deze worden vaak vanzelf opgepikt uit de context. De echte struikelblokken zijn de abstracte woorden die concepten en relaties beschrijven, zoals 'principe', 'analyse' of 'relatief'. Door ten slotte te filteren op een hogere abstractiegraad, op basis van data uit dezelfde studie van Brysbaert et al. (2014), spitsen we de woordenlijsten toe op de woordenschat waar expliciete instructie de grootste meerwaarde biedt.
+            De grootste uitdaging voor tekstbegrip op school ligt niet bij concrete woorden zoals 'maquette', 'aula' of 'thuisbatterij'. Deze woorden worden vaak vanzelf opgepikt uit de context. De echte struikelblokken zijn de abstracte woorden die concepten en relaties beschrijven, zoals 'principe', 'analyse' of 'relatief'. Door te filteren op een hogere abstractiegraad, op basis van data uit dezelfde studie van Brysbaert et al. (2014), spitsen we de woordenlijsten toe op de woordenschat waar expliciete instructie de grootste meerwaarde biedt.
           </p>
 
           <p style={{ marginBottom: '20px' }}>
@@ -110,11 +110,11 @@ export default function ArticlePage() {
           </h2>
 
           <p style={{ marginBottom: '20px' }}>
-            Een doordachte woordenlijst is slechts het begin. Om ervoor te zorgen dat de expliciete instructie ook zorgt voor een grotere kans op begrip wanneer het woord later effectief opduikt, steunt Octovoc op drie bewezen principes uit de cognitieve wetenschap.
+            Een doordachte woordenlijst is slechts het begin. Om ervoor te zorgen dat de expliciete instructie ook zorgt voor een grotere kans op begrip wanneer het woord later effectief opduikt, steunt Octovoc op 3 bewezen principes uit de cognitieve wetenschap: retrieval practice, desirable difficulty en spacing.
           </p>
 
           <p style={{ marginBottom: '20px' }}>
-            <strong>1. Hoe zorgen we dat leerlingen actief nadenken?</strong> Passief woorden en definities bestuderen is inefficiënt. De methodologie gebruikt daarom een drietrapsraket die de cognitieve inspanning systematisch opvoert, een principe dat bekendstaat als retrieval practice (het testeffect).
+            Belangrijk is dat de leerlingen actief aan de slag gaan. Passief woorden en definities lezen en herlezen is inefficiënt. De methodologie gebruikt daarom een drietrapsraket die de cognitieve inspanning systematisch opvoert en steunt op het 'zich herinneren' om zo de synaptische verbinding te verstevigen, een principe dat bekendstaat als retrieval practice (het testeffect) of zoals men in het basisonderwijs vaak zegt: "paadjes trekken".
           </p>
 
           <p style={{ marginBottom: '20px', paddingLeft: '20px' }}>
@@ -126,31 +126,27 @@ export default function ArticlePage() {
           </p>
 
           <p style={{ marginBottom: '20px', paddingLeft: '20px' }}>
-            <strong>Fase 3: Vrije productie.</strong> De leerling moet het woord zelfstandig en correct intypen in de zin, zonder hulp. Dit vereist de hoogste cognitieve inspanning.
+            <strong>Fase 3: Vrije productie.</strong> De leerling moet het woord zelfstandig en correct intypen in de zin, zonder hulp. Dit vereist de hoogste cognitieve inspanning omdat hier het woord opgeroepen moet worden.
           </p>
 
           <p style={{ marginBottom: '20px' }}>
-            Onderzoek toont aan dat deze actieve vorm van informatie ophalen uit het geheugen leidt tot veel duurzamer leren dan passieve herhaling (Roediger & Butler, 2011; Karpicke & Blunt, 2011).
+            Onderzoek toont aan dat deze actieve vorm van informatie ophalen uit het geheugen leidt tot veel duurzamer leren dan passief lezen en herlezen (Roediger & Butler, 2011; Karpicke & Blunt, 2011).
           </p>
 
           <p style={{ marginBottom: '20px' }}>
-            Leren is daarbij het meest effectief wanneer het moeite kost, maar niet zoveel dat het tot frustratie leidt. Dit principe heet desirable difficulty (wenselijke moeilijkheid) (Bjork & Bjork, 2020). De drieledige opbouw is een perfect voorbeeld: elke fase verhoogt de uitdaging op een behapbare manier.
+            Leren is daarbij het meest effectief wanneer het moeite kost, maar niet zoveel dat het tot frustratie leidt. Dit principe heet desirable difficulty (wenselijke moeilijkheid) (Bjork & Bjork, 2020). De drieledige opbouw is een perfect voorbeeld: elke fase verhoogt de uitdaging op een behapbare manier. Daarbij wordt gewerkt met batterijen van telkens 5 woorden wat binnen het kortetermijngeheugen een haalbaar aantal is.
           </p>
 
           <p style={{ marginBottom: '20px' }}>
-            Centraal staat natuurlijk ook het verlangen om ervoor te zorgen dat zoveel mogelijk woorden ook op langere termijn verankerd blijven. Ons brein vergeet informatie volgens een voorspelbare curve. De meest effectieve manier om deze curve te doorbreken is door informatie te herhalen op het moment dat we die bijna vergeten zijn. Dit heet het spacing effect (gespreide herhaling). Woorden die in de moeilijkste fase fout worden beantwoord, worden eerst onmiddellijk opnieuw aangeboden, maar komen ook in een aparte pool terecht waarmee ze later herhaald worden. Deze gespreide herhaling is significant effectiever voor langetermijnretentie dan het onmiddellijk opnieuw oefenen (Goossens et al., 2012).
+            Centraal staat natuurlijk ook het verlangen om ervoor te zorgen dat zoveel mogelijk woorden ook op langere termijn verankerd blijven. Ons brein vergeet informatie volgens een voorspelbare curve. De meest effectieve manier om deze curve te doorbreken is door informatie te herhalen op het moment dat we die bijna vergeten zijn. Dit heet het spacing effect (gespreide herhaling). Woorden die in de moeilijkste fase fout worden beantwoord, worden eerst onmiddellijk opnieuw aangeboden, maar komen ook in een aparte pool terecht waarmee ze later moeten worden herhaald. En ook bij die herhaling blijven de niet herinnerde vormen terugkeren. Deze gespreide herhaling focust op de retentie van de voor de leerling uitdagendste vormen om de aanpak binnen het tijdsbestek haalbaar te houden. De methodische inzet op spacing (waarbij onmiddellijk naar fase 3 gegaan wordt, zonder de woorden eerst terug in het kortetermijngeheugen te plaatsen) is significant effectiever voor langetermijnretentie dan het onmiddellijk opnieuw oefenen (Goossens et al., 2012).
           </p>
 
           <p style={{ marginBottom: '20px' }}>
-            Tot slot: expliciete woordenschattraining kan en mag natuurlijk nooit een vervanging zijn voor een rijke, talige omgeving waarin leerlingen veelvuldig in aanraking komen met complexe en authentieke teksten. Impliciete woordenschatverwerving door middel van lezen, zoals gestimuleerd door initiatieven als Rijketeksten.org, blijft de hoeksteen van een diepgaande en flexibele taalbeheersing.
+            Tot slot: expliciete woordenschattraining kan en mag natuurlijk nooit een vervanging zijn voor een rijke, talige omgeving waarin leerlingen veelvuldig in aanraking komen met complexe en authentieke teksten. Impliciete woordenschatverwerving door middel van lezen, zoals gestimuleerd door initiatieven als Rijketeksten.org, blijft de hoeksteen van een diepgaande en flexibele taalbeheersing. Maar expliciete woordenschattraining is een waardevol complement op een curriculum dat rijk lezen centraal stelt. Het functioneert als een precisie-instrument: een gerichte interventie om de kennis van cruciale, hoogfrequente en voor de leeftijd uitdagende woorden te versnellen.
           </p>
 
           <p style={{ marginBottom: '20px' }}>
-            Een tool gebaseerd op deze methodologie moet dus niet worden gezien als een totaaloplossing, maar als een waardevol complement op een curriculum dat rijk lezen centraal stelt. Het functioneert als een precisie-instrument: een gerichte interventie om de kennis van cruciale, hoogfrequente en voor de leeftijd uitdagende woorden te versnellen.
-          </p>
-
-          <p style={{ marginBottom: '20px' }}>
-            De feedback van leerlingen tijdens testfases, die het oefenen omschrijven als 'leerrijk', 'nuttig' en zelfs 'rustgevend', suggereert dat een dergelijke gestructureerde aanpak motiverend kan werken. Expliciete woordenschattraining in het Nederlands op basis van slim geselecteerde woorden kan zo een krachtige pijler zijn van een taalbeleid dat op zoek is naar makkelijk implementeerbare, effectieve acties.
+            De feedback van leerlingen in de eerste testfases is alvast veelbelovend: zij omschrijven het oefenen als 'leerrijk', 'nuttig' en zelfs 'rustgevend', wat suggereert dat een dergelijke gestructureerde aanpak motiverend kan werken. Expliciete woordenschattraining in het Nederlands op basis van slim geselecteerde woorden kan zo een krachtige pijler zijn van de lessen Nederlands, en ook een taalbeleid dat op zoek is naar makkelijk implementeerbare, effectieve acties met meetbaar resultaat.
           </p>
 
           <h2 style={{
