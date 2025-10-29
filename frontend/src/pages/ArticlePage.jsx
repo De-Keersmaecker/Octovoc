@@ -6,7 +6,7 @@ export default function ArticlePage() {
 
   return (
     <main className="stage" aria-label="octovoc methodologie" style={{ minHeight: '100vh' }}>
-      <section className="inner" style={{ maxWidth: '1050px', width: '70vw', paddingBlock: '60px' }}>
+      <section className="inner article-page-inner" style={{ maxWidth: '1050px', width: '70vw', paddingBlock: '60px' }}>
         <h1 className="title" style={{ marginBottom: '5px' }}>Octovoc</h1>
         <p style={{
           fontFamily: '"Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif',

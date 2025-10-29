@@ -142,3 +142,9 @@
 .back-btn {
   margin-top: 20px;
 }
+
+@media (max-width: 768px) {
+  .article-page-inner {
+    width: calc(100vw - 40px) !important;
+  }
+}
