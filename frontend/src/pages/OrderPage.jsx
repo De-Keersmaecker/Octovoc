@@ -86,7 +86,7 @@ export default function OrderPage() {
           color: '#fff',
           maxWidth: '500px'
         }}>
-          <div style={{ marginBottom: '10px' }}>€1,90 per leerling per schooljaar</div>
+          <div style={{ marginBottom: '10px' }}>€0,95 per leerling per schooljaar</div>
           <div style={{ opacity: 0.85, fontSize: 'clamp(13px, 1.1vw, 15px)' }}>
             inclusief voortgangsopvolging | onbeperkt oefenen | lerarenaccounts
           </div>
