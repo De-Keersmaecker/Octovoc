@@ -19,7 +19,6 @@ const ModuleProgressFooter = ({ moduleId, user, masteredWordsOverride, totalWord
         masteredWords: masteredWordsOverride,
         percentage
       }
-      console.log('ModuleProgressFooter: Using override values', data)
       setProgressData(data)
       setLoading(false)
       return
@@ -27,9 +26,9 @@ const ModuleProgressFooter = ({ moduleId, user, masteredWordsOverride, totalWord
 
     const fetchModuleProgress = async () => {
       try {
-        // Get all modules to find this specific one
-        const response = await api.get('/student/modules')
-        const module = response.data.find(m => m.id === parseInt(moduleId))
+        // Get specific module with progress data
+        const response = await api.get(`/student/module/${moduleId}`)
+        const module = response.data
 
         if (module) {
           // Calculate mastered words

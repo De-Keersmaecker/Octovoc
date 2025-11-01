@@ -8,6 +8,7 @@ from app.models.progress import StudentProgress, QuestionProgress, BatteryProgre
 from app.services.export_service import ExportService
 from datetime import datetime
 from sqlalchemy import func
+from sqlalchemy.orm import joinedload
 
 bp = Blueprint('teacher', __name__, url_prefix='/api/teacher')
 
@@ -81,6 +82,29 @@ def get_classroom_progress(classroom_id):
     # Get all active modules (sorted by display_order)
     modules = Module.query.filter_by(is_active=True).order_by(Module.display_order).all()
 
+    # Pre-fetch word counts for all modules (single query)
+    module_word_counts = {}
+    for module in modules:
+        count = Word.query.filter_by(module_id=module.id).count()
+        module_word_counts[module.id] = count
+
+    # Get all student IDs
+    student_ids = [s.id for s in students]
+
+    # Pre-fetch all progress records with eager loading (single query with joins)
+    all_progress = StudentProgress.query.options(
+        joinedload(StudentProgress.battery_progress).joinedload(BatteryProgress.question_progress)
+    ).filter(
+        StudentProgress.user_id.in_(student_ids)
+    ).all()
+
+    # Organize progress by student_id and module_id
+    progress_lookup = {}
+    for progress in all_progress:
+        if progress.user_id not in progress_lookup:
+            progress_lookup[progress.user_id] = {}
+        progress_lookup[progress.user_id][progress.module_id] = progress
+
     # Build matrix data structure
     matrix = []
     for student in students:
@@ -92,26 +116,19 @@ def get_classroom_progress(classroom_id):
             'modules': {}
         }
 
-        # Get all progress records for this student
-        progress_records = StudentProgress.query.filter_by(user_id=student.id).all()
-
-        # Create a lookup dictionary for quick access
-        progress_by_module = {p.module_id: p for p in progress_records}
+        # Get progress records for this student from pre-fetched data
+        student_progress = progress_lookup.get(student.id, {})
 
         # For each module, add progress data
         for module in modules:
-            if module.id in progress_by_module:
-                progress = progress_by_module[module.id]
+            if module.id in student_progress:
+                progress = student_progress[module.id]
+                total_words = module_word_counts[module.id]
 
-                # Get total words in module
-                from app.models.module import Word
-                total_words = Word.query.filter_by(module_id=module.id).count()
-
-                # Count unique words answered
+                # Count unique words answered (data already loaded via eager loading)
                 answered_word_ids = set()
                 for bp in progress.battery_progress:
-                    questions = QuestionProgress.query.filter_by(battery_progress_id=bp.id).all()
-                    for q in questions:
+                    for q in bp.question_progress:
                         if q.word_id:
                             answered_word_ids.add(q.word_id)
 

@@ -30,8 +30,16 @@ def create_app(config_class=Config):
     migrate.init_app(app, db)
     mail.init_app(app)
 
-    # CORS configuration - allow all origins
-    CORS(app, resources={r"/*": {"origins": "*"}})
+    # CORS configuration - restrict to specific origins
+    allowed_origins = os.getenv('ALLOWED_ORIGINS', 'http://localhost:5173,https://www.octovoc.be').split(',')
+    CORS(app, resources={
+        r"/*": {
+            "origins": allowed_origins,
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            "allow_headers": ["Content-Type", "Authorization"],
+            "supports_credentials": True
+        }
+    })
 
     jwt.init_app(app)
 
@@ -42,6 +50,17 @@ def create_app(config_class=Config):
     app.register_blueprint(teacher.bp)
     app.register_blueprint(admin.bp)
     app.register_blueprint(order.bp)
+
+    # Health check endpoint
+    @app.route('/health')
+    def health_check():
+        """Health check endpoint for monitoring"""
+        try:
+            # Test database connection
+            db.session.execute('SELECT 1')
+            return {'status': 'healthy', 'database': 'connected'}, 200
+        except Exception as e:
+            return {'status': 'unhealthy', 'error': str(e)}, 500
 
     # Create upload folder
     if not os.path.exists(app.config['UPLOAD_FOLDER']):

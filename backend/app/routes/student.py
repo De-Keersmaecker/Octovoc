@@ -117,6 +117,50 @@ def get_modules():
         return jsonify({'error': str(e)}), 500
 
 
+@bp.route('/module/<int:module_id>', methods=['GET'])
+@jwt_required(optional=True)
+def get_module(module_id):
+    """Get a specific module with progress data"""
+    user_id = get_jwt_identity()
+
+    # Get the module
+    module = Module.query.get(module_id)
+
+    if not module or not module.is_active:
+        return jsonify({'error': 'Module not found'}), 404
+
+    # Basic module data
+    module_data = module.to_dict()
+
+    # Add progress data if user is logged in
+    if user_id:
+        progress = StudentProgress.query.filter_by(
+            user_id=user_id,
+            module_id=module_id
+        ).first()
+
+        if progress:
+            module_data['progress'] = progress.to_dict()
+
+            # Calculate completion percentage
+            total_words = Word.query.filter_by(module_id=module_id).count()
+            answered_word_ids = set()
+
+            for bp in progress.battery_progress:
+                questions = QuestionProgress.query.filter_by(battery_progress_id=bp.id).all()
+                for q in questions:
+                    if q.word_id:
+                        answered_word_ids.add(q.word_id)
+
+            answered_words = len(answered_word_ids)
+            completion_percentage = (answered_words / total_words * 100) if total_words > 0 else 0
+
+            module_data['completion_percentage'] = completion_percentage
+            module_data['word_count'] = total_words
+
+    return jsonify(module_data), 200
+
+
 @bp.route('/module/<int:module_id>/start', methods=['POST'])
 @jwt_required(optional=True)
 def start_module(module_id):

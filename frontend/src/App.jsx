@@ -1,24 +1,44 @@
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
-import { useState, useEffect } from 'react'
-import LandingPage from './pages/LandingPage'
-import GuestLevelSelect from './pages/GuestLevelSelect'
-import OrderPage from './pages/OrderPage'
-import LoginPage from './pages/LoginPage'
-import RegisterPage from './pages/RegisterPage'
-import VerifyEmailPage from './pages/VerifyEmailPage'
-import StudentDashboard from './pages/StudentDashboard'
-import ExercisePage from './pages/ExercisePage'
-import FinalRoundPage from './pages/FinalRoundPage'
-import DifficultWordsPage from './pages/DifficultWordsPage'
-import ForgotPasswordPage from './pages/ForgotPasswordPage'
-import ResetPasswordPage from './pages/ResetPasswordPage'
-import TeacherDashboard from './pages/TeacherDashboard'
-import AdminDashboard from './pages/AdminDashboard'
-import PrivacyPage from './pages/PrivacyPage'
-import ArticlePage from './pages/ArticlePage'
-import GDPRNotification from './components/common/GDPRNotification'
-// Footer component removed
+import { useState, useEffect, lazy, Suspense } from 'react'
 import { getToken, getUser } from './utils/auth'
+
+// Eager load critical components for initial render
+import LandingPage from './pages/LandingPage'
+import GDPRNotification from './components/common/GDPRNotification'
+
+// Lazy load all other pages for code splitting
+const GuestLevelSelect = lazy(() => import('./pages/GuestLevelSelect'))
+const OrderPage = lazy(() => import('./pages/OrderPage'))
+const LoginPage = lazy(() => import('./pages/LoginPage'))
+const RegisterPage = lazy(() => import('./pages/RegisterPage'))
+const VerifyEmailPage = lazy(() => import('./pages/VerifyEmailPage'))
+const StudentDashboard = lazy(() => import('./pages/StudentDashboard'))
+const ExercisePage = lazy(() => import('./pages/ExercisePage'))
+const FinalRoundPage = lazy(() => import('./pages/FinalRoundPage'))
+const DifficultWordsPage = lazy(() => import('./pages/DifficultWordsPage'))
+const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage'))
+const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'))
+const TeacherDashboard = lazy(() => import('./pages/TeacherDashboard'))
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'))
+const PrivacyPage = lazy(() => import('./pages/PrivacyPage'))
+const ArticlePage = lazy(() => import('./pages/ArticlePage'))
+
+// Loading component for Suspense fallback
+const PageLoader = () => (
+  <div style={{
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: '100vh',
+    background: '#000',
+    color: '#fff',
+    fontFamily: '"Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif',
+    fontSize: 'clamp(14px, 1.2vw, 16px)',
+    letterSpacing: '0.02em'
+  }}>
+    laden...
+  </div>
+)
 
 function App() {
   const [user, setUser] = useState(null)
@@ -62,17 +82,18 @@ function App() {
 
   return (
     <>
-      <Routes>
-        {/* Public routes */}
-        <Route path="/login" element={<LoginPage setUser={setUser} />} />
-        <Route path="/register" element={<RegisterPage setUser={setUser} />} />
-        <Route path="/verify-email" element={<VerifyEmailPage setUser={setUser} />} />
-        <Route path="/privacy" element={<PrivacyPage />} />
-        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-        <Route path="/reset-password" element={<ResetPasswordPage />} />
-        <Route path="/guest-level-select" element={<GuestLevelSelect />} />
-        <Route path="/bestellen" element={<OrderPage />} />
-        <Route path="/methodologie" element={<ArticlePage />} />
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          {/* Public routes */}
+          <Route path="/login" element={<LoginPage setUser={setUser} />} />
+          <Route path="/register" element={<RegisterPage setUser={setUser} />} />
+          <Route path="/verify-email" element={<VerifyEmailPage setUser={setUser} />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
+          <Route path="/guest-level-select" element={<GuestLevelSelect />} />
+          <Route path="/bestellen" element={<OrderPage />} />
+          <Route path="/methodologie" element={<ArticlePage />} />
 
         {/* Landing page or redirect to dashboard based on login status */}
         <Route
@@ -143,8 +164,9 @@ function App() {
           }
         />
 
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </Suspense>
 
       <GDPRNotification />
     </>

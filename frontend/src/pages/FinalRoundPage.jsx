@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import api from '../services/api'
 import YouTubeRewardModal from '../components/common/YouTubeRewardModal'
 import ModuleProgressFooter from '../components/common/ModuleProgressFooter'
+import { levenshteinDistance } from '../utils/stringUtils'
 import './Exercise.css'
 
 export default function FinalRoundPage({ user }) {
@@ -25,10 +26,9 @@ export default function FinalRoundPage({ user }) {
   const startFinalRound = async () => {
     try {
       // Get module details
-      const modulesRes = await api.get('/student/modules')
-      const module = modulesRes.data.find(m => m.id === parseInt(moduleId))
-      if (module) {
-        setModuleName(module.name)
+      const moduleRes = await api.get(`/student/module/${moduleId}`)
+      if (moduleRes.data) {
+        setModuleName(moduleRes.data.name)
       }
 
       const res = await api.post(`/student/module/${moduleId}/final-round/start`)
@@ -100,33 +100,6 @@ export default function FinalRoundPage({ user }) {
     }
   }
 
-  const levenshteinDistance = (str1, str2) => {
-    const matrix = []
-
-    for (let i = 0; i <= str2.length; i++) {
-      matrix[i] = [i]
-    }
-
-    for (let j = 0; j <= str1.length; j++) {
-      matrix[0][j] = j
-    }
-
-    for (let i = 1; i <= str2.length; i++) {
-      for (let j = 1; j <= str1.length; j++) {
-        if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
-          matrix[i][j] = matrix[i - 1][j - 1]
-        } else {
-          matrix[i][j] = Math.min(
-            matrix[i - 1][j - 1] + 1,
-            matrix[i][j - 1] + 1,
-            matrix[i - 1][j] + 1
-          )
-        }
-      }
-    }
-
-    return matrix[str2.length][str1.length]
-  }
 
   const handleAnswer = async (selectedAnswer) => {
     if (feedback) return

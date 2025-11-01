@@ -28,7 +28,6 @@ def seed_quotes():
         with open(json_path, 'r', encoding='utf-8') as f:
             quotes_data = json.load(f)
 
-        print(f"Loading {len(quotes_data)} quotes...")
 
         # Add quotes to database
         for quote_data in quotes_data:

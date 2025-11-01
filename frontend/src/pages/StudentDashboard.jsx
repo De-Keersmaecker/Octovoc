@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../services/api'
 import { logout } from '../utils/auth'
@@ -92,22 +92,18 @@ export default function StudentDashboard({ user, setUser }) {
   const fetchModules = async (level) => {
     // Prevent concurrent fetches for the same level
     if (currentFetchLevel.current === level) {
-      console.log(`Already fetching modules for level ${level}, skipping...`)
       return
     }
 
     try {
       currentFetchLevel.current = level
-      console.log(`Fetching modules for level ${level}`)
 
       const response = await api.get(`/student/modules?level=${level}`)
       let modulesData = response.data
-      console.log(`Received ${modulesData.length} modules for level ${level}`, modulesData)
 
       // If guest, only show free modules
       if (isGuest) {
         modulesData = modulesData.filter(module => module.is_free)
-        console.log(`After free filter: ${modulesData.length} modules`)
       }
 
       setModules(modulesData)
@@ -211,6 +207,39 @@ export default function StudentDashboard({ user, setUser }) {
     sessionStorage.removeItem('userType')
     navigate('/guest-level-select')
   }
+
+  // Memoize module list rendering to prevent unnecessary re-renders
+  const moduleListItems = useMemo(() => {
+    return modules.map((module) => {
+      const isAccessible = isGuest ? module.is_free : (module.is_free || (user && user.class_code))
+      const isLocked = !isAccessible
+      const progressText = module.progress && !isGuest ? `, ${Math.round(module.completion_percentage)}% voltooid` : ''
+      const lockText = isLocked ? `, ${isGuest ? 'niet gratis' : 'klascode vereist'}` : ''
+
+      return (
+        <li
+          key={module.id}
+          className={`module-item ${isLocked ? 'locked' : ''}`}
+          onClick={() => isAccessible && startModule(module.id, module.is_free)}
+          role="button"
+          tabIndex={isAccessible ? 0 : -1}
+          onKeyDown={(e) => { if (isAccessible && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); startModule(module.id, module.is_free); } }}
+          aria-label={`${module.name}, ${module.word_count} woorden${progressText}${lockText}`}
+          aria-disabled={isLocked}
+        >
+          <p className="module-info">
+            <strong>{module.name}</strong>
+            <span className="module-details" aria-hidden="true">
+              {' | '}
+              {module.word_count} woorden
+              {module.progress && !isGuest && ` | ${Math.round(module.completion_percentage)}% voltooid`}
+              {isLocked && <span className="module-locked"> | {isGuest ? 'niet gratis' : 'klascode vereist'}</span>}
+            </span>
+          </p>
+        </li>
+      )
+    })
+  }, [modules, isGuest, user])
 
   return (
     <div className="dashboard-stage">
@@ -330,35 +359,7 @@ export default function StudentDashboard({ user, setUser }) {
                 </p>
               </li>
             )}
-            {modules.map((module) => {
-              const isAccessible = isGuest ? module.is_free : (module.is_free || (user && user.class_code))
-              const isLocked = !isAccessible
-              const progressText = module.progress && !isGuest ? `, ${Math.round(module.completion_percentage)}% voltooid` : ''
-              const lockText = isLocked ? `, ${isGuest ? 'niet gratis' : 'klascode vereist'}` : ''
-
-              return (
-                <li
-                  key={module.id}
-                  className={`module-item ${isLocked ? 'locked' : ''}`}
-                  onClick={() => isAccessible && startModule(module.id, module.is_free)}
-                  role="button"
-                  tabIndex={isAccessible ? 0 : -1}
-                  onKeyDown={(e) => { if (isAccessible && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); startModule(module.id, module.is_free); } }}
-                  aria-label={`${module.name}, ${module.word_count} woorden${progressText}${lockText}`}
-                  aria-disabled={isLocked}
-                >
-                  <p className="module-info">
-                    <strong>{module.name}</strong>
-                    <span className="module-details" aria-hidden="true">
-                      {' | '}
-                      {module.word_count} woorden
-                      {module.progress && !isGuest && ` | ${Math.round(module.completion_percentage)}% voltooid`}
-                      {isLocked && <span className="module-locked"> | {isGuest ? 'niet gratis' : 'klascode vereist'}</span>}
-                    </span>
-                  </p>
-                </li>
-              )
-            })}
+            {moduleListItems}
           </ul>
         )}
       </main>
