@@ -135,7 +135,7 @@ export default function RegisterPage({ setUser: setAppUser }) {
             type="text"
             value={code}
             onChange={handleCodeChange}
-            placeholder="XXXX-XXXX (klas- of lerarencode)"
+            placeholder="klascode (XXXX-XXXX)"
             required
             maxLength={9}
             className="input-field"

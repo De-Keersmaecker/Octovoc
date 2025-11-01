@@ -204,109 +204,148 @@ Het Octovoc Team
         return False
 
 
-def send_order_email(name, email, school_name, num_classrooms, num_students, num_teacher_accounts):
-    """Send order notification email to octovoc@katern.be"""
+def send_order_email(name, email, phone, school_name, billing_address, num_classrooms, num_students, num_teacher_accounts):
+    """Send quote PDF to customer and notification to admin"""
+    import os
+    import tempfile
+    from app.services.pdf_service import generate_quote_pdf
 
     try:
         app = current_app._get_current_object()
 
-        # Calculate estimated price
-        estimated_price = num_students * 1.90
+        # Calculate price (€0.95 per student)
+        total_price = num_students * 0.95
 
-        # Create email message
-        msg = Message(
-            subject=f"Nieuwe bestelling - {school_name}",
+        # Generate PDF quote
+        try:
+            pdf_path = generate_quote_pdf(
+                name=name,
+                school_name=school_name,
+                billing_address=billing_address,
+                num_classrooms=num_classrooms,
+                num_students=num_students,
+                num_teacher_accounts=num_teacher_accounts
+            )
+        except Exception as e:
+            print(f"Error generating PDF: {str(e)}")
+            # Continue without PDF attachment
+            pdf_path = None
+
+        # Get first name for personalization
+        first_name = name.split()[0] if name else 'daar'
+
+        # ===  1. Send quote to customer ===
+        customer_msg = Message(
+            subject=f"Offerte Octovoc - {school_name}",
+            recipients=[email],
+            sender=app.config.get('MAIL_DEFAULT_SENDER')
+        )
+
+        # Customer email body
+        customer_msg.body = f"""Beste {first_name},
+
+In bijlage onze offerte.
+
+Om te bestellen volstaat een eenvoudige reply of het opgeven van een bestelbonnummer. Na bevestiging ontvang je de toegangscodes binnen de 5 werkdagen.
+
+Vriendelijke groet,
+
+Jelle De Keersmaecker
+KATERN
+Brabançonnestraat 73
+3000 LEUVEN
+BE0643.557.881"""
+
+        # Attach PDF if generated
+        if pdf_path and os.path.exists(pdf_path):
+            with open(pdf_path, 'rb') as pdf_file:
+                customer_msg.attach(
+                    filename=os.path.basename(pdf_path),
+                    content_type='application/pdf',
+                    data=pdf_file.read()
+                )
+
+        # === 2. Send notification to admin ===
+        admin_msg = Message(
+            subject=f"Offerte verzonden - {school_name}",
             recipients=['octovoc@katern.be'],
             sender=app.config.get('MAIL_DEFAULT_SENDER'),
             reply_to=email
         )
 
-        # Plain text version
-        msg.body = f"""
-Nieuwe bestelling ontvangen via Octovoc!
+        admin_msg.body = f"""Beste {first_name},
 
-Contactgegevens:
-- Naam: {name}
-- Email: {email}
-- School: {school_name}
+In bijlage onze offerte.
+
+Om te bestellen volstaat een eenvoudige reply of het opgeven van een bestelbonnummer. Na bevestiging ontvang je de toegangscodes binnen de 5 werkdagen.
+
+Vriendelijke groet,
+
+Jelle De Keersmaecker
+KATERN
+Brabançonnestraat 73
+3000 LEUVEN
+BE0643.557.881
+
+---
+INTERNE INFO:
+Contactpersoon: {name}
+Email: {email}
+Telefoon: {phone if phone else 'niet opgegeven'}
+School: {school_name}
+Facturatieadres: {billing_address if billing_address else 'niet opgegeven'}
 
 Bestelling:
 - Aantal klassen: {num_classrooms}
-- Totaal aantal leerlingen: {num_students}
+- Aantal leerlingen: {num_students}
 - Aantal lerarenaccounts: {num_teacher_accounts}
+- Totaalprijs: € {total_price:.2f}"""
 
-Geschatte prijs: €{estimated_price:.2f} (€1,90 per leerling)
+        # Attach PDF to admin email too
+        if pdf_path and os.path.exists(pdf_path):
+            with open(pdf_path, 'rb') as pdf_file:
+                admin_msg.attach(
+                    filename=os.path.basename(pdf_path),
+                    content_type='application/pdf',
+                    data=pdf_file.read()
+                )
 
-Neem binnen 3 werkdagen contact op met de klant voor een offerte en bevestiging.
-"""
-
-        # HTML version
-        msg.html = f"""
-<html>
-  <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-    <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-      <h2 style="color: #000;">Nieuwe bestelling ontvangen</h2>
-
-      <h3>Contactgegevens</h3>
-      <table style="width: 100%; margin-bottom: 20px;">
-        <tr>
-          <td style="padding: 8px 0; font-weight: bold;">Naam:</td>
-          <td style="padding: 8px 0;">{name}</td>
-        </tr>
-        <tr>
-          <td style="padding: 8px 0; font-weight: bold;">Email:</td>
-          <td style="padding: 8px 0;"><a href="mailto:{email}">{email}</a></td>
-        </tr>
-        <tr>
-          <td style="padding: 8px 0; font-weight: bold;">School:</td>
-          <td style="padding: 8px 0;">{school_name}</td>
-        </tr>
-      </table>
-
-      <h3>Bestelling</h3>
-      <table style="width: 100%; margin-bottom: 20px;">
-        <tr>
-          <td style="padding: 8px 0; font-weight: bold;">Aantal klassen:</td>
-          <td style="padding: 8px 0;">{num_classrooms}</td>
-        </tr>
-        <tr>
-          <td style="padding: 8px 0; font-weight: bold;">Totaal aantal leerlingen:</td>
-          <td style="padding: 8px 0;">{num_students}</td>
-        </tr>
-        <tr>
-          <td style="padding: 8px 0; font-weight: bold;">Aantal lerarenaccounts:</td>
-          <td style="padding: 8px 0;">{num_teacher_accounts}</td>
-        </tr>
-      </table>
-
-      <div style="background-color: #f5f5f5; padding: 15px; border-radius: 4px; margin: 20px 0;">
-        <p style="margin: 0; font-size: 18px;">
-          <strong>Geschatte prijs:</strong> €{estimated_price:.2f}
-        </p>
-        <p style="margin: 5px 0 0 0; font-size: 14px; color: #666;">
-          (€1,90 per leerling)
-        </p>
-      </div>
-
-      <div style="background-color: #fff3cd; padding: 15px; border-radius: 4px; border-left: 4px solid #ffc107;">
-        <p style="margin: 0; font-weight: bold;">Actie vereist:</p>
-        <p style="margin: 5px 0 0 0;">Neem binnen 3 werkdagen contact op met de klant voor een offerte en bevestiging.</p>
-      </div>
-    </div>
-  </body>
-</html>
-"""
-
-        # Send email in background thread
-        print(f"Starting background email send to octovoc@katern.be (order from {email})")
-        thread = threading.Thread(
+        # Send both emails in background threads
+        print(f"Sending quote to customer: {email}")
+        customer_thread = threading.Thread(
             target=_send_async_email,
-            args=(app, msg, 'octovoc@katern.be'),
+            args=(app, customer_msg, email),
             daemon=True
         )
-        thread.start()
+        customer_thread.start()
 
-        print(f"Background email thread started for order from {email}")
+        print(f"Sending notification to admin about order from {email}")
+        admin_thread = threading.Thread(
+            target=_send_async_email,
+            args=(app, admin_msg, 'octovoc@katern.be'),
+            daemon=True
+        )
+        admin_thread.start()
+
+        # Cleanup temp PDF file after a delay
+        if pdf_path:
+            def cleanup_pdf():
+                import time
+                time.sleep(60)  # Wait for emails to send
+                try:
+                    if os.path.exists(pdf_path):
+                        os.remove(pdf_path)
+                        temp_dir = os.path.dirname(pdf_path)
+                        if os.path.exists(temp_dir):
+                            import shutil
+                            shutil.rmtree(temp_dir, ignore_errors=True)
+                except:
+                    pass
+
+            cleanup_thread = threading.Thread(target=cleanup_pdf, daemon=True)
+            cleanup_thread.start()
+
+        print(f"Quote emails queued for {email}")
         return True
 
     except Exception as e:

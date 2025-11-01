@@ -9,6 +9,10 @@ export default function OrderPage() {
     email: '',
     phone: '',
     schoolName: '',
+    street: '',
+    number: '',
+    postalCode: '',
+    city: '',
     numClassrooms: '',
     numStudents: '',
     numTeacherAccounts: ''
@@ -39,6 +43,10 @@ export default function OrderPage() {
         email: '',
         phone: '',
         schoolName: '',
+        street: '',
+        number: '',
+        postalCode: '',
+        city: '',
         numClassrooms: '',
         numStudents: '',
         numTeacherAccounts: ''
@@ -134,6 +142,46 @@ export default function OrderPage() {
             className="input-field"
           />
 
+          <div style={{ marginTop: '10px', marginBottom: '10px', fontSize: 'clamp(13px, 1.1vw, 15px)', opacity: 0.85 }}>
+            facturatieadres (optioneel)
+          </div>
+
+          <input
+            type="text"
+            name="street"
+            value={formData.street}
+            onChange={handleChange}
+            placeholder="straat"
+            className="input-field"
+          />
+
+          <input
+            type="text"
+            name="number"
+            value={formData.number}
+            onChange={handleChange}
+            placeholder="nummer"
+            className="input-field"
+          />
+
+          <input
+            type="text"
+            name="postalCode"
+            value={formData.postalCode}
+            onChange={handleChange}
+            placeholder="postcode"
+            className="input-field"
+          />
+
+          <input
+            type="text"
+            name="city"
+            value={formData.city}
+            onChange={handleChange}
+            placeholder="gemeente"
+            className="input-field"
+          />
+
           <input
             type="number"
             name="numClassrooms"
@@ -168,7 +216,7 @@ export default function OrderPage() {
           />
 
           <button type="submit" className="btn submit-btn" disabled={loading}>
-            {loading ? 'verzenden...' : 'info en offerte aanvragen'}
+            {loading ? 'verzenden...' : 'vrijblijvende offerte aanvragen'}
           </button>
         </form>
 

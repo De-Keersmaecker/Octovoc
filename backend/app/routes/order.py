@@ -12,7 +12,12 @@ def submit_order():
 
         name = data.get('name', '').strip()
         email = data.get('email', '').strip().lower()
+        phone = data.get('phone', '').strip()
         school_name = data.get('schoolName', '').strip()
+        street = data.get('street', '').strip()
+        number = data.get('number', '').strip()
+        postal_code = data.get('postalCode', '').strip()
+        city = data.get('city', '').strip()
         num_classrooms = data.get('numClassrooms', '')
         num_students = data.get('numStudents', '')
         num_teacher_accounts = data.get('numTeacherAccounts', '')
@@ -32,11 +37,18 @@ def submit_order():
         except (ValueError, TypeError):
             return jsonify({'error': 'Ongeldige waarden voor aantal'}), 400
 
+        # Build billing address
+        billing_address = ''
+        if street and number and postal_code and city:
+            billing_address = f"{street} {number}\n{postal_code} {city}"
+
         # Send email
         send_order_email(
             name=name,
             email=email,
+            phone=phone,
             school_name=school_name,
+            billing_address=billing_address,
             num_classrooms=num_classrooms,
             num_students=num_students,
             num_teacher_accounts=num_teacher_accounts
