@@ -50,17 +50,6 @@ def create_app(config_class=Config):
     app.register_blueprint(admin.bp)
     app.register_blueprint(order.bp)
 
-    # Health check endpoint
-    @app.route('/health')
-    def health_check():
-        """Health check endpoint for monitoring"""
-        try:
-            # Test database connection
-            db.session.execute('SELECT 1')
-            return {'status': 'healthy', 'database': 'connected'}, 200
-        except Exception as e:
-            return {'status': 'unhealthy', 'error': str(e)}, 500
-
     # Create upload folder
     if not os.path.exists(app.config['UPLOAD_FOLDER']):
         os.makedirs(app.config['UPLOAD_FOLDER'])
