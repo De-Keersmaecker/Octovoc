@@ -1,7 +1,7 @@
 """Add indexes on foreign keys for performance
 
-Revision ID: 004_add_foreign_key_indexes
-Revises: 003_add_reset_token_expiry
+Revision ID: 005_add_foreign_key_indexes
+Revises: 004
 Create Date: 2025-11-01
 
 """
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '004_add_foreign_key_indexes'
-down_revision = '003_add_reset_token_expiry'
+revision = '005_add_foreign_key_indexes'
+down_revision = '004'
 branch_labels = None
 depends_on = None
 
