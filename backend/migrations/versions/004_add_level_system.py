@@ -1,7 +1,7 @@
 """Add level system to modules and classrooms
 
 Revision ID: 004_add_level_system
-Revises: 003
+Revises: 002
 Create Date: 2025-10-18 00:00:00.000000
 
 """
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = '004'
-down_revision = '003'
+down_revision = '002'
 branch_labels = None
 depends_on = None
 
