@@ -31,10 +31,21 @@ def create_app(config_class=Config):
     mail.init_app(app)
 
     # CORS configuration - restrict to specific origins
-    allowed_origins = os.getenv('ALLOWED_ORIGINS', 'http://localhost:5173,https://www.octovoc.be').split(',')
+    allowed_origins_str = os.getenv('ALLOWED_ORIGINS', 'http://localhost:5173,https://www.octovoc.be,https://octovoc-production.up.railway.app')
+    allowed_origins = [origin.strip() for origin in allowed_origins_str.split(',')]
+
+    # Allow Railway preview deployments (*.up.railway.app)
+    def is_allowed_origin(origin):
+        if origin in allowed_origins:
+            return True
+        # Allow Railway subdomains
+        if origin and origin.endswith('.up.railway.app'):
+            return True
+        return False
+
     CORS(app, resources={
         r"/*": {
-            "origins": allowed_origins,
+            "origins": lambda origin, *args: is_allowed_origin(origin),
             "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
             "allow_headers": ["Content-Type", "Authorization"],
             "supports_credentials": True
