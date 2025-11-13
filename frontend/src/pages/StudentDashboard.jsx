@@ -188,29 +188,14 @@ export default function StudentDashboard({ user, setUser }) {
     }
   }, [user, navigate])
 
-  if (loading) {
-    return (
-      <div className="dashboard-stage">
-        <div style={{
-          textAlign: 'center',
-          paddingTop: '100px',
-          fontFamily: '"Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif',
-          fontSize: 'clamp(14px, 1.2vw, 16px)',
-          letterSpacing: '0.02em'
-        }}>
-          laden...
-        </div>
-      </div>
-    )
-  }
-
-  const handleSwitchLevel = () => {
+  const handleSwitchLevel = useCallback(() => {
     sessionStorage.removeItem('guestLevel')
     sessionStorage.removeItem('userType')
     navigate('/guest-level-select')
-  }
+  }, [navigate])
 
   // Memoize module list rendering to prevent unnecessary re-renders
+  // MUST be called before any early returns to maintain hook order
   const moduleListItems = useMemo(() => {
     return modules.map((module) => {
       const isAccessible = isGuest ? module.is_free : (module.is_free || (user && user.class_code))
@@ -242,6 +227,22 @@ export default function StudentDashboard({ user, setUser }) {
       )
     })
   }, [modules, isGuest, user, startModule])
+
+  if (loading) {
+    return (
+      <div className="dashboard-stage">
+        <div style={{
+          textAlign: 'center',
+          paddingTop: '100px',
+          fontFamily: '"Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif',
+          fontSize: 'clamp(14px, 1.2vw, 16px)',
+          letterSpacing: '0.02em'
+        }}>
+          laden...
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="dashboard-stage">
