@@ -25,47 +25,7 @@ export default function StudentDashboard({ user, setUser }) {
   const isGuest = sessionStorage.getItem('userType') === 'guest'
   const guestLevel = isGuest ? parseInt(sessionStorage.getItem('guestLevel')) : null
 
-  // Initialize on mount - fetch allowed levels and set initial level
-  useEffect(() => {
-    const initialize = async () => {
-      setLoading(true)
-
-      if (isGuest && guestLevel) {
-        // Guest user - set level and allowed levels
-        setSelectedLevel(guestLevel)
-        setAllowedLevels([guestLevel])
-        // Fetch modules for guest level
-        await fetchModules(guestLevel)
-      } else {
-        // Logged in user - fetch allowed levels first
-        const levels = await fetchAllowedLevels()
-
-        // Determine initial level
-        const initialLevel = levels.includes(selectedLevel) ? selectedLevel : levels[0]
-        setSelectedLevel(initialLevel)
-
-        // Fetch modules for initial level
-        await fetchModules(initialLevel)
-
-        // Fetch difficult words if logged in
-        if (user && !isGuest) {
-          fetchDifficultWords()
-          if (!user.class_code) {
-            setShowCodeInput(true)
-            setShouldBlink(true)
-            setTimeout(() => setShouldBlink(false), 4000)
-          }
-        }
-      }
-
-      isInitialized.current = true
-      setLoading(false)
-    }
-
-    initialize()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []) // Only run on mount
-
+  // Define all callback functions BEFORE using them in useEffect
   const fetchAllowedLevels = useCallback(async () => {
     try {
       const response = await api.get('/student/allowed-levels')
@@ -114,6 +74,47 @@ export default function StudentDashboard({ user, setUser }) {
       console.error('Error fetching difficult words:', err)
     }
   }, [])
+
+  // Initialize on mount - fetch allowed levels and set initial level
+  useEffect(() => {
+    const initialize = async () => {
+      setLoading(true)
+
+      if (isGuest && guestLevel) {
+        // Guest user - set level and allowed levels
+        setSelectedLevel(guestLevel)
+        setAllowedLevels([guestLevel])
+        // Fetch modules for guest level
+        await fetchModules(guestLevel)
+      } else {
+        // Logged in user - fetch allowed levels first
+        const levels = await fetchAllowedLevels()
+
+        // Determine initial level
+        const initialLevel = levels.includes(selectedLevel) ? selectedLevel : levels[0]
+        setSelectedLevel(initialLevel)
+
+        // Fetch modules for initial level
+        await fetchModules(initialLevel)
+
+        // Fetch difficult words if logged in
+        if (user && !isGuest) {
+          fetchDifficultWords()
+          if (!user.class_code) {
+            setShowCodeInput(true)
+            setShouldBlink(true)
+            setTimeout(() => setShouldBlink(false), 4000)
+          }
+        }
+      }
+
+      isInitialized.current = true
+      setLoading(false)
+    }
+
+    initialize()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // Only run on mount
 
   // Handle level changes after initialization
   useEffect(() => {
