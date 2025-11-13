@@ -63,19 +63,10 @@ export default function StudentDashboard({ user, setUser }) {
     }
 
     initialize()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []) // Only run on mount
 
-  // Handle level changes after initialization
-  useEffect(() => {
-    if (!isInitialized.current) return // Skip during initialization
-
-    // Fetch modules when user manually changes level
-    if (allowedLevels.includes(selectedLevel)) {
-      fetchModules(selectedLevel)
-    }
-  }, [selectedLevel]) // Only depend on selectedLevel
-
-  const fetchAllowedLevels = async () => {
+  const fetchAllowedLevels = useCallback(async () => {
     try {
       const response = await api.get('/student/allowed-levels')
       const levels = response.data.allowed_levels || [1, 2, 3, 4, 5, 6]
@@ -87,9 +78,9 @@ export default function StudentDashboard({ user, setUser }) {
       setAllowedLevels(defaultLevels)
       return defaultLevels
     }
-  }
+  }, [])
 
-  const fetchModules = async (level) => {
+  const fetchModules = useCallback(async (level) => {
     // Prevent concurrent fetches for the same level
     if (currentFetchLevel.current === level) {
       return
@@ -113,16 +104,26 @@ export default function StudentDashboard({ user, setUser }) {
     } finally {
       currentFetchLevel.current = null
     }
-  }
+  }, [isGuest])
 
-  const fetchDifficultWords = async () => {
+  const fetchDifficultWords = useCallback(async () => {
     try {
       const response = await api.get('/student/difficult-words')
       setDifficultWords(response.data)
     } catch (err) {
       console.error('Error fetching difficult words:', err)
     }
-  }
+  }, [])
+
+  // Handle level changes after initialization
+  useEffect(() => {
+    if (!isInitialized.current) return // Skip during initialization
+
+    // Fetch modules when user manually changes level
+    if (allowedLevels.includes(selectedLevel)) {
+      fetchModules(selectedLevel)
+    }
+  }, [selectedLevel, allowedLevels, fetchModules])
 
   const handleAddCode = async (codeValue) => {
     if (isValidating) return
