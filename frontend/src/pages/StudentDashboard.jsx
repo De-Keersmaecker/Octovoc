@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useMemo } from 'react'
+import { useEffect, useState, useRef, useMemo, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../services/api'
 import { logout } from '../utils/auth'
@@ -162,7 +162,7 @@ export default function StudentDashboard({ user, setUser }) {
     }
   }
 
-  const startModule = async (moduleId, isFree) => {
+  const startModule = useCallback(async (moduleId, isFree) => {
     // Check if module is accessible
     if (!isFree && (!user || !user.class_code)) {
       alert('Deze module is alleen toegankelijk met een klascode. Log in en voeg een klascode toe.')
@@ -184,7 +184,7 @@ export default function StudentDashboard({ user, setUser }) {
     } catch (err) {
       alert(err.response?.data?.error || 'Fout bij starten module')
     }
-  }
+  }, [user, navigate])
 
   if (loading) {
     return (
@@ -239,7 +239,7 @@ export default function StudentDashboard({ user, setUser }) {
         </li>
       )
     })
-  }, [modules, isGuest, user])
+  }, [modules, isGuest, user, startModule])
 
   return (
     <div className="dashboard-stage">
